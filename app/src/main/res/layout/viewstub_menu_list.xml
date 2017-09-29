@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/menu_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/hot_line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hotline"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/btn_trans_base10"
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            android:contentDescription="hotline_image"/>
+
+        <ImageView
+            android:id="@+id/newComplaint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/complaint"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:contentDescription="complaint_image"/>
+
+        <ImageView
+            android:id="@+id/viewMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/map"
+            android:visibility="gone"
+            android:contentDescription="map_image"/>
+
+        <ImageView
+            android:id="@+id/viewInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:contentDescription="info_image"
+            android:src="@drawable/info"/>
+
+    </LinearLayout>
+
+</LinearLayout>

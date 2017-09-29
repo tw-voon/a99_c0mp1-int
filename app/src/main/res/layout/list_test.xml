@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:weightSum="10">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        android:contentDescription="@string/action"
+        android:src="@color/colorOrange"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1.5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="17"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Apr"
+            android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="8.3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/complaint_title"
+            android:text="@string/dummy_text"
+            android:lines="2"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/category"
+            android:drawableStart="@drawable/category_layer"
+            android:text="@string/dummy_title"
+            android:drawablePadding="5dp"
+            android:textSize="12sp"
+            android:layout_below="@id/complaint_title"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/person"
+            android:drawableStart="@drawable/person_layer"
+            android:text="@string/dummy_title"
+            android:drawablePadding="5dp"
+            android:textSize="12sp"
+            android:layout_below="@+id/category"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timestamp"
+            android:drawableStart="@drawable/time_layer"
+            android:text="@string/dummy_title"
+            android:drawablePadding="5dp"
+            android:textSize="12sp"
+            android:layout_below="@id/person"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/timestamp"
+            android:id="@+id/label"
+            android:text="Assigned to: "
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/label"
+            android:text="@string/dummy_title"
+            android:layout_below="@+id/timestamp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="3dp"
+            android:textSize="12sp"
+            android:textStyle="italic|bold"/>
+
+    </RelativeLayout>
+</LinearLayout>

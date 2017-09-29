@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "260053282825",
+    "project_id": "better-pepper-bo-1501333749878"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260053282825:android:98c9047a68c4c19e",
+        "android_client_info": {
+          "package_name": "kuchingitsolution.betterpepperboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "260053282825-fn7b1c2ljib6t9nbqgtjc2so4obbk75p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7JgpS6Rw6MgSzjuHb5xDHVmOnjFZzz_w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

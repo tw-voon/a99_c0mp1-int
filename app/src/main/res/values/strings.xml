@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">Better City</string>
+    <string name="form_username">Username</string>
+    <string name="form_password">Password</string>
+    <string name="form_login">Login</string>
+    <string name="form_register">Register</string>
+    <string name="form_no_account">Don\'t have an account ?</string>
+    <string name="confirm_password">Password again</string>
+    <string name="form_have_account">Already have an account ? </string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="form_email">Email</string>
+    <string name="form_phone">Contact No.</string>
+    <string name="form_logout">Log Out</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_add">Add Person</string>
+    <string name="action_search">Search</string>
+    <string name="action_main">Home</string>
+    <string name="action_map">Map</string>
+    <string name="action_complaint">Recent Complaints</string>
+    <string name="action_personal">Personal</string>
+    <string name="action_chat">Message</string>
+    <string name="action_tip">Tips</string>
+    <string name="action_sign_out">Log Out</string>
+    <string name="action_send">Send</string>
+    <string name="action_enter_comment">Please enter comment here</string>
+    <string name="info_no_comment">No comment in this post</string>
+    <string name="info_comments">Comments:</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_home">Home</string>
+    <string name="title_complaint">Complaints</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_hotline">Hotline</string>
+    <string name="title_info">Pepper Board Info</string>
+    <string name="title_assign">Assign Officer</string>
+    <string name="title_officer">Update Action</string>
+    <string name="title_detail">Details Info</string>
+
+    <string name="google_map_key">AIzaSyAFg3Ic0EkXj9jzEwu4IlYWCGCHgdIGzgE</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- status bar-->
+    <string name="status">Status: </string>
+    <string name="reason">Reason: </string>
+    <string name="action">Action Taken: </string>
+    <string name="image"> Image: </string>
+    <string name="last_action">Status: </string>
+    <string name="officer_name">Assigned to: </string>
+
+    <!-- option bar-->
+    <string name="tvStatus">Status </string>
+    <string name="tvOfficer">Assign Officer </string>
+    <string name="tvAction">Action Taken </string>
+    <string name="tvReason">Reason </string>
+    <string name="tvUpdate">Update Action</string>
+    <string name="tvImage">Image </string>
+
+    <!--Profile-->
+    <string name="tvTotalComplaint">complaints </string>
+    <string name="tvCompletedComplaint">solved </string>
+    <string name="tvFollowedPost">followed </string>
+    <string name="no_noti">No notification</string>
+    <string name="no_msg">No message yet.. </string>
+    <string name="description">Description</string>
+    <string name="support">Support</string>
+    <string name="support_none">0 Supported</string>
+    <string name="affected">Affected</string>
+    <string name="affected_none">0 Affected</string>
+    <string name="image_desc">Complaint image</string>
+
+    <!--Sample String-->
+    <string name="dummy_title">This is a testing title</string>
+    <string name="dummy_text">
+        It is a long established fact that a reader will be distracted by the readable content of a
+        page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less
+        normal distribution of letters, as opposed to using \'Content here, content here\', making
+        it look like readable English. Many desktop publishing packages and web page editors now use
+        Lorem Ipsum as their default model text, and a search for \'lorem ipsum\' will uncover many
+        web sites still in their infancy. Various versions have evolved over the years, sometimes by
+        accident, sometimes on purpose (injected humour and the like).</string>
+    <string name="confirm_solved">This action solve the report ? </string>
+    <string name="confirm_image">Click to add image </string>
+    <string name="confirm_add">Add</string>
+
+    <string name="title_activity_image_fullscreen">ImageFullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>

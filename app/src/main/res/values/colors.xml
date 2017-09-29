@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGreen">#00A859</color>
+    <color name="colorGrey">#1e1e1e</color>
+    <color name="colorOrange">#F58634</color>
+    <color name="base10">#eaeaea</color>
+    <color name="colorBackground">#FFD7D7D7</color>
+
+    <color name="mt_red">#FF3366</color>
+    <color name="mt_gray1">#b1b5ba</color>
+    <color name="mt_gray2">#BBBBBE</color>
+    <color name="mt_gray3">#77777D</color>
+    <color name="mt_gray4">#8E959E</color>
+    <color name="mt_gray5">#F8F8F9</color>
+    <color name="mt_gray6">#B6B6B8</color>
+    <color name="mt_black">#1D1D26</color>
+    <color name="mt_green">#50D2C2</color>
+    <color name="mt_purple">#D667CD</color>
+    <color name="mt_yellow">#FCAB53</color>
+
+    <color name="black_overlay">#66000000</color>
+</resources>

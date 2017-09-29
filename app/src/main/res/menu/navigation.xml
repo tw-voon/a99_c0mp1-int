@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:checkable="true"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_complaint"
+        android:icon="@drawable/ic_assignment_black_24dp"
+        android:checkable="true"
+        android:title="@string/title_complaint" />
+
+    <item
+        android:id="@+id/navigation_message"
+        android:icon="@drawable/ic_chat_black_24dp"
+        android:checkable="true"
+        android:title="@string/action_chat"/>
+
+    <item
+        android:id="@+id/navigation_notifications"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="@string/title_notifications" />
+
+    <item
+        android:id="@+id/navigation_personal"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:checkable="true"
+        android:title="@string/action_personal" />
+
+</menu>

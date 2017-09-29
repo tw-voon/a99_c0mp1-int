@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorWhite"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/no_notification"
+        android:text="@string/no_noti"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:paddingBottom="?attr/actionBarSize"
+        android:gravity="center_horizontal|center_vertical"
+        android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_notification"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
+
+</RelativeLayout>

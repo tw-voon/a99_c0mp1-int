@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="kuchingitsolution.betterpepperboard.search.SearchUserActivity">
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:numColumns="auto_fit"
+        android:columnWidth="90dp"
+        android:horizontalSpacing="3dp"
+        android:verticalSpacing="3dp"
+        android:stretchMode="columnWidth"
+        android:textAlignment="center"
+        android:scrollbars="vertical"
+        android:smoothScrollbar="true"
+        android:gravity="center"
+        android:id="@+id/selectedUser"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/newuser_recycler_view"
+        android:layout_below="@+id/selectedUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="45dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_margin="10dp"
+        android:id="@+id/add"
+        android:text="@string/confirm_add"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimary"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

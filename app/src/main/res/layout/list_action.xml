@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--<ImageView-->
+        <!--android:layout_width="1dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/mt_black"-->
+        <!--android:paddingStart="9dp"/>-->
+
+    <RelativeLayout
+        android:id="@+id/timeline_dot"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="1dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" >
+
+        <View
+            android:id="@+id/vertical_line"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/mt_gray4" />
+
+        <View
+            android:id="@+id/timeline_dots"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/current_act_" />
+
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/timeline_dot"-->
+        <!--android:layout_width="10dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:orientation="vertical">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/vertical_line"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:background="#000000"/>-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/timeline_dots"-->
+            <!--android:layout_width="10dp"-->
+            <!--android:layout_height="10dp"-->
+            <!--android:adjustViewBounds="true"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:background="@drawable/current_act_"-->
+            <!--android:scaleType="fitCenter" />-->
+
+        <!--&lt;!&ndash;<View&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="1dip"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_gravity="center_horizontal"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:visibility="visible"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="@color/mt_gray3"/>&ndash;&gt;-->
+
+    <!--</RelativeLayout>-->
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <TextView
+            android:id="@+id/action_taken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+
+        <ImageView
+            android:id="@+id/image_attached"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:visibility="gone"
+            android:scaleType="fitCenter"/>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:visibility="gone"
+            android:id="@+id/loading_img"/>
+
+        <TextView
+            android:id="@+id/action_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
