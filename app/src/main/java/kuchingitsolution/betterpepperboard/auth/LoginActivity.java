@@ -1,7 +1,9 @@
 package kuchingitsolution.betterpepperboard.auth;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -98,6 +100,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void process_login(String result){
 
+        if(result.equals("fail")){
+            loading.setVisibility(View.GONE);
+            showMessage();
+            return;
+        }
+
         try {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("status").equals("success")){
@@ -115,6 +123,19 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Server error.", Toast.LENGTH_SHORT).show();
         }
         loading.setVisibility(View.GONE);
+    }
+
+    private void showMessage(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Credential fail");
+        builder.setMessage("Wrong email or password");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -37,6 +38,7 @@ public class FollowedFragment extends Fragment{
 
     RecyclerView my_followed_list;
     ReportAdapter followedAdapter;
+    TextView no_content;
     ArrayList<ReportModel> followedModelArrayList = new ArrayList<>();
     Session session;
 
@@ -60,6 +62,7 @@ public class FollowedFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if(getView() != null){
+            no_content = getView().findViewById(R.id.no_content);
             my_followed_list = (RecyclerView) getView().findViewById(R.id.my_followed_list);
             followedAdapter = new ReportAdapter(getActivity(), followedModelArrayList);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -105,7 +108,7 @@ public class FollowedFragment extends Fragment{
 
     private void process_report(String result){
         if(result.equals("empty")){
-            Toast.makeText(getActivity(), "No Compaint submitted", Toast.LENGTH_SHORT).show();
+            no_content.setVisibility(View.VISIBLE);
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(result);
@@ -116,10 +119,13 @@ public class FollowedFragment extends Fragment{
                     JSONObject data = report.getJSONObject(i);
                     JSONObject media = data.getJSONObject("media");
                     JSONObject user = data.getJSONObject("user");
+                    JSONObject category = data.getJSONObject("category");
+                    JSONObject location = data.getJSONObject("location");
                     ReportModel followedModel = new ReportModel(
-                            user.getString("name"), " ",
+                            user.getString("name"), category.getString("name"),
                             data.getString("created_at"), data.getString("title"),
-                            media.getString("link"), data.getString("id"), data.getString("status_id")
+                            media.getString("link"), data.getString("id"),
+                            data.getString("status_id"), location.getString("name")
                     );
                     followedModelArrayList.add(followedModel);
                 }

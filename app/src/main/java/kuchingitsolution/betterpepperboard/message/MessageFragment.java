@@ -2,6 +2,7 @@ package kuchingitsolution.betterpepperboard.message;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -46,7 +48,7 @@ import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 
-public class MessageFragment extends Fragment {
+public class MessageFragment extends Fragment implements UserListAdapter.onUserClickCallBack{
 
     private List<UserListModel> userListModels = new ArrayList<>();
     private RecyclerView userListView;
@@ -74,7 +76,7 @@ public class MessageFragment extends Fragment {
             session = new Session(getActivity());
             db_offline = new DB_Offline(getActivity());
             userListView = getView().findViewById(R.id.message_recycler_view);
-            userListAdapter = new UserListAdapter(getActivity(), userListModels);
+            userListAdapter = new UserListAdapter(getContext(), userListModels, this);
             userListView.setAdapter(userListAdapter);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             userListView.setLayoutManager(linearLayoutManager);
@@ -242,4 +244,33 @@ public class MessageFragment extends Fragment {
         super.onPause();
     }
 
+    @Override
+    public void OnChangeName(String id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialog_change_name, null))
+                // Add action buttons
+            .setPositiveButton("Change", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                Log.d("contextmenu", "click true");
+            }
+        })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.setTitle("New Name");
+        builder.show();
+    }
+
+    @Override
+    public void OnDeleteChat(String id) {
+
+    }
 }

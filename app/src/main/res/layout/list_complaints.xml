@@ -1,228 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp">
 
     <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        card_view:cardCornerRadius="4dp">
 
-        <RelativeLayout
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:weightSum="10">
 
-            <TextView
-                android:id="@+id/status"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:background="@color/colorOrange"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"/>
+            <ImageView
+                android:id="@+id/status_color"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:contentDescription="@string/action"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1.5">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="17"
+                    android:id="@+id/day"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="14sp"
+                    android:text="Apr"
+                    android:id="@+id/month"
+                    android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_collections_black_24dp"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="10dp"
+                    android:id="@+id/attachment"/>
+
+            </LinearLayout>
 
             <RelativeLayout
-                android:layout_width="match_parent"
+                android:id="@+id/content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_toStartOf="@+id/status"
-                android:id="@+id/firstlayout">
+                android:layout_weight="8.2">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    app:srcCompat="@drawable/ic_person_black_24dp"
-                    android:id="@+id/profile_image"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/complaint_title"
+                    android:text="@string/dummy_text"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/category"
+                    android:drawableStart="@drawable/category_layer"
+                    android:text="@string/dummy_title"
+                    android:drawablePadding="5dp"
+                    android:textSize="12sp"
+                    android:layout_below="@id/complaint_title"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/person"
+                    android:drawableStart="@drawable/person_layer"
+                    android:text="@string/dummy_title"
+                    android:drawablePadding="5dp"
+                    android:textSize="12sp"
+                    android:layout_below="@+id/category"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location"
+                    android:drawableStart="@drawable/location_layer"
+                    android:text="@string/dummy_title"
+                    android:drawablePadding="5dp"
+                    android:textSize="12sp"
+                    android:layout_below="@id/person"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/timestamp"
+                    android:drawableStart="@drawable/time_layer"
+                    android:text="@string/dummy_title"
+                    android:drawablePadding="5dp"
+                    android:textSize="12sp"
+                    android:layout_below="@id/location"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@+id/timestamp"
+                    android:id="@+id/label"
+                    android:text="Assigned to: "
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/label"
+                    android:text="@string/dummy_title"
+                    android:layout_below="@+id/timestamp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="3dp"
+                    android:textSize="12sp"
+                    android:textStyle="italic|bold"
+                    android:id="@+id/officer_name"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:layout_toEndOf="@+id/profile_image"
-                    android:id="@+id/detail"
-                    android:orientation="vertical">
+                    android:id="@+id/response"
+                    android:layout_below="@+id/label"
+                    android:layout_marginTop="8dp"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/username"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_marginTop="5dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="#000000"
-                        android:textStyle="bold" />
+                        android:id="@+id/like_region"
+                        android:clickable="true"
+                        android:layout_weight="0.5"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/like_logo"
+                            android:src="@drawable/ic_favorite_border_black_24dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="5dp"
+                            android:id="@+id/like"
+                            android:text="@string/support"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="(0)"
+                            android:id="@+id/like_no"
+                            android:layout_gravity="center_vertical"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:id="@+id/timestamp"/>
+                        android:layout_weight="0.5"
+                        android:id="@+id/follow_region"
+                        android:clickable="true"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:paddingBottom="5dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                        android:id="@+id/location"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/follow_logo"
+                            android:src="@drawable/ic_star_border_black_24dp"/>
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="5dp"
+                            android:id="@+id/follow"
+                            android:text="@string/affected"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="(0)"
+                            android:id="@+id/follow_no"
+                            android:layout_gravity="center_vertical"/>
+
+                    </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
-
-            <TextView
-                android:id="@+id/report_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/firstlayout"
-                android:textSize="16sp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="2dp"
-                android:textColor="#000000"/>
-
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="at - Kota Samarahan"-->
-                <!--android:paddingStart="15dp"-->
-                <!--android:paddingEnd="15dp"-->
-                <!--android:paddingBottom="5dp"-->
-                <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"-->
-                <!--android:layout_below="@+id/report_title"-->
-                <!--android:id="@+id/location"/>-->
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:paddingBottom="5dp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:layout_below="@+id/report_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/mt_black"/>
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@color/colorPrimary"
-                android:adjustViewBounds="true"
-                android:minHeight="50dp"
-                android:layout_below="@+id/description"
-                android:contentDescription="@string/image_desc"
-                android:scaleType="fitXY" />
-
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:id="@+id/loading_img"
-                android:layout_below="@id/description"/>
-
-            <TextView
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:layout_below="@+id/imageView"
-                android:id="@+id/officer_incharge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/colorPrimaryDark"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/response"
-                android:layout_below="@id/officer_incharge"
-                android:paddingTop="5dp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:weightSum="2">
-
-                <TextView
-                    android:id="@+id/supported"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/support_none"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/affected"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/affected_none"
-                    android:gravity="end"
-                    android:layout_weight="1"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/to_response"
-                android:layout_below="@id/response"
-                android:paddingTop="5dp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:weightSum="3">
-
-                <Button
-                    android:id="@+id/support"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableStart="@drawable/ic_favorite_border_black_24dp"
-                    android:text="@string/support"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:background="@drawable/btn_trans_base10" />
-
-                <Button
-                    android:id="@+id/affect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableStart="@drawable/ic_star_border_black_24dp"
-                    android:text="@string/affected"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:background="@drawable/btn_trans_base10" />
-
-                <Button
-                    android:id="@+id/comment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:foreground="?android:selectableItemBackground"
-                    android:background="@android:color/transparent"
-                    android:drawableStart="@drawable/ic_comment_black_24dp"
-                    android:paddingTop="5dp"
-                    android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:text="Comment"/>
-
-            </LinearLayout>
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-    </RelativeLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

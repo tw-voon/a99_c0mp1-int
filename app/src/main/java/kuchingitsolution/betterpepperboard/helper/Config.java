@@ -4,7 +4,7 @@ public class Config {
 
     public static String PREF_NAME = "pepper_board";
     private static String DOMAIN_URL = "http://kuchingitsolution.net/complaint_panel/api";
-//    private static String DOMAIN_URL = "http://192.168.1.101/BetterPepperBoard/pepperboard.net/api";
+//    private static String DOMAIN_URL = "http://192.168.5.1/BetterPepperBoard/pepperboard.net/api";
     public static String LOGIN_URL = DOMAIN_URL + "/login";
     public static String REGISTER_URL = DOMAIN_URL + "/register";
     public static String HOTLINE_URL = DOMAIN_URL + "/hotline";
@@ -33,6 +33,7 @@ public class Config {
     public static String URL_QUERY = DOMAIN_URL + "/query";
     public static String URL_SEARCH_USER = DOMAIN_URL + "/searchUser";
     public static String URL_ADD_USER = DOMAIN_URL + "/add_chat_user";
+    public static String URL_GET_LOCATION = DOMAIN_URL + "/get_location_report";
 
     //status of each user
     public static String MAIN = "main";

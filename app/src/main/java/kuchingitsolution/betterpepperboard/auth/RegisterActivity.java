@@ -1,6 +1,8 @@
 package kuchingitsolution.betterpepperboard.auth;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -61,6 +63,19 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
+    private void showMessage(String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+        builder.setTitle("Register fail");
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     public void validateInfo(View view) {
 
         username = edtTxtname.getText().toString();
@@ -116,6 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void processResponse(String result){
+
         try {
             JSONObject jObject = new JSONObject(result);
 
@@ -133,6 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            showMessage(result);
         }
         loading.setVisibility(View.GONE);
     }

@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@color/mt_gray5"
     android:layout_marginBottom="?android:attr/actionBarSize">
 
     <RelativeLayout
@@ -22,16 +22,16 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:padding="10dp"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:src="@drawable/profile_sample"
-                android:layout_weight="1"/>
+                android:layout_weight="0.8"/>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="10dp"
-                android:layout_weight="2">
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2.2">
 
                 <TextView
                     android:id="@+id/username"
@@ -150,7 +150,8 @@
                 android:layout_weight="1.499"
                 android:textAlignment="center"
                 android:padding="10dp"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"/>
 
             <ImageView
                 android:layout_width="1dp"
@@ -165,15 +166,22 @@
                 android:layout_weight="1.499"
                 android:textAlignment="center"
                 android:padding="10dp"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"/>
         </LinearLayout>
 
-        <FrameLayout
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_height="1dp"
+            android:src="@color/mt_gray1"
             android:layout_below="@+id/menu"
-            android:id="@+id/content_personal"/>
+            android:id="@+id/divider2"/>
 
     </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/content_personal"/>
+
 </LinearLayout>

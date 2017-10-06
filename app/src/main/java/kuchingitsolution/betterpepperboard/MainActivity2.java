@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import kuchingitsolution.betterpepperboard.notification.NotificationFragment;
 import kuchingitsolution.betterpepperboard.personal.PersonalFragment;
 import kuchingitsolution.betterpepperboard.search.SearchActivity;
 import kuchingitsolution.betterpepperboard.search.SearchUserActivity;
+import kuchingitsolution.betterpepperboard.service.onesignal_service;
 import kuchingitsolution.betterpepperboard.setting.SettingActivity;
 
 public class MainActivity2 extends AppCompatActivity {
@@ -51,15 +54,17 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null)
-        getSupportActionBar().setShowHideAnimationEnabled(false);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setShowHideAnimationEnabled(false);
+        }
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         content = (FrameLayout) findViewById(R.id.contents);
         db_offline = new DB_Offline(this);
         session = new Session(this);
+        startService(new Intent(MainActivity2.this, onesignal_service.class));
 
         pushFragment(new HomeFragment(), R.string.title_home);
     }
@@ -107,8 +112,8 @@ public class MainActivity2 extends AppCompatActivity {
                 ft.commit();
                 if(getSupportActionBar() != null) {
                     getSupportActionBar().setTitle(title_resource);
-            }
-        }
+                 }
+             }
         }
     }
 
@@ -145,6 +150,18 @@ public class MainActivity2 extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        }
+        else {
+            Log.d("close", "close " + getFragmentManager().getBackStackEntryCount());
+            super.onBackPressed();
+        }
     }
 
     @Override

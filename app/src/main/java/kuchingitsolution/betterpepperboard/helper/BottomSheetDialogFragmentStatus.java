@@ -12,11 +12,10 @@ import com.squareup.picasso.Picasso;
 import kuchingitsolution.betterpepperboard.R;
 
 public class BottomSheetDialogFragmentStatus extends BottomSheetDialogFragment {
-    private String status, reason, action, imgLink;
+    private String status, action, imgLink;
 
-    public void setData(String status, String reason, String action, String imgLink){
+    public void setData(String status, String action, String imgLink){
         this.status = status;
-        this.reason = reason;
         this.action = action;
         this.imgLink = imgLink;
     }
@@ -32,7 +31,6 @@ public class BottomSheetDialogFragmentStatus extends BottomSheetDialogFragment {
         TextView labelImg = (TextView) contentView.findViewById(R.id.labelImg);
         ImageView imgStatus = (ImageView) contentView.findViewById(R.id.status_img);
         tvStatus.setText(status);
-        tvReason.setText(reason);
         tvActionTaken.setText(action);
         Log.d("imglink", imgLink);
         if(!imgLink.equals("null"))

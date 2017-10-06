@@ -44,10 +44,12 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
+import kuchingitsolution.betterpepperboard.helper.ImageCompressionUtils;
 import kuchingitsolution.betterpepperboard.helper.Utility;
 import kuchingitsolution.betterpepperboard.helper.network.ApiCall;
 import kuchingitsolution.betterpepperboard.helper.network.CountingRequestBody;
@@ -70,6 +72,7 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
     ProgressDialog loading;
     private OkHttpClient client;
     private RelativeLayout relativeLayout;
+    ImageCompressionUtils imageCompressionUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,19 +83,23 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        final String reason, action, image_link, status;
-
-        edtAction = (EditText) findViewById(R.id.edtAction);
-        add_image = (Button) findViewById(R.id.add_image);
-        closeImage = (ImageView) findViewById(R.id.cancel_image);
-        submit = (Button) findViewById(R.id.submit);
-        status_action = (RadioGroup) findViewById(R.id.status);
+        edtAction = findViewById(R.id.edtAction);
+        add_image = findViewById(R.id.add_image);
+        closeImage = findViewById(R.id.cancel_image);
+        submit = findViewById(R.id.submit);
+        status_action = findViewById(R.id.status);
         loading = new ProgressDialog(this);
         loading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
+
+        OkHttpClient.Builder b = new OkHttpClient.Builder();
+        b.readTimeout(200, TimeUnit.SECONDS);
+        b.writeTimeout(300, TimeUnit.SECONDS);
+        b.retryOnConnectionFailure(true);
+        client = b.build();
         report_id = getIntent().getStringExtra("report_id");
-        imgActionImage = (ImageView) findViewById(R.id.ivImg);
-        relativeLayout = (RelativeLayout) findViewById(R.id.image);
+        imgActionImage = findViewById(R.id.ivImg);
+        relativeLayout = findViewById(R.id.image);
+        imageCompressionUtils = new ImageCompressionUtils(this);
         image = null;
         status_id = "2";
 
@@ -203,14 +210,10 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            String path = getRealPathFromURI_API11to18(this, uri);
+            String path = imageCompressionUtils.compressImage(uri);
             try {
                 Uri imageUri = data.getData();
-                if(Build.VERSION.SDK_INT <= 18)
-                    imgFile = new File(path);
-                else imgFile = new File(uri.getPath());
-
-                Log.d("path", imgFile.getPath());
+                imgFile = new File(path);
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 bitmap = BitmapFactory.decodeStream(imageStream);
                 bitmap = getResizedBitmap(bitmap, bitmap.getWidth() / 5, bitmap.getHeight() / 5);
@@ -334,14 +337,16 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
                 Log.d("Result", s + " ");
 //                showMessage(s);
                 loading.dismiss();
-                if (s.equals("success")) {
-                    Toast.makeText(OfficerActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(OfficerActivity.this, DetailsComplaintActivity.class);
-                    intent.putExtra("action_taken", action_taken);
-                    intent.putExtra("status_id", status_id);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
+                if(s != null) {
+                    if (s.equals("success")) {
+                        Toast.makeText(OfficerActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(OfficerActivity.this, DetailsComplaintActivity.class);
+                        intent.putExtra("action_taken", action_taken);
+                        intent.putExtra("status_id", status_id);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                } else Toast.makeText(OfficerActivity.this, "Upload fail", Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }

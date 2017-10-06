@@ -42,7 +42,6 @@ public class ActionActivity extends AppCompatActivity{
     private List<ActionModel> actionModels;
     private TextView tvStatus, tvOfficerName;
     String report_id, officer_name, status_id;
-    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +49,10 @@ public class ActionActivity extends AppCompatActivity{
         setContentView(R.layout.activity_action);
 
         if(getActionBar() != null)
-            getActionBar().setDisplayHomeAsUpEnabled(false);
+            getActionBar().setHomeButtonEnabled(true);
 
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         tvOfficerName = (TextView) findViewById(R.id.tvOfficerName);
-        session = new Session(this);
 
         if(getIntent() != null){
             report_id = getIntent().getStringExtra("report_id");
@@ -146,11 +144,9 @@ public class ActionActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-        switch (itemId){
-            case android.R.id.home:
-                super.onBackPressed();
-                Log.d("report_id", "pressed");
-                break;
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -158,14 +154,10 @@ public class ActionActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
-        session.setCurrentId(report_id);
-        Log.d("onpause", "pause " + report_id);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        session.setCurrentId(report_id);
-        Log.d("onpause", "pause " + report_id);
     }
 }

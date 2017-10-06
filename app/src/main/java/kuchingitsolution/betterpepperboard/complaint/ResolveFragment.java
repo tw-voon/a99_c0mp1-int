@@ -69,6 +69,7 @@ public class ResolveFragment extends Fragment{
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             complaintlist.setLayoutManager(linearLayoutManager);
             complaintlist.setNestedScrollingEnabled(false);
+            complaintlist.setItemAnimator(new SlideUpAnimator());
 
             complaintlist.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -104,7 +105,8 @@ public class ResolveFragment extends Fragment{
 
         if(result.equals("[]")) {
             loading.setVisibility(View.GONE);
-            noContent.setVisibility(View.VISIBLE);
+            if(complaintAdapter.getItemCount() > 0)
+                complaintAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -160,6 +162,8 @@ public class ResolveFragment extends Fragment{
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter("custom-event-name"));
+        loading.setVisibility(View.VISIBLE);
+        complaintAdapter.clear();
     }
 
     @Override

@@ -2,6 +2,7 @@ package kuchingitsolution.betterpepperboard.complaint;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,8 @@ import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.notification.NotificationAdapter;
 
+import static kuchingitsolution.betterpepperboard.R.string.officer_name;
+
 public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyViewHolder> {
 
     private ArrayList<ComplaintModel> newslist = new ArrayList<>();
@@ -60,29 +64,31 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView username, report_title, report_desc, timestamp, location_name, supported, affected, status, officer_incharge;
-        ImageView report_image;
-        CircleImageView profile_image;
-        Button comment, support, affect;
-        ProgressBar loading;
+        TextView day, month, complaint_title, category, timestamp, officer_name, person, location;
+        TextView like_no, like, follow_no, follow;
+        ImageView like_logo, follow_logo, status_color, attachment;
+        LinearLayout like_region, follow_region;
 
         MyViewHolder(View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.username);
-            report_title =  itemView.findViewById(R.id.report_title);
-            report_desc =  itemView.findViewById(R.id.description);
-            report_image =  itemView.findViewById(R.id.imageView);
-            timestamp =  itemView.findViewById(R.id.timestamp);
-            location_name =  itemView.findViewById(R.id.location);
-            supported =  itemView.findViewById(R.id.supported);
-            affected =  itemView.findViewById(R.id.affected);
-            status =  itemView.findViewById(R.id.status);
-            officer_incharge =  itemView.findViewById(R.id.officer_incharge);
-            profile_image =  itemView.findViewById(R.id.profile_image);
-            comment =  itemView.findViewById(R.id.comment);
-            support =  itemView.findViewById(R.id.support);
-            affect =  itemView.findViewById(R.id.affect);
-            loading = itemView.findViewById(R.id.loading_img);
+            day = itemView.findViewById(R.id.day);
+            month = itemView.findViewById(R.id.month);
+            complaint_title = itemView.findViewById(R.id.complaint_title);
+            category = itemView.findViewById(R.id.category);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            officer_name = itemView.findViewById(R.id.officer_name);
+            person = itemView.findViewById(R.id.person);
+            location = itemView.findViewById(R.id.location);
+            like = itemView.findViewById(R.id.like);
+            like_no = itemView.findViewById(R.id.like_no);
+            follow = itemView.findViewById(R.id.follow);
+            follow_no = itemView.findViewById(R.id.follow_no);
+            like_logo = itemView.findViewById(R.id.like_logo);
+            follow_logo = itemView.findViewById(R.id.follow_logo);
+            status_color = itemView.findViewById(R.id.status_color);
+            like_region = itemView.findViewById(R.id.like_region);
+            follow_region = itemView.findViewById(R.id.follow_region);
+            attachment = itemView.findViewById(R.id.attachment);
         }
     }
 
@@ -90,7 +96,6 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         this.context = context;
         this.newslist = newsList;
     }
-
 
     @Override
     public ComplaintAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -116,53 +121,35 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         db_offline = new DB_Offline(this.context);
         session = new Session(this.context);
         final ComplaintModel news = newslist.get(position);
-        String officer_name;
-        holder.loading.setVisibility(View.VISIBLE);
 
-        holder.username.setText(news.getUsername());
-        Log.d("Image Url ---", news.getLink());
-
-        Glide.with(holder.itemView.getContext())
-                .load(news.getLink())
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        holder.loading.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .skipMemoryCache(false)
-                .priority(position < 5 ? Priority.HIGH : Priority.NORMAL)
-                .into(holder.report_image);
-
-        holder.profile_image.setImageResource(R.drawable.ic_person_outline_black_24dp);
-        holder.report_desc.setText(news.getNewsDescription());
-        holder.report_title.setText(news.getReportTitle());
+        holder.person.setText(news.getUsername());
+        holder.complaint_title.setText(news.getReportTitle());
         holder.timestamp.setText(get_time(news.getCreated_at()));
         String location = String.format("at - <b>%s</b>", news.getLocation_name());
-        holder.location_name.setText(Html.fromHtml(location));
-//        if(news.getStatus_id() == 1){
-        String tvStatus = news.getStatus_name();
-        holder.status.setText(tvStatus);
-//        } else if (news.getStatus_id() == 2){
-//            String tvStatus = "Unsolve";
-//            holder.status.setText(tvStatus);
-//        }
+        holder.location.setText(Html.fromHtml(location));
+        holder.day.setText(get_date("day", news.getCreated_at()));
+        holder.month.setText(get_date("month", news.getCreated_at()));
+        holder.category.setText(news.getType_name());
+
+        if(news.getStatus_id() == 1) {
+            holder.status_color.setBackgroundResource(R.color.colorPrimary);
+        } else {
+            holder.status_color.setBackgroundResource(R.color.mt_red);
+        }
+
+        String officer_name;
 
         if(!news.getOfficer_name().equals("NULL")) {
-            officer_name = String.format("Assigned to - %S", news.getOfficer_name());
-            holder.officer_incharge.setText(officer_name);
-        } else holder.officer_incharge.setVisibility(View.GONE);
+            officer_name = news.getOfficer_name();
+        } else {
+            officer_name = "Waiting admin assign officer";
+        }
 
-        String support = String.format("%S Supported", news.getSupported());
-        String affect = String.format("%S Affected", news.getAffected());
-        holder.supported.setText(support);
-        holder.affected.setText(affect);
+        holder.officer_name.setText(officer_name);
+        final String support = String.format("(%S)", db_offline.get_support(news.getId()));
+        String affect = String.format("(%S)", db_offline.get_affect(news.getId()));
+        holder.like_no.setText(support);
+        holder.follow_no.setText(affect);
         JSONObject response = db_offline.ifResponse(news.getId());
 
         if(response.length() != 0){
@@ -172,64 +159,84 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                 Log.d("response", response.getString("affected"));
 
                 if(response.getString("support").equals("1")) {
-                    holder.support.setTextColor(Color.BLUE);
-                } else holder.support.setTextColor(Color.BLACK);
+                    holder.like.setTextColor(Color.BLUE);
+                    holder.like_no.setTextColor(Color.BLUE);
+                    holder.like_logo.setImageResource(R.drawable.ic_favorite_black_24dp);
+                } else {
+                    holder.like.setTextColor(Color.BLACK);
+                    holder.like_no.setTextColor(Color.BLACK);
+                    holder.like_logo.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                }
 
-                if(response.getString("affected").equals("1"))
-                    holder.affect.setTextColor(Color.BLUE);
-                else holder.affect.setTextColor(Color.BLACK);
+                if(response.getString("affected").equals("1")) {
+                    holder.follow.setTextColor(Color.BLUE);
+                    holder.follow_no.setTextColor(Color.BLUE);
+                    holder.follow_logo.setImageResource(R.drawable.ic_star_black_24dp);
+                } else {
+                    holder.follow.setTextColor(Color.BLACK);
+                    holder.follow_no.setTextColor(Color.BLACK);
+                    holder.follow_logo.setImageResource(R.drawable.ic_star_border_black_24dp);
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-        holder.support.setOnClickListener(new View.OnClickListener() {
+        holder.like_region.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if(holder.support.getCurrentTextColor() == Color.BLUE) {
-                    holder.support.setTextColor(Color.BLACK);
+                if(holder.like.getCurrentTextColor() == Color.BLUE) {
+
+                    holder.like.setTextColor(Color.BLACK);
+                    holder.like_no.setTextColor(Color.BLACK);
+                    holder.like_logo.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     news.noSupport();
-                    holder.supported.setText(news.getSupport() + " Supported");
+                    String support = String.format("(%S)", news.getSupport());
+                    holder.like_no.setText(support);
                     updateResponse("support", 0, news.getId(), news.getSupport());
+
                 }
                 else {
-                    holder.support.setTextColor(Color.BLUE);
+
+                    holder.like.setTextColor(Color.BLUE);
+                    holder.like_no.setTextColor(Color.BLUE);
+                    holder.like_logo.setImageResource(R.drawable.ic_favorite_black_24dp);
                     news.support();
-                    holder.supported.setText(news.getSupport() + " Supported");
+                    String support = String.format("(%S)", news.getSupport());
+                    holder.like_no.setText(support);
                     updateResponse("support", 1, news.getId(), news.getSupport());
+
                 }
             }
         });
 
-        holder.affect.setOnClickListener(new View.OnClickListener() {
+        holder.follow_region.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String status;
-                if(holder.affect.getCurrentTextColor() == Color.BLUE){
-                    holder.affect.setTextColor(Color.BLACK);
-                    news.noAffected();
-                    status = String.format("%s Affected", news.getAffected());
-                    holder.affected.setText(status);
-                    updateResponse("affected", 0, news.getId(), news.getAffected());
-                } else{
-                    holder.affect.setTextColor(Color.BLUE);
-                    news.affected();
-                    status = String.format("%s Affected", news.getAffected());
-                    holder.affected.setText(status);
-                    updateResponse("affected", 1, news.getId(), news.getAffected());
-                }
-            }
-        });
 
-        holder.comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Under constructing comment feature for"+ news.getReportTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context.getApplicationContext(), DetailsComplaintActivity.class);
-                intent.putExtra("report_id", news.getId());
-                context.startActivity(intent);
+                if(holder.follow.getCurrentTextColor() == Color.BLUE){
+
+                    holder.follow.setTextColor(Color.BLACK);
+                    holder.follow_no.setTextColor(Color.BLACK);
+                    holder.follow_logo.setImageResource(R.drawable.ic_star_border_black_24dp);
+                    news.noAffected();
+                    String affect = String.format("(%S)", news.getSupport());
+                    holder.follow_no.setText(affect);
+                    updateResponse("affected", 0, news.getId(), news.getAffected());
+
+                } else{
+
+                    holder.follow.setTextColor(Color.BLUE);
+                    holder.follow_no.setTextColor(Color.BLUE);
+                    holder.follow_logo.setImageResource(R.drawable.ic_star_black_24dp);
+                    news.affected();
+                    String affect = String.format("(%S)", news.getAffected());
+                    holder.follow_no.setText(affect);
+                    updateResponse("affected", 1, news.getId(), news.getAffected());
+
+                }
             }
         });
 
@@ -294,6 +301,42 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
+    }
+
+    private String get_date(String type, String time){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+                "dd", Locale.getDefault());
+
+        SimpleDateFormat dateFormat3 = new SimpleDateFormat(
+                "MMM", Locale.getDefault());
+
+        String day = null;
+
+        switch (type){
+            case "day":
+                try {
+                    Date date = dateFormat.parse(time);
+                    day = dateFormat2.format(date);
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                break;
+
+            case "month":
+                try {
+                    Date date = dateFormat.parse(time);
+                    day = dateFormat3.format(date);
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                break;
+        }
+
+        return day;
     }
 
     private String get_time(String time){

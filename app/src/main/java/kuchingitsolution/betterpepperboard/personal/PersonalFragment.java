@@ -1,6 +1,8 @@
 package kuchingitsolution.betterpepperboard.personal;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -88,6 +90,7 @@ public class PersonalFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     setFragment(new ReportFragment());
+                    setTabTextColor("report");
                 }
             });
 
@@ -95,6 +98,7 @@ public class PersonalFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     setFragment(new FollowedFragment());
+                    setTabTextColor("followed");
                 }
             });
 
@@ -103,6 +107,33 @@ public class PersonalFragment extends Fragment {
             username.setText(session.getUsername());
             //default fragment
             setFragment(new ReportFragment());
+            setTabTextColor("report");
+        }
+    }
+
+    private void setTabTextColor(String click){
+        switch (click){
+            case "report":
+                if(Build.VERSION.SDK_INT >= 23 ) {
+                    showReport.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+                    showFollowed.setTextColor(getResources().getColor(R.color.mt_gray3, null));
+                }
+                else{
+                    showReport.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    showFollowed.setTextColor(getResources().getColor(R.color.mt_gray3));
+                }
+                break;
+
+            case "followed":
+                if(Build.VERSION.SDK_INT >= 23 ) {
+                    showFollowed.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+                    showReport.setTextColor(getResources().getColor(R.color.mt_gray3, null));
+                }
+                else{
+                    showFollowed.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    showReport.setTextColor(getResources().getColor(R.color.mt_gray3));
+                }
+                break;
         }
     }
 

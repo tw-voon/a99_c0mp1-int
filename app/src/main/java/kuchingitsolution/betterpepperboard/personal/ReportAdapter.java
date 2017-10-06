@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,12 +24,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.helper.Session;
+import kuchingitsolution.betterpepperboard.helper.Utility;
 
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHolder>{
 
     private Context context;
     private ArrayList<ReportModel> reportModels = new ArrayList<>();
     private Session session;
+    private Utility utility = new Utility();
 
     public ReportAdapter(Context context, ArrayList<ReportModel> reportModels){
         this.context = context;
@@ -38,7 +41,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_report, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_test, parent, false);
         MyViewHolder viewHolder = new MyViewHolder(itemView);
         return viewHolder;
     }
@@ -47,39 +50,21 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, int position) {
 
         final ReportModel model = reportModels.get(position);
-        holder.loading.setVisibility(View.VISIBLE);
-
-//        if(session.getUserAvatar() == null || session.getUserAvatar().equals("null"))
-        holder.profile_image.setImageResource(R.drawable.profile_sample);
-//        else
-//            Picasso.with(context).load(session.getUserAvatar()).into(holder.profile_image);
-
-        holder.timestamp.setText(model.getTimestamp());
-        holder.title.setText(model.getTitle());
-        holder.username.setText(model.getUsername());
-//        Picasso.with(context).load(model.getPreview()).into(holder.preview);
-
-        Glide.with(holder.itemView.getContext())
-                .load(model.getPreview())
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        holder.loading.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .skipMemoryCache(false)
-                .into(holder.preview);
+        String day = utility.get_date("day", model.getTimestamp());
+        String month = utility.get_date("month", model.getTimestamp());
+        holder.complaint_title.setText(model.getTitle());
+        holder.person.setText(model.getUsername());
+        holder.timestamp.setText(utility.get_time(model.getTimestamp()));
+        holder.day.setText(day);
+        holder.month.setText(month);
+        holder.category.setText(model.getCategory());
+        String location = String.format("at - %S", model.getLocation());
+        holder.location.setText(location);
 
         if(model.getStatus().equals("1")){
-            holder.imgStatus.setImageResource(R.drawable.status_approve);
+            holder.status_color.setBackgroundResource(R.color.colorPrimary);
         } else if(model.getStatus().equals("2")){
-            holder.imgStatus.setImageResource(R.drawable.status_pending);
+            holder.status_color.setBackgroundResource(R.color.mt_red);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -100,20 +85,21 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView username, timestamp, title;
-        public ImageView imgStatus, preview;
-        public CircleImageView profile_image;
-        public ProgressBar loading;
+        TextView day, month, complaint_title, category, timestamp, officer_name, person, location;
+        ImageView status_color, attachment;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            username = (TextView) itemView.findViewById(R.id.username);
-            timestamp = (TextView)itemView.findViewById(R.id.timestamp);
-            title = (TextView) itemView.findViewById(R.id.title);
-            imgStatus = (ImageView) itemView.findViewById(R.id.status);
-            profile_image = (CircleImageView) itemView.findViewById(R.id.profile_image);
-            preview = (ImageView) itemView.findViewById(R.id.preview);
-            loading = itemView.findViewById(R.id.loading_img);
+            day = itemView.findViewById(R.id.day);
+            month = itemView.findViewById(R.id.month);
+            complaint_title = itemView.findViewById(R.id.complaint_title);
+            category = itemView.findViewById(R.id.category);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            officer_name = itemView.findViewById(R.id.officer_name);
+            person = itemView.findViewById(R.id.person);
+            location = itemView.findViewById(R.id.location);
+            status_color = itemView.findViewById(R.id.status_color);
+            attachment = itemView.findViewById(R.id.attachment);
         }
     }
 }

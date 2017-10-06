@@ -1,10 +1,17 @@
 package kuchingitsolution.betterpepperboard.message;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,10 +31,13 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
 
     List<UserListModel> userlists = new ArrayList<>();
     Context context;
+    String ids;
+    private onUserClickCallBack onUserClickCallBack;
 
-    public UserListAdapter(Context context, List<UserListModel> userlists){
+    public UserListAdapter(Context context, List<UserListModel> userlists, onUserClickCallBack onUserClickCallBack){
         this.context = context;
         this.userlists = userlists;
+        this.onUserClickCallBack = onUserClickCallBack;
     }
 
     @Override
@@ -62,7 +72,36 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
             }
         });
 
+        holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                MenuItem Edit = contextMenu.add(Menu.NONE, 1, 1, "Edit");
+                MenuItem Delete = contextMenu.add(Menu.NONE, 2, 2, "Delete");
+                ids = userListModel.getRoom_id();
+                Edit.setOnMenuItemClickListener(onEditMenu);
+                Delete.setOnMenuItemClickListener(onEditMenu);
+            }
+        });
+
     }
+
+    private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+
+            switch (item.getItemId()) {
+                case 1:
+                    Log.d("contextmenu", "helloe edit " +  ids);
+                    onUserClickCallBack.OnChangeName(ids);
+                    break;
+
+                case 2:
+                    Log.d("contextmenu", "helloe delete");
+                    break;
+            }
+            return true;
+        }
+    };
 
     @Override
     public int getItemCount() {
@@ -79,6 +118,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
             timestamp = itemView.findViewById(R.id.timestamp);
             count = itemView.findViewById(R.id.count);
             previewContentMessage = itemView.findViewById(R.id.previewContentMessage);
+
         }
     }
 
@@ -98,5 +138,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
         }
 
         return false;
+    }
+
+    public interface onUserClickCallBack{
+        void OnChangeName(String id);
+        void OnDeleteChat(String id);
     }
 }

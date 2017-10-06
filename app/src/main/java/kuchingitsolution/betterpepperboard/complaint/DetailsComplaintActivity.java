@@ -2,10 +2,7 @@ package kuchingitsolution.betterpepperboard.complaint;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.PersistableBundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +13,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,14 +33,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +51,6 @@ import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentOptio
 import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentStatus;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
-import kuchingitsolution.betterpepperboard.helper.Network;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.officer.OfficerActivity;
 
@@ -67,8 +59,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     private List<CommentModel> comments;
     private RecyclerView commentlist;
     private CommentAdapter commentAdapter;
-    private String status, reason, action, imgLink, reportLink, report_id, status_id, officer_id, officer_name;
-    Network hasInternet;
+    private String status, action, imgLink, reportLink, report_id, status_id, officer_id, officer_name;
     TextView desc, location, title, username, no_comment, timestamp, officer_incharge, affected, supported, last_status;
     Button btnsendComment, affect, support;
     EditText edtcomment;
@@ -79,7 +70,6 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     LinearLayout sendComment, last_action;
     ProgressBar loading, loading_img;
     DB_Offline db_offline;
-    Bundle bundle;
     BottomSheetDialogFragmentStatus statusBottomSheetDialogFragment = null;
     BottomSheetDialogFragmentOption optionBottomSheetDialogFragment = null;
     int affected_no, support_no;
@@ -89,46 +79,51 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_complaint);
 
+        Log.d("view_order", "oncreate");
+
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         comments = new ArrayList<>();
-        commentlist = (RecyclerView) findViewById(R.id.comment_list_view);
-
-        if(savedInstanceState != null)
-            report_id = savedInstanceState.getString("report_id");
-        else if (getIntent() != null)
-            report_id = getIntent().getStringExtra("report_id");
-
-        Log.d("report_id", report_id + " ;");
+        commentlist = findViewById(R.id.comment_list_view);
         session = new Session(this);
         db_offline = new DB_Offline(this);
 
-        desc = (TextView) findViewById(R.id.post_description);
-        location = (TextView) findViewById(R.id.locationName);
-        title = (TextView) findViewById(R.id.stickyView);
-        username = (TextView) findViewById(R.id.username);
-        user_profile =(CircleImageView) findViewById(R.id.profile_image);
-        pic = (ImageView) findViewById(R.id.heroImageView);
-        extraoption = (ImageView) findViewById(R.id.extraoption);
+
+        if (getIntent() != null) {
+            report_id = getIntent().getStringExtra("report_id");
+            if(report_id != null)
+                session.setCurrentId(report_id);
+            else report_id = session.getCurrentId();
+        } else report_id = session.getCurrentId();
+
+        Log.d("report_id", report_id + " ;" + session.getCurrentId());
+
+        desc = findViewById(R.id.post_description);
+        location = findViewById(R.id.locationName);
+        title = findViewById(R.id.stickyView);
+        username = findViewById(R.id.username);
+        user_profile = findViewById(R.id.profile_image);
+        pic = findViewById(R.id.heroImageView);
+        extraoption = findViewById(R.id.extraoption);
         extraoption.setVisibility(View.VISIBLE);
-        no_comment = (TextView) findViewById(R.id.no_comment);
-        btnsendComment = (Button) findViewById(R.id.btn_send);
-        affected = (TextView) findViewById(R.id.affected);
-        supported = (TextView) findViewById(R.id.supported);
-        affect = (Button) findViewById(R.id.affect);
-        support = (Button) findViewById(R.id.support);
-        edtcomment = (EditText) findViewById(R.id.message);
-        timestamp = (TextView) findViewById(R.id.timestamp);
-        commentsection = (RelativeLayout) findViewById(R.id.commentsection);
-        inforpart = (RelativeLayout) findViewById(R.id.info_part);
-        sendComment = (LinearLayout) findViewById(R.id.sendComment);
-        loading = (ProgressBar) findViewById(R.id.loading);
+        no_comment = findViewById(R.id.no_comment);
+        btnsendComment = findViewById(R.id.btn_send);
+        affected = findViewById(R.id.affected);
+        supported =  findViewById(R.id.supported);
+        affect = findViewById(R.id.affect);
+        support =  findViewById(R.id.support);
+        edtcomment =  findViewById(R.id.message);
+        timestamp =  findViewById(R.id.timestamp);
+        commentsection =  findViewById(R.id.commentsection);
+        inforpart =  findViewById(R.id.info_part);
+        sendComment =  findViewById(R.id.sendComment);
+        loading =  findViewById(R.id.loading);
         loading_img = findViewById(R.id.loading_img);
-        officer_incharge = (TextView) findViewById(R.id.officer_incharge);
-        last_status = (TextView) findViewById(R.id.last_status);
-        last_action = (LinearLayout) findViewById(R.id.last_action);
+        officer_incharge =  findViewById(R.id.officer_incharge);
+        last_status =  findViewById(R.id.last_status);
+        last_action =  findViewById(R.id.last_action);
 
         btnsendComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,17 +146,17 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
 
                 if(session.getPosition().equals("3")) {
                     statusBottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
-                    statusBottomSheetDialogFragment.setData(status, reason, action, imgLink);
+                    statusBottomSheetDialogFragment.setData(status, action, imgLink);
                     statusBottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
                 } else {
 
                     if(session.getPosition().equals("2") && !officer_id.equals(session.getUserID())){
                         statusBottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
-                        statusBottomSheetDialogFragment.setData(status, reason, action, imgLink);
+                        statusBottomSheetDialogFragment.setData(status, action, imgLink);
                         statusBottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
                     } else {
                         optionBottomSheetDialogFragment = new BottomSheetDialogFragmentOption();
-                        optionBottomSheetDialogFragment.setData(status, reason, action);
+                        optionBottomSheetDialogFragment.setData(status, action);
                         optionBottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
                     }
                 }
@@ -221,7 +216,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
 
         String result = db_offline.getSingleReport(report_id);
         JSONArray jsonArray;
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         String url = null;
         try {
             jsonArray = new JSONArray(result);
@@ -311,11 +306,13 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                 if(affect.getCurrentTextColor() == Color.BLUE){
                     /* deduct affected quantity */
                     updateResponse("affected", "minus");
+//                    complaintModel.noAffected();
                     String tvAffected = String.format("%s Affected", getAffected_no());
                     affected.setText(tvAffected);
                     affect.setTextColor(Color.BLACK);
                 } else {
                     updateResponse("affected", "add");
+//                    complaintModel.affected();
                     String tvAffected = String.format("%s Affected", getAffected_no());
                     affected.setText(tvAffected);
                     affect.setTextColor(Color.BLUE);
@@ -328,11 +325,13 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
             public void onClick(View view) {
                 if(support.getCurrentTextColor() == Color.BLUE){
                     updateResponse("support", "minus");
+//                    complaintModel.noSupport();
                     String tvSupported = String.format("%s Supported", getSupport_no());
                     supported.setText(tvSupported);
                     support.setTextColor(Color.BLACK);
                 } else {
                     updateResponse("support", "add");
+//                    complaintModel.support();
                     String tvSupported = String.format("%s Supported", getSupport_no());
                     supported.setText(tvSupported);
                     support.setTextColor(Color.BLUE);
@@ -348,7 +347,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                     intent.putExtra("report_id", report_id);
                     intent.putExtra("officer_name", officer_name);
                     intent.putExtra("status_id", status_id);
-                    startActivityForResult(intent, 1003);
+                    startActivity(intent);
                 }
             }
         });
@@ -382,12 +381,16 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
         switch (type){
             case "support":
                 if(action.equals("add")){
-                    setResponse(getAffected_no(), getSupport_no() + 1);
+                    int temp_support = getSupport_no();
+                    setResponse(getAffected_no(), temp_support + 1);
+                    Log.d("currentsupportclick", getSupport_no() + " ");
                     updateResponse("support", 1, report_id, getSupport_no());
                 }
 
                 if(action.equals("minus")){
-                    setResponse(getAffected_no(), getSupport_no() - 1);
+                    int temp_support = getSupport_no();
+                    setResponse(getAffected_no(), temp_support - 1);
+                    Log.d("currentsupportclick", getSupport_no() + " ");
                     updateResponse("support", 0, report_id, getSupport_no());
                 }
                 break;
@@ -448,7 +451,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                     public void onResponse(String response) {
 
                         Log.d("Status: ", response);
-                        JSONObject jsonObject = null;
+                        JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(response);
 
@@ -483,7 +486,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                 }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<String,String>();
+                Map<String,String> map = new HashMap<>();
                 map.put("report_id",report_id);
                 map.put("user_id", session.getUserID());
                 map.put("comment", message);
@@ -517,7 +520,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                 }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<String,String>();
+                Map<String,String> map = new HashMap<>();
                 map.put("report_id",report_ID);
                 return map;
             }
@@ -569,10 +572,10 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     }
 
     @Override
-    public void onUserClick(String status, String reason, String action_taken) {
+    public void onUserClick(String status, String action_taken) {
 
         BottomSheetDialogFragmentStatus bottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
-        bottomSheetDialogFragment.setData(status, reason, action, imgLink);
+        bottomSheetDialogFragment.setData(status, action, imgLink);
         if(status_id.equals("1"))
             showMessage("This complaint already mark as Solved. If you wish to change please contact system admin");
         else
@@ -622,16 +625,20 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                  officer_incharge.setVisibility(View.VISIBLE);
          }
 
+         Log.d("report id", resultCode +" code");
+
          if(requestCode == 1002 && resultCode == RESULT_OK){
              last_status.setText(data.getStringExtra("action_taken"));
              if(data.getStringExtra("status_id").equals("1")){
                  extraoption.setVisibility(View.GONE);
+                 status_id = "1";
              }
          }
 
-         if(requestCode == 1003 && resultCode == RESULT_OK){
-             report_id = data.getStringExtra("report_id");
-         }
+//         if(requestCode == 1003 && resultCode == RESULT_OK){
+//             report_id = data.getStringExtra("report_id");
+//             Log.d("report_id", "  id : " + report_id);
+//         }
     }
 
     @Override
@@ -654,6 +661,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("view_order", "onresume");
 //        initiatedata(report_id);
 //        Log.d("report_id", " report: " + report_id);
     }

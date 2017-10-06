@@ -11,6 +11,7 @@
     <string name="form_email">Email</string>
     <string name="form_phone">Contact No.</string>
     <string name="form_logout">Log Out</string>
+    <string name="no_content">No Content</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

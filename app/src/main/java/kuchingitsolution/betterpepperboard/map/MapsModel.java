@@ -3,7 +3,7 @@ package kuchingitsolution.betterpepperboard.map;
 public class MapsModel {
 
     private double latitude, longitude;
-    private int reportID;
+    private String reportID;
     public String reportTitle, reportDescription, imgLink;
 
     public void setLatitude (double latitude){
@@ -14,7 +14,7 @@ public class MapsModel {
         this.longitude = longitude;
     }
 
-    public void setReportID (int reportID){
+    public void setReportID (String reportID){
         this.reportID = reportID;
     }
 
@@ -36,7 +36,7 @@ public class MapsModel {
         return longitude;
     }
 
-    public int getReportID(){
+    public String getReportID(){
         return reportID;
     }
 

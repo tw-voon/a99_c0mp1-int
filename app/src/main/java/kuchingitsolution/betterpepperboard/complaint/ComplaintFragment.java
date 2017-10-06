@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ public class ComplaintFragment extends Fragment{
     private DB_Offline db_offline;
     private Session session;
     private GetComplaint getComplaint;
+    private boolean reload = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -94,9 +96,17 @@ public class ComplaintFragment extends Fragment{
 
     @Override
     public void onResume() {
-        super.onResume();
         getComplaint.pull_complaint();
+        super.onResume();
+//        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
     }
+
+    @Override
+    public void onPause() {
+        reload = true;
+        super.onPause();
+    }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -131,6 +141,4 @@ public class ComplaintFragment extends Fragment{
             return mFragmentTitleList.get(position);
         }
     }
-
-
 }

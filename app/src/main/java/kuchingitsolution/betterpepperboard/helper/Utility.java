@@ -10,6 +10,12 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Utility {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -72,6 +78,93 @@ public class Utility {
             }
             return true;
         } else return false;
+    }
+
+    public String get_date(String type, String time){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+                "dd", Locale.getDefault());
+
+        SimpleDateFormat dateFormat3 = new SimpleDateFormat(
+                "MMM", Locale.getDefault());
+
+        String day = null;
+
+        switch (type){
+            case "day":
+                try {
+                    Date date = dateFormat.parse(time);
+                    day = dateFormat2.format(date);
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                break;
+
+            case "month":
+                try {
+                    Date date = dateFormat.parse(time);
+                    day = dateFormat3.format(date);
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                break;
+        }
+
+        return day;
+    }
+
+    public String get_time(String time){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+                "EEE, d MMM yyyy HH:mm:ss", Locale.getDefault());
+
+        try {
+            Date date = dateFormat.parse(time);
+            Date now = dateFormat.parse(getDateTime());
+            Log.d("date", date.toString() + " " + now.toString());
+            long diff = now.getTime() - date.getTime();
+
+            long diffMinutes = diff / (60 * 1000) % 60;
+            long diffHours = diff / (60 * 60 * 1000) % 24;
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+            Log.d("start_min", " " + diffMinutes);
+            Log.d("start_hour", " " + diffHours);
+            Log.d("start_day", " " + diffDays);
+
+            if(diffDays>0) {
+                Log.d("Time", diffDays + " days ago");
+                return String.valueOf(dateFormat2.format(date));
+            } else if(diffHours>=1) {
+                Log.d("Time", diffHours + " hours ago");
+                return String.format("%s hour ago", diffHours);
+            } else if(diffMinutes<60) {
+                Log.d("Time", diffMinutes + " minutes ago");
+                return String.format("%s minute ago",diffMinutes);
+            } else {
+                Log.d("Time", String.valueOf("Now"));
+                return String.valueOf(0);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return time;
+
+    }
+
+    public String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 }

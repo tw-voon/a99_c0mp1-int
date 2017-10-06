@@ -42,7 +42,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.MyViewHold
 
         holder.username.setText(officerModel.getUsername());
         holder.position.setText("Officer");
-        holder.imgProfile.setImageResource(R.drawable.head_1);
+        holder.imgProfile.setImageResource(R.drawable.profile_sample);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

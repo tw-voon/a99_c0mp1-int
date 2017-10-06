@@ -18,6 +18,13 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -34,12 +41,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import android.Manifest;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentMap;
+import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.Session;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -52,17 +65,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
-    ArrayList<MapsModel> locations = new ArrayList<MapsModel>();
+    ArrayList<MapsModel> data = new ArrayList<MapsModel>();
     private MarkerOptions options = new MarkerOptions();
-    Session session;
-    public HashMap<String, Integer> params = new HashMap<String, Integer>();
+    public HashMap<String, String> params = new HashMap<>();
     public HashMap<String, String> image = new HashMap<String, String>();
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog bottomSheetDialog;
     TextView title, desc;
     RelativeLayout bottomsheet;
-    int report_id;
+    Session session;
+    String report_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,83 +102,61 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void getComplaint(){
 
-        Session session = new Session(this);
         final String userID = session.getUserID();
 
-        class getNewsFeed extends AsyncTask<String, String, String> {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GET_LOCATION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-            ProgressDialog loading;
-            Context context;
+                        Log.d("Status: ", response);
+                        process_geolocation(response);
 
-            private getNewsFeed(Context context){
-                this.context = context;
-                loading = new ProgressDialog(context);
-            }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
 
+                        Log.d("Error", error.toString());
+
+                    }
+                }){
             @Override
-            protected void onPreExecute() {
-                loading.setMessage("Loading News Feed");
-                loading.setCancelable(false);
-                loading.show();
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<String,String>();
+                map.put("user_id",session.getUserID());
+                return map;
             }
+        };
 
-            @Override
-            protected void onPostExecute(String result) {
-                loading.dismiss();
-//                Toast.makeText(MapsActivity.this, result, Toast.LENGTH_SHORT).show();
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 
-                MapsModel location = new MapsModel();
-                location.setLatitude(1.4693344);
-                location.setLongitude(110.4275608);
-                location.setReportID(1);
-                location.setReportTitle("Flash flood in this branch");
-                location.setReportDescription("Drainage system in this branch blocked");
-                location.setImgLink("http://www.nssl.noaa.gov/education/svrwx101/floods/img/nws-flash.jpg");
-                locations.add(location);
+    private void process_geolocation(String result){
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+            int length = jsonArray.length();
 
-                location = new MapsModel();
-                location.setLatitude(1.4657508);
-                location.setLongitude(110.420327);
-                location.setReportID(2);
-                location.setReportTitle("Staff attitude");
-                location.setReportDescription("Irresponsible of staff");
-                location.setImgLink("https://cdn1.businessmanagementdaily.com/res/images/bmd_homepage/iStock_BoredBusinessWoman_350.jpg");
-                locations.add(location);
-
-                addMarkerOnMap(locations);
-
-//                try {
-//                    JSONArray decodedResult = new JSONArray(result);
-//                    for (int i = 0; i<decodedResult.length(); i++){
-//                        JSONObject json_data = decodedResult.getJSONObject(i);
-//                        Locations location = new Locations();
-//                        location.setLatitude(json_data.getDouble("location_latitute"));
-//                        location.setLongitude(json_data.getDouble("location_longitute"));
-//                        location.setReportID(json_data.getInt("ids"));
-//                        location.setReportTitle(json_data.getString("report_Title"));
-//                        location.setReportDescription(json_data.getString("report_Description"));
-//                        locations.add(location);
-//                    }
-//                    addMarkerOnMap(locations);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+            for (int i = 0; i < length ; i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject locations = jsonObject.getJSONObject("location");
+                JSONObject media = jsonObject.getJSONObject("media");
+                MapsModel mapsModel = new MapsModel();
+                mapsModel.setLatitude(locations.getDouble("lat"));
+                mapsModel.setLongitude(locations.getDouble("lon"));
+                mapsModel.setReportID(jsonObject.getString("id"));
+                mapsModel.setReportTitle(jsonObject.getString("title"));
+                mapsModel.setReportDescription(jsonObject.getString("description"));
+                mapsModel.setImgLink(media.getString("link"));
+                data.add(mapsModel);
             }
-
-            @Override
-            protected String doInBackground(String... params) {
-                String result;
-                HashMap<String,String> param = new HashMap<String,String>();
-                param.put("userID", userID);
-                return "true";
-//                result = rh.sendPostRequest(AppConfig.URL_GetReport, param);
-//                return result;
-            }
+            addMarkerOnMap(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        getNewsFeed u = new getNewsFeed(MapsActivity.this);
-        u.execute();
     }
 
     public void addMarkerOnMap(ArrayList<MapsModel> locations){

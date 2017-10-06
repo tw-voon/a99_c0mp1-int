@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -17,29 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.srx.widget.PullToLoadView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
-import kuchingitsolution.betterpepperboard.helper.Network;
 import kuchingitsolution.betterpepperboard.helper.Session;
-import kuchingitsolution.betterpepperboard.helper.network.RequestBuilder;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class UnresolveFragment extends Fragment {
 
@@ -83,6 +69,8 @@ public class UnresolveFragment extends Fragment {
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             complaintlist.setLayoutManager(linearLayoutManager);
             complaintlist.setNestedScrollingEnabled(false);
+            complaintlist.setItemAnimator(new SlideUpAnimator());
+            complaintlist.setItemViewCacheSize(0);
 
             complaintlist.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -107,15 +95,12 @@ public class UnresolveFragment extends Fragment {
                     }
                 }
             });
-            initiatedata(complaintAdapter.getItemCount());
         }
-        Log.d("Called", "Called --- ");
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
             initiatedata(complaintAdapter.getItemCount());
         }
     };
@@ -125,16 +110,17 @@ public class UnresolveFragment extends Fragment {
         final String result = db_offline.getComplaint(2, page);
         Log.d("result2", result);
 
-        if(result.equals("[]"))
+        if(result.equals("[]")) {
+            if(complaintAdapter.getItemCount() > 0)
+                complaintAdapter.notifyDataSetChanged();
+            loading.setVisibility(View.GONE);
             return;
+        }
 
-        Log.d("item_count", complaintAdapter.getItemCount() + "    " + page);
         if(complaintAdapter.getItemCount() == db_offline.get_total(2))
             return;
 
         final int cursize = complaintAdapter.getItemCount();
-//        if(newsData.size() > 0)
-//            newsData.clear();
 
         Handler handler = new Handler();
 
@@ -174,6 +160,10 @@ public class UnresolveFragment extends Fragment {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter("custom-event-name"));
+        loading.setVisibility(View.VISIBLE);
+        complaintAdapter.clear();
+//        if(complaintAdapter.getItemCount() > 0)
+//            complaintAdapter.notifyDataSetChanged();
     }
 
     @Override

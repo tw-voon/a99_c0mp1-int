@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
+import kuchingitsolution.betterpepperboard.complaint.SlideUpAnimator;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.Session;
 
@@ -37,6 +39,7 @@ public class ReportFragment extends Fragment {
 
     RecyclerView my_report_list;
     ReportAdapter reportAdapter;
+    TextView no_content;
     ArrayList<ReportModel> reportModelArrayList = new ArrayList<>();
     Session session;
 
@@ -60,6 +63,7 @@ public class ReportFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(getView() != null){
+            no_content = getView().findViewById(R.id.no_content);
             my_report_list = (RecyclerView) getView().findViewById(R.id.my_report_list);
             reportAdapter = new ReportAdapter(getActivity(), reportModelArrayList);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -69,6 +73,7 @@ public class ReportFragment extends Fragment {
             DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(my_report_list.getContext(),
                     linearLayoutManager.getOrientation());
             my_report_list.addItemDecoration(dividerItemDecoration);
+            my_report_list.setItemAnimator(new SlideUpAnimator());
 
             my_report_list.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -113,7 +118,7 @@ public class ReportFragment extends Fragment {
 
     private void process_report(String result){
         if(result.equals("empty")){
-            Toast.makeText(getActivity(), "No Compaint submitted", Toast.LENGTH_SHORT).show();
+            no_content.setVisibility(View.VISIBLE);
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(result);
@@ -124,10 +129,13 @@ public class ReportFragment extends Fragment {
                     JSONObject data = report.getJSONObject(i);
                     JSONObject media = data.getJSONObject("media");
                     JSONObject user = data.getJSONObject("user");
+                    JSONObject category = data.getJSONObject("category");
+                    JSONObject location = data.getJSONObject("location");
                     ReportModel reportModel = new ReportModel(
-                            user.getString("name"), " ",
+                            user.getString("name"), category.getString("name"),
                             data.getString("created_at"), data.getString("title"),
-                            media.getString("link"), data.getString("id"), data.getString("status_id")
+                            media.getString("link"), data.getString("id"),
+                            data.getString("status_id"), location.getString("name")
                     );
                     reportModelArrayList.add(reportModel);
                 }

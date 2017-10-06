@@ -9,12 +9,11 @@ import android.widget.Toast;
 import kuchingitsolution.betterpepperboard.R;
 
 public class BottomSheetDialogFragmentOption extends BottomSheetDialogFragment{
-    private String progress, reason, action;
+    private String progress, action;
     private OptionBottomSheetCallback optionBottomSheetCallback;
 
-    public void setData(String status, String reason, String action){
+    public void setData(String status, String action){
         this.progress = status;
-        this.reason = reason;
         this.action = action;
     }
 
@@ -46,7 +45,7 @@ public class BottomSheetDialogFragmentOption extends BottomSheetDialogFragment{
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "status clicked", Toast.LENGTH_SHORT).show();
-                optionBottomSheetCallback.onUserClick(progress, reason, action);
+                optionBottomSheetCallback.onUserClick(progress, action);
             }
         });
 
@@ -61,7 +60,7 @@ public class BottomSheetDialogFragmentOption extends BottomSheetDialogFragment{
     }
 
     public static interface OptionBottomSheetCallback {
-        void onUserClick(String status, String reason, String action_taken);
+        void onUserClick(String status, String action_taken);
         void assignOfficer();
     }
 }

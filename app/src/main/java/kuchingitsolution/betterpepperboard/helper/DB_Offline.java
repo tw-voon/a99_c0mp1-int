@@ -710,6 +710,34 @@ public class DB_Offline extends SQLiteOpenHelper {
         return exists;
     }
 
+    public int get_support(String report_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
+        String checkQuery = "SELECT support FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ report_id + "'";
+        cursor = db.rawQuery(checkQuery, null);
+        int support = 0;
+        if(cursor.moveToFirst())
+            support = Integer.valueOf(cursor.getString(0));
+        else Log.d("Result", "support : 0");
+        Log.d("support", support + " ");
+        cursor.close();
+        return support;
+    }
+
+    public int get_affect(String report_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
+        String checkQuery = "SELECT "+ AFFECTED +" FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ report_id + "'";
+        cursor = db.rawQuery(checkQuery, null);
+        int affect = 0;
+        if(cursor.moveToFirst())
+            affect = Integer.valueOf(cursor.getString(0));
+        else Log.d("Result", "support : 0");
+        Log.d("support", affect + " ");
+        cursor.close();
+        return affect;
+    }
+
     private boolean ifRoomExists(String id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1202,13 +1230,8 @@ public class DB_Offline extends SQLiteOpenHelper {
                 }
 
                 ContentValues report = new ContentValues();
-                if(value == 0) {
-                    report.put("support", initial - 1);
-                    db.update(TABLE_REPORT, report, " id = '" + report_id + "'", null);
-                } else {
-                    report.put("support", initial + 1);
-                    db.update(TABLE_REPORT, report, " id = '" + report_id + "'", null);
-                }
+                report.put(SUPPORTED, initial);
+                db.update(TABLE_REPORT, report, " id = '" + report_id + "'", null);
 
                 break;
             case "affected":
@@ -1226,6 +1249,11 @@ public class DB_Offline extends SQLiteOpenHelper {
                     id = db.insert(TABLE_RESPONSE, null, item);
                     Log.d("type", " affected insert" + id);
                 }
+
+                ContentValues reports = new ContentValues();
+                reports.put(AFFECTED, initial);
+                db.update(TABLE_REPORT, reports, " id = '" + report_id + "'", null);
+
                 break;
             default:
                 break;

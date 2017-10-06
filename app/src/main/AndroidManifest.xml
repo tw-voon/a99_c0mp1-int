@@ -158,7 +158,11 @@
             android:name=".action.ActionActivity"
             android:label="@string/tvAction"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".complaint.DetailsComplaintActivity" />
+        </activity>
 
         <service android:name=".service.onesignal_service" />
         <service

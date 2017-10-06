@@ -26,6 +26,7 @@ import java.util.List;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.ImageFullscreenActivity;
+import kuchingitsolution.betterpepperboard.helper.GlideProgressive;
 
 public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.MyViewHolder> {
 
@@ -94,29 +95,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.MyViewHold
 
         holder.action_taken.setText(actionModel.getAction_taken());
         holder.action_time.setText(actionModel.getCreated_at());
-
-//        int no_line = holder.action_taken.getMeasuredHeight();
-
-//        holder.itemView.measure(View..UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        holder.itemView.measure(View.MeasureSpec.EXACTLY, View.MeasureSpec.EXACTLY);
-//        width = holder.itemView.getMeasuredWidth();
-//        height = holder.itemView.getMeasuredHeight();
-//
-//        Log.d("view height", " " + width + "  " + height);
-//
-//        int newheight = Math.round((width / height) / 10);
-//
-//        if(newheight == 1)
-//            parms = new RelativeLayout.LayoutParams(3,newheight  * 180);
-//        else if(newheight == 0)
-//            parms = new RelativeLayout.LayoutParams(3, 180);
-//        else
-//            parms = new RelativeLayout.LayoutParams(3,newheight  * 90);
-//
-//        parms.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-//        holder.vertical_line.setLayoutParams(parms);
-
-//        Log.d("view height", " " + holder.content.getHeight() + " line: " + no_line + "  height " + Math.round((width / height) / 10)  * 80);
 
     }
 

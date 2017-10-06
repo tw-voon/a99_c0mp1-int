@@ -189,19 +189,11 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-        switch (itemId){
-            case android.R.id.home:
-                onBackPressed();
-                Log.d("report_id", "pressed");
-                break;
-
-            case R.id.submit:
-                Toast.makeText(this, "Submit selected", Toast.LENGTH_SHORT)
-                        .show();
-                assign_officer(officer_id);
-                break;
-            default:
-                break;
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else if (itemId == R.id.submit){
+            assign_officer(officer_id);
         }
         return super.onOptionsItemSelected(menuItem);
     }

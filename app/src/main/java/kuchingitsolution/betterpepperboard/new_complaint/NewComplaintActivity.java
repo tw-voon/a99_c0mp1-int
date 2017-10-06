@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
@@ -92,7 +93,11 @@ public class NewComplaintActivity extends AppCompatActivity {
         edtdesc =  findViewById(R.id.report_desc);
         image_preview =  findViewById(R.id.image_preview);
         locationPreview =  findViewById(R.id.location_preview);
-        client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
+        OkHttpClient.Builder b = new OkHttpClient.Builder();
+        b.readTimeout(200, TimeUnit.SECONDS);
+        b.writeTimeout(300, TimeUnit.SECONDS);
+        b.retryOnConnectionFailure(true);
+        client = b.build();
         loading = new ProgressDialog(this);
         loading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         session = new Session(this);

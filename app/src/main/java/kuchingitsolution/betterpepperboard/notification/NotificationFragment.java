@@ -97,7 +97,6 @@ public class NotificationFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         Log.d("Status75: ", response);
-                        Toast.makeText(getActivity(), "success" + session.getUserID(), Toast.LENGTH_SHORT).show();
                         if(response.equals("empty")) {
                             no_content.setVisibility(View.VISIBLE);
                             Toast.makeText(getActivity(), "empty", Toast.LENGTH_SHORT).show();
