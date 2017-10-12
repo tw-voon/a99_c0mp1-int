@@ -21,8 +21,7 @@ import java.io.IOException;
 
 public class ImageCompressionUtils {
 
-    Context context;
-    RealPathUtils realPathUtils;
+    private Context context;
 
     public ImageCompressionUtils(Context c)
     {
@@ -33,9 +32,9 @@ public class ImageCompressionUtils {
         String filePath;
 
         if(Build.VERSION.SDK_INT == 19)
-            filePath = RealPathUtils.getRealPathFromURI_API19(context, imageUri);
+            filePath = getRealPathFromURI(imageUri);
         else if (Build.VERSION.SDK_INT > 19)
-            filePath = getRealPathFromURI(imageUri.getPath());
+            filePath = getRealPathFromURI(imageUri);
         else
             filePath = RealPathUtils.getRealPathFromURI_API11to18(context, imageUri);
 
@@ -150,11 +149,11 @@ public class ImageCompressionUtils {
         Log.d("Exif", filename);
         return filename;
     }
-    private String getRealPathFromURI(String contentURI) {
-        Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor =context. getContentResolver().query(contentUri, null, null, null, null);
+    private String getRealPathFromURI(Uri contentURI) {
+//        Uri contentUri = Uri.parse(contentURI);
+        Cursor cursor =context. getContentResolver().query(contentURI, null, null, null, null);
         if (cursor == null) {
-            return contentUri.getPath();
+            return contentURI.getPath();
         } else {
             cursor.moveToFirst();
             int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);

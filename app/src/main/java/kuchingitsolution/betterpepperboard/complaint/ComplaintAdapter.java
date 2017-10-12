@@ -151,6 +151,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         holder.like_no.setText(support);
         holder.follow_no.setText(affect);
         JSONObject response = db_offline.ifResponse(news.getId());
+        Log.d("responssss", "Report id : " + news.getId() + " Response : " + response.toString());
 
         if(response.length() != 0){
             try {
@@ -181,6 +182,15 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else {
+
+            holder.follow.setTextColor(Color.BLACK);
+            holder.follow_no.setTextColor(Color.BLACK);
+            holder.follow_logo.setImageResource(R.drawable.ic_star_border_black_24dp);
+
+            holder.like.setTextColor(Color.BLACK);
+            holder.like_no.setTextColor(Color.BLACK);
+            holder.like_logo.setImageResource(R.drawable.ic_favorite_border_black_24dp);
         }
 
         holder.like_region.setOnClickListener(new View.OnClickListener() {

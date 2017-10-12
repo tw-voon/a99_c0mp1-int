@@ -71,7 +71,7 @@ public class NewComplaintActivity extends AppCompatActivity {
     final static int PLACE_PICKER_CODE = 1000, REQUEST_CAMERA = 1888, PICK_IMAGE_REQUEST = 2;
     Bitmap selectedImage;
     private OkHttpClient client;
-    ProgressDialog loading;
+    ProgressBar loading;
     Session session;
     File imgFile;
     ImageCompressionUtils imageCompressionUtils;
@@ -98,8 +98,7 @@ public class NewComplaintActivity extends AppCompatActivity {
         b.writeTimeout(300, TimeUnit.SECONDS);
         b.retryOnConnectionFailure(true);
         client = b.build();
-        loading = new ProgressDialog(this);
-        loading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        loading = findViewById(R.id.uploading);
         session = new Session(this);
         imageCompressionUtils = new ImageCompressionUtils(this);
 
@@ -329,7 +328,7 @@ public class NewComplaintActivity extends AppCompatActivity {
 //            imagePath = getStringImage(selectedImage);
 //            Log.d("imagepath", imagePath);
             uploadImage(getStringImage(selectedImage));
-            loading.show();
+            loading.setVisibility(View.VISIBLE);
         }
             return status;
     }
@@ -359,8 +358,6 @@ public class NewComplaintActivity extends AppCompatActivity {
                         selectedLatitute, selectedLongitute, userLocation,
                         imgFile, session.getUserID());
 
-//                Log.d("result", image.toString());
-
                 CountingRequestBody monitoring = new CountingRequestBody(body, new CountingRequestBody.Listener() {
                     @Override
                     public void onRequestProgress(long bytesWritten, long contentLength) {
@@ -368,6 +365,7 @@ public class NewComplaintActivity extends AppCompatActivity {
                         float percentage = 100f * bytesWritten / contentLength;
                         if (percentage >= 0) {
                             loading.setProgress((int)percentage);
+                            Log.d("upload", String.valueOf(percentage));
                         }
                     }
                 });
@@ -384,7 +382,7 @@ public class NewComplaintActivity extends AppCompatActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
 //                Log.d("Result", s);
-                loading.dismiss();
+                loading.setVisibility(View.GONE);
                 if(s.equals("Success")) {
                     Toast.makeText(NewComplaintActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(NewComplaintActivity.this, MainActivity2.class);

@@ -96,7 +96,8 @@ public class ComplaintFragment extends Fragment{
 
     @Override
     public void onResume() {
-        getComplaint.pull_complaint();
+        getComplaint.load_data(1, Config.URL_GET_UNSOLVE);
+        getComplaint.load_data(1, Config.URL_GET_SOLVE);
         super.onResume();
 //        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
     }

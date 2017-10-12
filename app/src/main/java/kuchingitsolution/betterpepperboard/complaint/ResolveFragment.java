@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import kuchingitsolution.betterpepperboard.R;
+import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 
@@ -39,6 +40,8 @@ public class ResolveFragment extends Fragment{
     DB_Offline db_offline;
     Session session;
     boolean loadmore = false;
+    private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
+    private GetComplaint getComplaint;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,45 +59,30 @@ public class ResolveFragment extends Fragment{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(getView() != null){
-            complaintlist = (RecyclerView) getView().findViewById(R.id.resolve_report);
-            loading = (ProgressBar) getView().findViewById(R.id.loading);
+            complaintlist = getView().findViewById(R.id.resolve_report);
+            loading = getView().findViewById(R.id.loading);
             loading.setVisibility(View.VISIBLE);
-            noContent = (TextView) getView().findViewById(R.id.no_content);
+            noContent = getView().findViewById(R.id.no_content);
             noContent.setVisibility(View.GONE);
             db_offline = new DB_Offline(getContext());
             session = new Session(getContext());
+            getComplaint = new GetComplaint(getContext());
 
             complaintAdapter = new ComplaintAdapter(getContext(), newsData);
             complaintlist.setAdapter(complaintAdapter);
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             complaintlist.setLayoutManager(linearLayoutManager);
+            endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    Log.d("page", String.valueOf(page) + " " + totalItemsCount);
+                    getComplaint.load_data(page, Config.URL_GET_SOLVE);
+                }
+            };
+            complaintlist.addOnScrollListener(endlessRecyclerViewScrollListener);
             complaintlist.setNestedScrollingEnabled(false);
             complaintlist.setItemAnimator(new SlideUpAnimator());
 
-            complaintlist.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    int visibleItemCount = linearLayoutManager.getChildCount();
-                    int totalItemCount = linearLayoutManager.getItemCount();
-                    int pastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition();
-                    if (pastVisibleItems + visibleItemCount == totalItemCount && loadmore) {
-                        Log.d("OnScroll", "Past Visible : " + pastVisibleItems + " visibleItem : " + visibleItemCount + " total : " + totalItemCount);
-                        Log.d("OnScroll", "Current page : " + complaintAdapter.getItemCount());
-                        if(complaintAdapter.getItemCount() < db_offline.get_total(1)) {
-                            Log.d("Called", "Called --- " + totalItemCount);
-                            loadmore = false;
-                            initiatedata(totalItemCount);
-                        }
-                    }
-                }
-            });
-            initiatedata(complaintAdapter.getItemCount());
         }
     }
 
@@ -152,7 +140,6 @@ public class ResolveFragment extends Fragment{
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
             initiatedata(complaintAdapter.getItemCount());
         }
     };

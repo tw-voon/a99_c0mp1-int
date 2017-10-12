@@ -29,7 +29,7 @@ public class Config {
     public static String URL_FETCH_CHAT_ROOM = DOMAIN_URL + "/fetchSingleChatRoom";
     public static String URL_ADD_MSG = DOMAIN_URL + "/addMessage";
     public static String URL_GET_UNSOLVE = DOMAIN_URL + "/unsolved_complaint";
-    public static String URL_GET_SOLVED = DOMAIN_URL + "/solved_complaint";
+    public static String URL_GET_SOLVE = DOMAIN_URL + "/solved_complaint";
     public static String URL_QUERY = DOMAIN_URL + "/query";
     public static String URL_SEARCH_USER = DOMAIN_URL + "/searchUser";
     public static String URL_ADD_USER = DOMAIN_URL + "/add_chat_user";

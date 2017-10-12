@@ -68,6 +68,60 @@ public class GetComplaint {
         }.execute(Config.GET_REPORT);
     }
 
+    public void load_data(final int page, String url)
+    {
+        new AsyncTask<String, Integer, String>() {
+            @Override
+            protected String doInBackground(String... url) {
+                Response response = null;
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = RequestBuilder.get_Complaint(session.getUserID(), page);
+                Request request = new Request.Builder()
+                        .url(url[0])
+                        .post(body)
+                        .build();
+                try {
+                    response = client.newCall(request).execute();
+                    return response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                Log.e("ANSWER INFINITE SCROLL", "" + result);
+                if(result != null)
+                    process_unsolved(result);
+                else broadcast();
+//                    db_offline.insertReport(result);
+            }
+        }.execute(url);
+    }
+
+    private void process_unsolved(String result){
+
+        try {
+
+            JSONObject jsonObject = new JSONObject(result);
+            JSONObject jsonObject1 = jsonObject.getJSONObject("report");
+            JSONArray jsonArray = jsonObject1.getJSONArray("data");
+            JSONArray response = jsonObject.getJSONArray("response");
+            int length = jsonArray.length();
+
+            for (int i = 0; i < length; i++){
+                JSONObject data = jsonArray.getJSONObject(i);
+                db_offline.insertComplaint(data);
+            }
+            db_offline.insertResponse(response);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        broadcast();
+    }
+
     private void process_response(String result){
 
         try {
@@ -87,7 +141,7 @@ public class GetComplaint {
         broadcast();
     }
 
-    private void broadcast(){
+    public void broadcast(){
         Intent intent = new Intent("custom-event-name");
         // You can also include some extra data.
         intent.putExtra("reload", "true");

@@ -27,7 +27,7 @@ public class SplashScreen extends AppCompatActivity {
     // splash screen time
     private static int SPLASH_SCREEN_TIME = 3000;
     String[] permissionsRequired = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA,
             Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_CALLBACK_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
@@ -42,10 +42,12 @@ public class SplashScreen extends AppCompatActivity {
 
         if(ActivityCompat.checkSelfPermission(SplashScreen.this, permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(SplashScreen.this, permissionsRequired[1]) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(SplashScreen.this, permissionsRequired[2]) != PackageManager.PERMISSION_GRANTED){
+                || ActivityCompat.checkSelfPermission(SplashScreen.this, permissionsRequired[2]) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(SplashScreen.this, permissionsRequired[3]) != PackageManager.PERMISSION_GRANTED){
             if(ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[0])
                     || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[1])
-                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[2])){
+                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[2])
+                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this, permissionsRequired[3])){
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                 builder.setTitle("Need Multiple Permissions");
@@ -120,7 +122,8 @@ public class SplashScreen extends AppCompatActivity {
                 proceedAfterPermission();
             } else if(ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[0])
                     || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[1])
-                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[2])){
+                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,permissionsRequired[2])
+                    || ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this, permissionsRequired[3])){
 //                txtPermissions.setText("Permissions Required");
                 AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                 builder.setTitle("Need Multiple Permissions");
@@ -169,8 +172,7 @@ public class SplashScreen extends AppCompatActivity {
                     Log.d("OneSignal", "User id : " + userId);
                 }
             });
-        }
-        else
+        } else
             i = new Intent(SplashScreen.this, LoginActivity.class);
         startActivity(i);
         // close this activity
