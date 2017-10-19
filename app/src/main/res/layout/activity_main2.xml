@@ -33,18 +33,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorWhite"
-            app:itemIconTint="@drawable/navbar_color"
-            app:itemTextColor="@drawable/navbar_color"
-            app:menu="@menu/navigation" />
+        <!--<android.support.design.widget.BottomNavigationView-->
+            <!--android:id="@+id/navigation"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:background="@color/colorWhite"-->
+            <!--app:itemIconTint="@drawable/navbar_color"-->
+            <!--app:itemTextColor="@drawable/navbar_color"-->
+            <!--app:menu="@menu/navigation" />-->
 
     </android.support.design.widget.CoordinatorLayout>
+    <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorWhite"
+        app:itemIconTint="@drawable/navbar_color"
+        app:itemTextColor="@drawable/navbar_color"
+        app:menu="@menu/navigation" />
 </RelativeLayout>
 
 

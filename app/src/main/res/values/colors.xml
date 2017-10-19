@@ -9,6 +9,7 @@
     <color name="colorOrange">#F58634</color>
     <color name="base10">#eaeaea</color>
     <color name="colorBackground">#FFD7D7D7</color>
+    <color name="trans">#00ffffff</color>
 
     <color name="mt_red">#FF3366</color>
     <color name="mt_gray1">#b1b5ba</color>

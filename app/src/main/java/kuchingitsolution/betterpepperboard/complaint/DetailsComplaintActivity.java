@@ -52,6 +52,7 @@ import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentStatu
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
+import kuchingitsolution.betterpepperboard.map.ActivityViewOnMap;
 import kuchingitsolution.betterpepperboard.officer.OfficerActivity;
 
 public class DetailsComplaintActivity extends AppCompatActivity implements BottomSheetDialogFragmentOption.OptionBottomSheetCallback{
@@ -59,7 +60,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     private List<CommentModel> comments;
     private RecyclerView commentlist;
     private CommentAdapter commentAdapter;
-    private String status, action, imgLink, reportLink, report_id, status_id, officer_id, officer_name;
+    private String status, action, imgLink, reportLink, report_id, status_id, officer_id, officer_name, lat, lon, report_title;
     TextView desc, location, title, username, no_comment, timestamp, officer_incharge, affected, supported, last_status;
     Button btnsendComment, affect, support;
     EditText edtcomment;
@@ -95,8 +96,10 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
             report_id = getIntent().getStringExtra("report_id");
             if(report_id != null)
                 session.setCurrentId(report_id);
-            else report_id = session.getCurrentId();
-        } else report_id = session.getCurrentId();
+            else
+                report_id = session.getCurrentId();
+        } else
+            report_id = session.getCurrentId();
 
         Log.d("report_id", report_id + " ;" + session.getCurrentId());
 
@@ -216,7 +219,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
 
         String result = db_offline.getSingleReport(report_id);
         JSONArray jsonArray;
-        JSONObject jsonObject;
+        final JSONObject jsonObject;
         String url = null;
         try {
             jsonArray = new JSONArray(result);
@@ -224,6 +227,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
             username.setText(jsonObject.getString("username"));
             user_profile.setImageResource(R.drawable.ic_person_outline_black_24dp);
             title.setText(jsonObject.getString("title"));
+            report_title = jsonObject.getString("title");
             desc.setText(jsonObject.getString("description"));
             url = jsonObject.getString("link");
             Glide.with(DetailsComplaintActivity.this)
@@ -248,6 +252,8 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
             location.setText(locate);
             status_id = jsonObject.getString("status_id");
             officer_id = jsonObject.getString("officer_id");
+            lat = jsonObject.getString("lat");
+            lon = jsonObject.getString("lon");
 
             if(session.getPosition().equals("1"))
                 extraoption.setVisibility(View.VISIBLE);
@@ -336,6 +342,17 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                     supported.setText(tvSupported);
                     support.setTextColor(Color.BLUE);
                 }
+            }
+        });
+
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailsComplaintActivity.this, ActivityViewOnMap.class);
+                intent.putExtra("lat", Double.valueOf(lat));
+                intent.putExtra("lon", Double.valueOf(lon));
+                intent.putExtra("title", report_title);
+                startActivity(intent);
             }
         });
 

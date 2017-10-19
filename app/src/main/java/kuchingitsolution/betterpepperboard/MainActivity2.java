@@ -1,32 +1,27 @@
 package kuchingitsolution.betterpepperboard;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TableLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.onesignal.OneSignal;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import kuchingitsolution.betterpepperboard.complaint.ComplaintFragment;
 import kuchingitsolution.betterpepperboard.helper.BottomNavigationViewHelper;
@@ -40,6 +35,8 @@ import kuchingitsolution.betterpepperboard.search.SearchActivity;
 import kuchingitsolution.betterpepperboard.search.SearchUserActivity;
 import kuchingitsolution.betterpepperboard.service.onesignal_service;
 import kuchingitsolution.betterpepperboard.setting.SettingActivity;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity2 extends AppCompatActivity {
 
@@ -47,26 +44,57 @@ public class MainActivity2 extends AppCompatActivity {
     Toolbar toolbar;
     FrameLayout content;
     Session session;
+    BottomNavigationViewEx navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setShowHideAnimationEnabled(false);
         }
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
+        navigation.enableItemShiftingMode(false);
+        navigation.enableShiftingMode(false);
+        navigation.enableAnimation(false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
-        content = (FrameLayout) findViewById(R.id.contents);
+//        BottomNavigationViewHelper.disableShiftMode(navigation);
+//        bottomNavigationMenuView = (BottomNavigationMenuView)navigation.getChildAt(0);
+//        bottomNavigationMenuView2 = (BottomNavigationMenuView)navigation.getChildAt(0);
+//        icon_noti = bottomNavigationMenuView.getChildAt(3);
+//        icon_message = bottomNavigationMenuView2.getChildAt(2);
+//        notifcation_view = (BottomNavigationItemView)icon_noti;
+//        message_view = (BottomNavigationItemView)icon_message;
+//
+//        View badge = LayoutInflater.from(this)
+//                .inflate(R.layout.notification_badge, bottomNavigationMenuView, false);
+//        notifcation_view.addView(badge);
+//        message_view.addView(badge);
+        content = findViewById(R.id.contents);
         db_offline = new DB_Offline(this);
         session = new Session(this);
         startService(new Intent(MainActivity2.this, onesignal_service.class));
 
         pushFragment(new HomeFragment(), R.string.title_home);
+        addBadgeAt(2,1);
+    }
+
+    private Badge addBadgeAt(int position, int number) {
+        // add badge setGravityOffset(12, 2, true)
+        return new QBadgeView(this)
+                .setBadgeNumber(number)
+                .setGravityOffset(8, 3, true)
+                .bindTarget(navigation.getBottomNavigationItemView(position))
+                .setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
+                    @Override
+                    public void onDragStateChanged(int dragState, Badge badge, View targetView) {
+                        if (Badge.OnDragStateChangedListener.STATE_SUCCEED == dragState)
+                            Toast.makeText(MainActivity2.this, "Count 1", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

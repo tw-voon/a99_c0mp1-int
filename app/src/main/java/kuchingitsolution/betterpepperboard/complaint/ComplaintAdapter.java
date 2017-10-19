@@ -253,8 +253,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Under constructing comment feature for"+ news.getReportTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, DetailsComplaintActivity.class);
+                Intent intent = new Intent(context, SingleReportActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("report_id", news.getId());
                 intent.putExtras(bundle);
