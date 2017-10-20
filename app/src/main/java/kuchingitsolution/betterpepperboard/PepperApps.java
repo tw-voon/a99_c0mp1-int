@@ -154,7 +154,7 @@ public class PepperApps extends Application{
             String report_id = null;
             String customKey;
             String group_key = result.notification.payload.groupKey;
-            Intent intent;
+            Intent intent = null;
             customKey = data.optString("state", null);
 
             if (customKey != null && customKey.equals("chat")){
@@ -163,7 +163,7 @@ public class PepperApps extends Application{
                 intent = new Intent(mContext, ChatActivity.class);
                 intent.putExtra("chat_room_id", group_key);
                 intent.putExtra("name", name);
-            } else {
+            } else if(customKey != null){
                 intent = new Intent(mContext, DetailsComplaintActivity.class);
                 report_id = data.optString("report_id", "null");
                 Log.d("OneSignalData", "report id : " + report_id);
@@ -171,8 +171,11 @@ public class PepperApps extends Application{
             }
 
             Log.d("OneSignalData", data.toString() + " ");
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+
+            if(intent != null) { /* only run this if intent not = to null */
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
         }
     }
 }

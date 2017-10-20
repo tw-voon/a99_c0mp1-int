@@ -45,6 +45,7 @@ public class MainActivity2 extends AppCompatActivity {
     FrameLayout content;
     Session session;
     BottomNavigationViewEx navigation;
+    QBadgeView notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,24 +78,27 @@ public class MainActivity2 extends AppCompatActivity {
         db_offline = new DB_Offline(this);
         session = new Session(this);
         startService(new Intent(MainActivity2.this, onesignal_service.class));
+        notification = new QBadgeView(this);
 
         pushFragment(new HomeFragment(), R.string.title_home);
         addBadgeAt(2,1);
     }
 
-    private Badge addBadgeAt(int position, int number) {
+    public void addBadgeAt(int position, int number) {
         // add badge setGravityOffset(12, 2, true)
-        return new QBadgeView(this)
+//        return new QBadgeView(this)
+//                .setGravityOffset(8, 3, true)
+//                .setBadgeNumber(number)
+//                .setBadgeBackgroundColor(R.color.mt_red)
+//                .bindTarget(navigation.getBottomNavigationItemView(position));
+        notification.setGravityOffset(8, 3, true)
                 .setBadgeNumber(number)
-                .setGravityOffset(8, 3, true)
-                .bindTarget(navigation.getBottomNavigationItemView(position))
-                .setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
-                    @Override
-                    public void onDragStateChanged(int dragState, Badge badge, View targetView) {
-                        if (Badge.OnDragStateChangedListener.STATE_SUCCEED == dragState)
-                            Toast.makeText(MainActivity2.this, "Count 1", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .setBadgeBackgroundColor(R.color.mt_red)
+                .bindTarget(navigation.getBottomNavigationItemView(position));
+    }
+
+    public void removeBadgeAt(int position){
+        notification.hide(true);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -119,6 +123,7 @@ public class MainActivity2 extends AppCompatActivity {
                     return true;
                 case R.id.navigation_message:
                     pushFragment(new MessageFragment(), R.string.action_chat);
+                    removeBadgeAt(2);
                     return true;
                 case R.id.navigation_personal:
                     pushFragment(new PersonalFragment(), R.string.action_personal);

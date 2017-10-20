@@ -150,4 +150,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         PepperApps.activityResumed();// On Resume notify the Application
     }
+
+    public void forgot_password(View view) {
+        Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+        startActivity(intent);
+    }
 }

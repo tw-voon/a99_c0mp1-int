@@ -13,9 +13,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.appcompat.BuildConfig;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -194,7 +196,10 @@ public class NewComplaintActivity extends AppCompatActivity {
                 Environment.DIRECTORY_PICTURES);
         imagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
         File file = new File(imagePath);
-        Uri outputFileUri = Uri.fromFile(file);
+//        Uri outputFileUri = Uri.fromFile(file);
+        Uri outputFileUri = FileProvider.getUriForFile(NewComplaintActivity.this,
+                "kuchingitsolution.betterpepperboard.provider",
+                file);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         startActivityForResult(intent, REQUEST_CAMERA);

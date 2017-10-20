@@ -3,12 +3,15 @@
     <string name="form_username">Username</string>
     <string name="form_password">Password</string>
     <string name="form_login">Login</string>
+    <string name="form_reset">Send Password Reset Link</string>
     <string name="form_register">Register</string>
     <string name="form_no_account">Don\'t have an account ?</string>
+    <string name="form_forgot_password">Forgot your password ?</string>
     <string name="confirm_password">Password again</string>
     <string name="form_have_account">Already have an account ? </string>
     <string name="title_activity_main">MainActivity</string>
     <string name="form_email">Email</string>
+    <string name="form_input_email">Please key in your login email</string>
     <string name="form_phone">Contact No.</string>
     <string name="form_logout">Log Out</string>
     <string name="no_content">No Content</string>
@@ -40,7 +43,7 @@
     <string name="title_officer">Update Action</string>
     <string name="title_detail">Details Info</string>
 
-    <string name="google_map_key">AIzaSyAFg3Ic0EkXj9jzEwu4IlYWCGCHgdIGzgE</string>
+    <string name="google_map_key">AIzaSyAFO6P2smj8PPF8aHeRbGUxF2gcC9hKHZE</string>
     <string name="title_activity_maps">Map</string>
 
     <!-- status bar-->
