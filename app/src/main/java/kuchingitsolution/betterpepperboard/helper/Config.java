@@ -3,8 +3,8 @@ package kuchingitsolution.betterpepperboard.helper;
 public class Config {
 
     public static String PREF_NAME = "pepper_board";
-//    private static String DOMAIN_URL = "http://kuchingitsolution.net/complaint_panel/api";
-    private static String DOMAIN_URL = "http://192.168.1.102/ComplaintManagementPanel/admin_panel/api";
+    private static String DOMAIN_URL = "http://kuchingitsolution.net/admin_panel/api";
+//    private static String DOMAIN_URL = "http://192.168.1.102/ComplaintManagementPanel/admin_panel/api";
     public static String LOGIN_URL = DOMAIN_URL + "/login";
     public static String REGISTER_URL = DOMAIN_URL + "/register";
     public static String HOTLINE_URL = DOMAIN_URL + "/hotline";
@@ -35,13 +35,14 @@ public class Config {
     public static String URL_ADD_USER = DOMAIN_URL + "/add_chat_user";
     public static String URL_GET_LOCATION = DOMAIN_URL + "/get_location_report";
     public static String URL_RESET_PASSWORD = DOMAIN_URL + "/password/email";
+    public static String URL_CHANGE_NAME = DOMAIN_URL + "/room/change_name";
+    public static String URL_DELETE_ROOM = DOMAIN_URL + "/room/delete";
+    public static String URL_DELETE_MSG = DOMAIN_URL + "/room/delete_msg";
 
     //badge position
-    public int HOME = 0;
-    public int COMPLAINT = 1;
-    public int MESSAGE = 2;
-    public int NOTI = 3;
-    public int PERSOANL = 4;
+    public static final String COMPLAINT = "complaint";
+    public static final String MESSAGE = "message";
+    public static final String NOTI = "notification";
 
     // KEY THHING
     public static String CHAT_NOTIFICATION = "room_list";

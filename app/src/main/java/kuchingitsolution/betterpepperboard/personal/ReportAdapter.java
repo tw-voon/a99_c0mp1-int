@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.helper.Utility;
 
@@ -70,7 +71,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.MyViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context.getApplicationContext(), DetailsComplaintActivity.class);
+                Intent intent = new Intent(context.getApplicationContext(), SingleReportActivity.class);
                 intent.putExtra("report_id", model.getReport_id());
                 context.startActivity(intent);
             }

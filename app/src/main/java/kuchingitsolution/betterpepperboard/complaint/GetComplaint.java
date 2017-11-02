@@ -93,9 +93,18 @@ public class GetComplaint {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Log.e("ANSWER INFINITE SCROLL", "" + result);
-                if(result != null)
-                    process_unsolved(result);
-                else broadcast();
+                if(result != null){
+
+                    if(!result.equals("null")) {
+                        if(page == 1)
+                            db_offline.clearComplaint();
+                        process_unsolved(result);
+                    } else
+                        broadcast();
+
+                } else
+                    broadcast();
+
 //                    db_offline.insertReport(result);
             }
         }.execute(url);

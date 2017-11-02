@@ -63,8 +63,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginBottom="8dp">
 
                 <EditText
                     android:id="@+id/report_title"
@@ -78,8 +77,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginBottom="8dp">
 
                 <EditText
                     android:id="@+id/report_desc"
@@ -89,6 +87,22 @@
                     android:scrollbars="vertical"
                     android:maxLines="10"
                     android:hint="Description" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/report_suggestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:scrollbars="vertical"
+                    android:maxLines="10"
+                    android:hint="Suggestion (Optional)" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -121,7 +135,7 @@
                 android:layout_margin="10dp"
                 android:adjustViewBounds="true"
                 android:src="@color/mt_gray1"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
                 android:visibility="gone"
                 android:contentDescription="upload image here"/>
 

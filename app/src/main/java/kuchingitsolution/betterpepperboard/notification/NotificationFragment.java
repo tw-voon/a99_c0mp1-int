@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
@@ -99,6 +100,9 @@ public class NotificationFragment extends Fragment {
                         Log.d("Status75: ", response);
                         if(response.equals("empty")) {
                             no_content.setVisibility(View.VISIBLE);
+                            db_offline.deleteNotification();
+                            if(notificationModels.size() > 0)
+                                notificationModels.clear();
                             Toast.makeText(getActivity(), "empty", Toast.LENGTH_SHORT).show();
                         }
                         else
@@ -128,8 +132,9 @@ public class NotificationFragment extends Fragment {
     private void processActivity(String response){
         no_content.setVisibility(View.GONE);
 
-        if(response.equals("empty"))
+        if(response.equals("empty")) {
             no_content.setVisibility(View.VISIBLE);
+        }
 
         db_offline.deleteNotification();
 
@@ -179,4 +184,9 @@ public class NotificationFragment extends Fragment {
         db_offline.close();
     }
 
+    @Override
+    public void onResume() {
+        ((MainActivity2)getActivity()).removeBadgeAt(3);
+        super.onResume();
+    }
 }

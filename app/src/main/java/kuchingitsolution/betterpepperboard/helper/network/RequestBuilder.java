@@ -30,12 +30,13 @@ public class RequestBuilder {
                 .build();
     }
 
-    public static MultipartBody uploadNewComplaint(String title, String category_id, String description, String lat, String lon, String location_name, File image, String user_id){
+    public static MultipartBody uploadNewComplaint(String title, String category_id, String description, String suggestion, String lat, String lon, String location_name, File image, String user_id){
 //        Log.d("result2", image);
         return new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("title", title)
                 .addFormDataPart("desc", description)
+                .addFormDataPart("suggestion", suggestion)
                 .addFormDataPart("category_id", category_id)
                 .addFormDataPart("latitude", lat)
                 .addFormDataPart("longitude", lon)

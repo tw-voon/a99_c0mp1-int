@@ -48,8 +48,8 @@ public class InfoActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        info_category = (ListView) findViewById(R.id.info_cateogry);
-        loading = (ProgressBar) findViewById(R.id.loading);
+        info_category = findViewById(R.id.info_cateogry);
+        loading = findViewById(R.id.loading);
         db_offline = new DB_Offline(this);
         arrayAdapter = new ArrayAdapter<String>(
                 this,
@@ -61,8 +61,6 @@ public class InfoActivity extends AppCompatActivity {
         info_category.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Toast.makeText(InfoActivity.this,adapterView.getAdapter().getItem(i).toString(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(InfoActivity.this," " + categoryModels.get(i).getCategory_id(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(InfoActivity.this, DetailActivity.class);
                 intent.putExtra("category_id", categoryModels.get(i).getCategory_id());
                 startActivity(intent);

@@ -1,6 +1,9 @@
 package kuchingitsolution.betterpepperboard;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -10,6 +13,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,6 +29,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import kuchingitsolution.betterpepperboard.complaint.ComplaintFragment;
 import kuchingitsolution.betterpepperboard.helper.BottomNavigationViewHelper;
+import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.home.HomeFragment;
@@ -45,7 +50,8 @@ public class MainActivity2 extends AppCompatActivity {
     FrameLayout content;
     Session session;
     BottomNavigationViewEx navigation;
-    QBadgeView notification;
+    QBadgeView notification, message, complaint;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,43 +68,73 @@ public class MainActivity2 extends AppCompatActivity {
         navigation.enableShiftingMode(false);
         navigation.enableAnimation(false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-//        BottomNavigationViewHelper.disableShiftMode(navigation);
-//        bottomNavigationMenuView = (BottomNavigationMenuView)navigation.getChildAt(0);
-//        bottomNavigationMenuView2 = (BottomNavigationMenuView)navigation.getChildAt(0);
-//        icon_noti = bottomNavigationMenuView.getChildAt(3);
-//        icon_message = bottomNavigationMenuView2.getChildAt(2);
-//        notifcation_view = (BottomNavigationItemView)icon_noti;
-//        message_view = (BottomNavigationItemView)icon_message;
-//
-//        View badge = LayoutInflater.from(this)
-//                .inflate(R.layout.notification_badge, bottomNavigationMenuView, false);
-//        notifcation_view.addView(badge);
-//        message_view.addView(badge);
         content = findViewById(R.id.contents);
         db_offline = new DB_Offline(this);
         session = new Session(this);
         startService(new Intent(MainActivity2.this, onesignal_service.class));
         notification = new QBadgeView(this);
-
+        message = new QBadgeView(this);
+        complaint = new QBadgeView(this);
         pushFragment(new HomeFragment(), R.string.title_home);
-        addBadgeAt(2,1);
     }
 
     public void addBadgeAt(int position, int number) {
-        // add badge setGravityOffset(12, 2, true)
-//        return new QBadgeView(this)
-//                .setGravityOffset(8, 3, true)
-//                .setBadgeNumber(number)
-//                .setBadgeBackgroundColor(R.color.mt_red)
-//                .bindTarget(navigation.getBottomNavigationItemView(position));
-        notification.setGravityOffset(8, 3, true)
-                .setBadgeNumber(number)
-                .setBadgeBackgroundColor(R.color.mt_red)
-                .bindTarget(navigation.getBottomNavigationItemView(position));
+
+        if(position == 3){
+//            if(notification.getVisibility() == View.INVISIBLE)
+//                notification.setVisibility(View.VISIBLE);
+            notification.setGravityOffset(8, 3, true)
+                    .setBadgeNumber(number)
+                    .bindTarget(navigation.getBottomNavigationItemView(position));
+        } else if(position == 2){
+//            if(message.getVisibility() == View.INVISIBLE)
+//                message.setVisibility(View.VISIBLE);
+            message.setGravityOffset(8, 3, true)
+                    .setBadgeNumber(number)
+                    .bindTarget(navigation.getBottomNavigationItemView(position));
+        } else if(position == 1){
+            complaint.setGravityOffset(8, 3, true)
+                    .setBadgeNumber(number)
+                    .bindTarget(navigation.getBottomNavigationItemView(position));
+        }
+        Log.d("BadgeView", String.valueOf(number));
+
     }
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
+            Log.d("onesignal_data", intent.getStringExtra("data"));
+            if(intent.getStringExtra("data") != null){
+                switch (intent.getStringExtra("data")){
+                    case Config.MESSAGE:
+                        addBadgeAt(2, 1);
+                        break;
+                    case Config.COMPLAINT:
+                        addBadgeAt(1, 1);
+                        break;
+                    case Config.NOTI:
+                        addBadgeAt(3, session.getNotiBadge());
+                        break;
+                }
+            }
+        }
+    };
+
     public void removeBadgeAt(int position){
-        notification.hide(true);
+
+        if(position == 3){
+            notification.setBadgeNumber(0);
+//            notification.hide(true);
+        } else if(position == 2){
+            message.setBadgeNumber(0);
+            message.hide(true);
+        } else if(position == 1){
+            complaint.setBadgeNumber(0);
+            complaint.hide(true);
+        }
+
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -112,18 +148,19 @@ public class MainActivity2 extends AppCompatActivity {
                     pushFragment(new HomeFragment(), R.string.title_home);
                     return true;
                 case R.id.navigation_complaint:
-                    if(currentFragment instanceof ComplaintFragment)
-                        return false;
-                    else{
-                        pushFragment(new ComplaintFragment(), R.string.title_complaint);
-                        return true;
-                    }
+                    pushFragment(new ComplaintFragment(), R.string.title_complaint);
+                    removeBadgeAt(1);
+                    session.resetBadge(1);
+                    return true;
                 case R.id.navigation_notifications:
                     pushFragment(new NotificationFragment(), R.string.title_notifications);
+                    removeBadgeAt(3);
+                    session.resetBadge(3);
                     return true;
                 case R.id.navigation_message:
                     pushFragment(new MessageFragment(), R.string.action_chat);
                     removeBadgeAt(2);
+                    session.resetBadge(2);
                     return true;
                 case R.id.navigation_personal:
                     pushFragment(new PersonalFragment(), R.string.action_personal);
@@ -137,7 +174,7 @@ public class MainActivity2 extends AppCompatActivity {
         if (fragment == null)
             return;
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         if (fragmentManager != null) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
             if (ft != null) {
@@ -185,6 +222,24 @@ public class MainActivity2 extends AppCompatActivity {
         return true;
     }
 
+    private void setup_tab(){
+        int notibadge = session.getNotiBadge();
+        int msgBadge = session.getMessageBadge();
+        int complaintBadge = session.getComplaintBadge();
+
+        if(complaintBadge > 0){
+            addBadgeAt(1, complaintBadge);
+        }
+
+        if(msgBadge > 0){
+            addBadgeAt(2, msgBadge);
+        }
+
+        if(notibadge > 0){
+            addBadgeAt(3, notibadge);
+        }
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -199,14 +254,17 @@ public class MainActivity2 extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         super.onPause();
         PepperApps.activityPaused();// On Pause notify the Application
     }
 
     @Override
     protected void onResume() {
-
         super.onResume();
         PepperApps.activityResumed();// On Resume notify the Application
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter("notification_received"));
+        setup_tab();
     }
 }

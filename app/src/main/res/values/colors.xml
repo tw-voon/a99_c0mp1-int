@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGreen">#00A859</color>
-    <color name="colorGrey">#1e1e1e</color>
+    <!--<color name="colorGrey">#1e1e1e</color>-->
     <color name="colorOrange">#F58634</color>
     <color name="base10">#eaeaea</color>
     <color name="colorBackground">#FFD7D7D7</color>
@@ -24,4 +24,8 @@
     <color name="mt_yellow">#FCAB53</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="colorBg">#2D78B1</color>
+    <color name="colorGrey">#D1D1D1</color>
+
 </resources>

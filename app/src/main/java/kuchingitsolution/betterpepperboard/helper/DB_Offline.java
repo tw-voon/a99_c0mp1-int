@@ -64,6 +64,7 @@ public class DB_Offline extends SQLiteOpenHelper {
     private static final String STATUS_ID = "status_id";
     private static final String TITLE = "title";
     private static final String DESC = "description";
+    private static final String SUGGESTION = "suggestion";
     private static final String SUPPORTED = "support";
     private static final String AFFECTED = "affected";
 
@@ -169,6 +170,7 @@ public class DB_Offline extends SQLiteOpenHelper {
                 + OFFICER_NAME + " VARCHAR,"
                 + TITLE + " VARCHAR,"
                 + DESC + " VARCHAR,"
+                + SUGGESTION + " VARCHAR,"
                 + MEDIA_TYPE + " INTEGER,"
                 + LINK + " VARCHAR,"
                 + LAST_ACTION + " VARCHAR,"
@@ -359,6 +361,32 @@ public class DB_Offline extends SQLiteOpenHelper {
             db.update(CHAT_ROOM_TABLE, item, " id = '" + userListModel.getRoom_id() + "'", null);
         else
             db.insert(CHAT_ROOM_TABLE, null, item);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+    }
+
+    public void changeRoomName(String name, String room_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        ContentValues item = new ContentValues();
+        item.put(NAME, name);
+
+        db.update(CHAT_ROOM_TABLE, item, " id = '" + room_id + "'", null);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
+    }
+
+    public void deleteRoom(String room_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        db.delete(CHAT_ROOM_TABLE, ID + " = ?", new String[] { room_id });
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -679,6 +707,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             item.put(LAST_ACTION, data.getJSONArray("action").getJSONObject(0).getString("action_taken"));
             item.put(TITLE, data.getString("title"));
             item.put(DESC, data.getString("description"));
+            item.put(SUGGESTION, data.optString(SUGGESTION, null));
             item.put(AFFECTED, data.getInt("affected"));
             item.put(SUPPORTED, data.getInt("support"));
             item.put(CREATED_AT, data.getString("created_at"));
@@ -946,13 +975,14 @@ public class DB_Offline extends SQLiteOpenHelper {
                     jsonObject.put(OFFICER_NAME, cursor.getString(12));
                     jsonObject.put(TITLE, cursor.getString(13));
                     jsonObject.put(DESC, cursor.getString(14));
-                    jsonObject.put(MEDIA_TYPE, cursor.getString(15));
-                    jsonObject.put(LINK, cursor.getString(16));
-                    jsonObject.put(LAST_ACTION, cursor.getString(17));
-                    jsonObject.put(AFFECTED, cursor.getString(18));
-                    jsonObject.put(SUPPORTED, cursor.getString(19));
-                    jsonObject.put(CREATED_AT, cursor.getString(20));
-                    jsonObject.put(UPDATED_AT, cursor.getString(21));
+                    jsonObject.put(SUGGESTION, cursor.getString(15));
+                    jsonObject.put(MEDIA_TYPE, cursor.getString(16));
+                    jsonObject.put(LINK, cursor.getString(17));
+                    jsonObject.put(LAST_ACTION, cursor.getString(18));
+                    jsonObject.put(AFFECTED, cursor.getString(19));
+                    jsonObject.put(SUPPORTED, cursor.getString(20));
+                    jsonObject.put(CREATED_AT, cursor.getString(21));
+                    jsonObject.put(UPDATED_AT, cursor.getString(22));
                     complaintData.add(cursor.getPosition(), jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1063,13 +1093,14 @@ public class DB_Offline extends SQLiteOpenHelper {
                     jsonObject.put(OFFICER_NAME, cursor.getString(12));
                     jsonObject.put(TITLE, cursor.getString(13));
                     jsonObject.put(DESC, cursor.getString(14));
-                    jsonObject.put(MEDIA_TYPE, cursor.getString(15));
-                    jsonObject.put(LINK, cursor.getString(16));
-                    jsonObject.put(LAST_ACTION, cursor.getString(17));
-                    jsonObject.put(AFFECTED, cursor.getString(18));
-                    jsonObject.put(SUPPORTED, cursor.getString(19));
-                    jsonObject.put(CREATED_AT, cursor.getString(20));
-                    jsonObject.put(UPDATED_AT, cursor.getString(21));
+                    jsonObject.put(SUGGESTION, cursor.getString(15));
+                    jsonObject.put(MEDIA_TYPE, cursor.getString(16));
+                    jsonObject.put(LINK, cursor.getString(17));
+                    jsonObject.put(LAST_ACTION, cursor.getString(18));
+                    jsonObject.put(AFFECTED, cursor.getString(19));
+                    jsonObject.put(SUPPORTED, cursor.getString(20));
+                    jsonObject.put(CREATED_AT, cursor.getString(21));
+                    jsonObject.put(UPDATED_AT, cursor.getString(22));
                     complaintData.add(cursor.getPosition(), jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();

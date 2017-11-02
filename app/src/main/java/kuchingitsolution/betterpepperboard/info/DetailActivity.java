@@ -73,7 +73,6 @@ public class DetailActivity extends AppCompatActivity {
         if(!result.equals("[]"))
             process_result(result, Config.OFFLINE);
         else {
-//            Toast.makeText(HotlineActivity.this, "Please connect to Internet", Toast.LENGTH_SHORT).show();
             loading.setVisibility(View.GONE);
         }
     }

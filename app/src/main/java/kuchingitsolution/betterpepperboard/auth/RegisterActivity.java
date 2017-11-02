@@ -2,6 +2,8 @@ package kuchingitsolution.betterpepperboard.auth;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import kuchingitsolution.betterpepperboard.MainActivity;
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.PepperApps;
@@ -34,10 +37,11 @@ import kuchingitsolution.betterpepperboard.helper.Session;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    EditText edtTxtname, edtEmail, edtPhone, password, passwordAgain;
-    String username, pswd, pswd_again, email, phone;
-    Session session;
-    private ProgressBar loading;
+    private EditText edtTxtname, edtEmail, edtPhone, password, passwordAgain;
+    private String username, pswd, pswd_again, email, phone;
+    private Session session;
+    private CircularProgressButton register;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
         edtPhone.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_CLASS_PHONE);
         session = new Session(this);
-        loading = findViewById(R.id.loading);
+        register = findViewById(R.id.form_register);
+        handler = new Handler();
     }
 
     public void toLogin(View view) {
@@ -92,8 +97,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if(pswd.equals(pswd_again)){
-//            Toast.makeText(RegisterActivity.this, "Password same", Toast.LENGTH_SHORT).show();
-            loading.setVisibility(View.VISIBLE);
+            register.startAnimation();
             register();
         } else
             Toast.makeText(RegisterActivity.this, "Please make sure the password is same.", Toast.LENGTH_SHORT).show();
@@ -105,15 +109,13 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("TAG", response);
-//                        Toast.makeText(RegisterActivity.this, response, Toast.LENGTH_SHORT).show();
                         processResponse(response);
-//                        loading.dismiss();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loading.setVisibility(View.GONE);
+                        button_revert();
                         Toast.makeText(RegisterActivity.this, "Line109: " + error.toString() + error.getCause(),Toast.LENGTH_LONG ).show();
                     }
                 }){
@@ -130,6 +132,19 @@ public class RegisterActivity extends AppCompatActivity {
         PepperApps.getInstance(RegisterActivity.this).addToRequestQueue(stringRequest, "TAG");
     }
 
+    private void button_revert(){
+        register.doneLoadingAnimation(R.color.mt_red, BitmapFactory.decodeResource(getResources(), R.drawable.ic_close_white_24dp));
+        register.revertAnimation();
+    }
+
+    final Runnable r = new Runnable() {
+        public void run() {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity2.class);
+            startActivity(intent);
+            finish();
+        }
+    };
+
     private void processResponse(String result){
 
         try {
@@ -137,25 +152,28 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (jObject.getString("status").equals("success")) {
                 JSONObject dataObject = new JSONObject(jObject.getString("data"));
-//                Toast.makeText(RegisterActivity.this, "Success", Toast.LENGTH_SHORT).show();
                 session.setLoggedin(true);
                 session.putData(dataObject.getString("id"), dataObject.getString("name"), dataObject.getString("avatar_link"), dataObject.getString("role_id"));
-//                registerKey(dataObject.getString("id"));
                 session.putUserAvatar(dataObject.getString("avatar_link"));
-                startActivity(new Intent(RegisterActivity.this, MainActivity2.class));
-                finish();
+                handler.postDelayed(r, 1000);
             } else
                 Toast.makeText(RegisterActivity.this, jObject.getString("data"), Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {
             e.printStackTrace();
             showMessage(result);
+            button_revert();
         }
-        loading.setVisibility(View.GONE);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        register.dispose();
     }
 }

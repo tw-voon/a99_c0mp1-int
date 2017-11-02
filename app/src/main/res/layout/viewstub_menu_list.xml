@@ -28,6 +28,7 @@
             android:src="@drawable/complaint"
             android:adjustViewBounds="true"
             android:layout_marginBottom="4dp"
+            android:scaleType="fitXY"
             android:visibility="gone"
             android:contentDescription="complaint_image"/>
 
@@ -38,6 +39,7 @@
             android:adjustViewBounds="true"
             android:layout_marginBottom="4dp"
             android:src="@drawable/map"
+            android:scaleType="fitXY"
             android:visibility="gone"
             android:contentDescription="map_image"/>
 
@@ -47,6 +49,7 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:layout_marginBottom="4dp"
+            android:scaleType="fitXY"
             android:visibility="gone"
             android:contentDescription="info_image"
             android:src="@drawable/info"/>

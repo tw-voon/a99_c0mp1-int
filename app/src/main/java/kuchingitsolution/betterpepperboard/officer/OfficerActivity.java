@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -132,7 +133,6 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
                     }
                 });
                 builder.show();
-
             }
         });
 
@@ -182,7 +182,12 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
                 Environment.DIRECTORY_PICTURES);
         imagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
         File file = new File(imagePath);
-        Uri outputFileUri = Uri.fromFile(file);
+        Uri outputFileUri;
+        if(Build.VERSION.SDK_INT  < 20)
+            outputFileUri = Uri.fromFile(file);
+        else
+            outputFileUri = FileProvider.getUriForFile(OfficerActivity.this,
+                "kuchingitsolution.betterpepperboard.provider", file);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         startActivityForResult(intent, 1888);

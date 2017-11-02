@@ -64,6 +64,7 @@ public class SearchUserActivity extends AppCompatActivity
 
         session = new Session(this);
         selectedUser = (GridView) findViewById(R.id.selectedUser);
+        selectedUser.setVisibility(View.GONE);
         submit = (Button) findViewById(R.id.add);
         submit.setOnClickListener(this);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
@@ -97,13 +98,21 @@ public class SearchUserActivity extends AppCompatActivity
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        getUser(query);
+//        getUser(query);
         return true;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
+    public boolean onQueryTextChange(String query) {
+        if(!query.equals(""))
+            getUser(query);
+        else {
+            if(data.size() > 0) {
+                data.clear();
+                searchAddAdapter.notifyDataSetChanged();
+            }
+        }
+        return true;
     }
 
     private void getUser(final String query){

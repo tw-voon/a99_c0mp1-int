@@ -3,6 +3,8 @@ package kuchingitsolution.betterpepperboard.auth;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.PepperApps;
 import kuchingitsolution.betterpepperboard.R;
@@ -37,8 +40,10 @@ public class LoginActivity extends AppCompatActivity {
 
     DB_Offline db_offline;
     Session session;
-    private ProgressBar loading;
+    Handler handler;
     private EditText edtUsername, edtPassword;
+    private CircularProgressButton login;
+    private int ENABLE = 1, DISABLE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +51,26 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         db_offline = new DB_Offline(this);
         session = new Session(this);
-        edtUsername = (EditText) findViewById(R.id.username);
-        edtPassword = (EditText) findViewById(R.id.edtPassword);
+        edtUsername = findViewById(R.id.edtEmail);
+        edtPassword = findViewById(R.id.edtPassword);
+        login = findViewById(R.id.form_login);
+        handler = new Handler();
+//        loading = findViewById(R.id.loading);
+    }
 
-        loading = findViewById(R.id.loading);
+    private void modified_edt_field(int status){
+
+        switch (status){
+            case 1:
+                edtUsername.setEnabled(true);
+                edtPassword.setEnabled(true);
+                break;
+
+            case 2:
+                edtUsername.setEnabled(false);
+                edtPassword.setEnabled(false);
+        }
+
     }
 
     public void toRegister(View view) {
@@ -62,7 +83,8 @@ public class LoginActivity extends AppCompatActivity {
         String username = edtUsername.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
         if(username.length() != 0 && password.length() != 0){
-            loading.setVisibility(View.VISIBLE);
+            modified_edt_field(DISABLE);
+            login.startAnimation();
             _login(username, password);
         } else {
             Toast.makeText(LoginActivity.this, "Please input all the field.", Toast.LENGTH_LONG ).show();
@@ -83,8 +105,9 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loading.setVisibility(View.GONE);
-                        Toast.makeText(LoginActivity.this, "Line109: " + error.toString() + error.getCause(),Toast.LENGTH_LONG ).show();
+                        revert_();
+                        Log.d("Error", error.toString());
+                        Toast.makeText(LoginActivity.this, "No Internet access", Toast.LENGTH_SHORT).show();
                     }
                 }){
             @Override
@@ -101,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
     private void process_login(String result){
 
         if(result.equals("fail")){
-            loading.setVisibility(View.GONE);
+            revert_();
             showMessage();
             return;
         }
@@ -110,20 +133,35 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject(result);
             if(jsonObject.getString("status").equals("success")){
                 JSONObject user = jsonObject.getJSONObject("data");
+                login.doneLoadingAnimation(R.color.colorBg, BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_48dp));
                 session.setLoggedin(true);
                 session.putData(user.getString("id"), user.getString("name"), user.optString("avatar_link", "null"), user.getString("role_id"));
-                Intent intent = new Intent(LoginActivity.this, MainActivity2.class);
-                startActivity(intent);
-                finish();
+                handler.postDelayed(r, 1000);
             } else {
                 Toast.makeText(LoginActivity.this, "Fail to login. Please check your login details", Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(LoginActivity.this, "Server error.", Toast.LENGTH_SHORT).show();
+            revert_();
         }
-        loading.setVisibility(View.GONE);
+//        loading.setVisibility(View.GONE);
     }
+
+    private void revert_(){
+        login.doneLoadingAnimation(R.color.mt_red, BitmapFactory.decodeResource(getResources(), R.drawable.ic_close_white_24dp));
+        login.revertAnimation();
+        modified_edt_field(ENABLE);
+    }
+
+
+    final Runnable r = new Runnable() {
+        public void run() {
+            Intent intent = new Intent(LoginActivity.this, MainActivity2.class);
+            startActivity(intent);
+            finish();
+        }
+    };
 
     private void showMessage(){
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -143,6 +181,12 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onPause();
         PepperApps.activityPaused();// On Pause notify the Application
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        login.dispose();
     }
 
     @Override

@@ -74,6 +74,7 @@
     <string name="affected">Affected</string>
     <string name="affected_none">0 Affected</string>
     <string name="image_desc">Complaint image</string>
+    <string name="txtSuggestion">Suggestion from post\'s owner</string>
 
     <!--Sample String-->
     <string name="dummy_title">This is a testing title</string>

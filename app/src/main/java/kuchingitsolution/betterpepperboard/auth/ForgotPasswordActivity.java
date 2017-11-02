@@ -2,6 +2,7 @@ package kuchingitsolution.betterpepperboard.auth;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import kuchingitsolution.betterpepperboard.PepperApps;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
@@ -28,9 +30,9 @@ import kuchingitsolution.betterpepperboard.helper.Config;
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private EditText email;
-    private Button submit;
-    private ProgressBar loading;
+    private CircularProgressButton submit;
     private String email_data;
+    private int ENABLE = 1, DISABLE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         email = findViewById(R.id.edtEmail);
         submit = findViewById(R.id.form_send);
-        loading = findViewById(R.id.loading);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,28 +50,44 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
                 if(TextUtils.isEmpty(email.getText().toString()))
                     Toast.makeText(ForgotPasswordActivity.this, "Please input your email address", Toast.LENGTH_SHORT).show();
-                else
+                else {
+                    submit.startAnimation();
+                    disable_interaction(DISABLE);
                     SendPasswordResetLink();
+                }
             }
         });
     }
 
+    private void disable_interaction(int status){
+
+        switch (status){
+            case 1:
+                email.setEnabled(true);
+                break;
+            case 2:
+                email.setEnabled(false);
+                break;
+        }
+
+    }
+
+
     private void SendPasswordResetLink(){
-        submit.setEnabled(false); /* disable button click */
-        loading.setVisibility(View.VISIBLE);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_RESET_PASSWORD,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("TAG", response);
                         showMessage(response);
+                        disable_interaction(ENABLE);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loading.setVisibility(View.GONE);
-                        submit.setEnabled(true);
+                        disable_interaction(ENABLE);
+                        revert_();
                         Toast.makeText(ForgotPasswordActivity.this, "Line109: " + error.toString() + error.getCause(),Toast.LENGTH_LONG ).show();
                     }
                 }){
@@ -89,24 +106,44 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         builder.setCancelable(false);
         builder.setTitle(message);
 
-        if(message.equals("We have e-mailed your password reset link!"))
-            builder.setMessage("Please go your email to reset the password");
+        if(message.equals("We have e-mailed your password reset link!")) {
+            submit.doneLoadingAnimation(R.color.colorBg, BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_48dp));
+            builder.setMessage("Please go your email to reset the password. The email may take some time to reach your email. Thank you.");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        } else {
+            revert_();
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+        }
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
                 if(message.equals("We have e-mailed your password reset link!")) {
-                    Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
+
                 } else {
                     dialogInterface.dismiss();
-                    loading.setVisibility(View.GONE);
                     submit.setEnabled(true);
                 }
             }
         });
         builder.show();
+    }
+
+    private void revert_(){
+        submit.doneLoadingAnimation(R.color.mt_red, BitmapFactory.decodeResource(getResources(), R.drawable.ic_close_white_24dp));
+        submit.revertAnimation();
     }
 }

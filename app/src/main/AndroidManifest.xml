@@ -9,6 +9,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -80,6 +81,7 @@
             android:name=".new_complaint.NewComplaintActivity"
             android:label="@string/title_complaint"
             android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -226,12 +228,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity2" />
         </activity>
-        <activity android:name=".complaint.SingleReportActivity">
+        <activity
+            android:name=".complaint.SingleReportActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".complaint.DetailsComplaintActivity" />
+                android:value=".MainActivity2" />
         </activity>
-        <activity android:name=".auth.ForgotPasswordActivity"></activity>
+        <activity android:name=".auth.ForgotPasswordActivity"/>
     </application>
 
 </manifest>

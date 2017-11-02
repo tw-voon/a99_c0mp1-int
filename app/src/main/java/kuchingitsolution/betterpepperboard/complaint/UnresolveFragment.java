@@ -149,7 +149,7 @@ public class UnresolveFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter("custom-event-name"));
         loading.setVisibility(View.VISIBLE);
-        complaintAdapter.clear();
+//        complaintAdapter.clear();
     }
 
     @Override

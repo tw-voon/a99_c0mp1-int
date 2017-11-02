@@ -87,10 +87,6 @@ public class Session {
 
     public String getUserAvatar() { return prefs.getString("AVATAR", null); }
 
-    public String getFirebaseID(){
-        return prefs.getString("firebaseID", null);
-    }
-
     public boolean loggedin(){
         return prefs.getBoolean(KEY_IS_LOGGED, false);
     }
@@ -127,6 +123,60 @@ public class Session {
     public void clearPreference()
     {
         prefs.edit().clear().commit();
+    }
+
+    public void setup_tab_badge(int number){
+
+        editor.putInt(Config.COMPLAINT, number);
+        editor.putInt(Config.MESSAGE, number);
+        editor.putInt(Config.NOTI, number);
+
+        editor.commit();
+
+    }
+
+    public void putComplaintBadge(int number){
+        editor.putInt(Config.COMPLAINT, getComplaintBadge() + number);
+        editor.commit();
+    }
+
+    public int getComplaintBadge(){
+        return prefs.getInt(Config.COMPLAINT, 0);
+    }
+
+    public void putMessageBadge(int number){
+        editor.putInt(Config.MESSAGE, getMessageBadge() + number);
+        editor.commit();
+    }
+
+    public int getMessageBadge(){
+        return prefs.getInt(Config.MESSAGE, 0);
+    }
+
+    public void putNotiBadge(int number){
+        editor.putInt(Config.NOTI, getNotiBadge() + number);
+        editor.commit();
+    }
+
+    public int getNotiBadge(){
+        return prefs.getInt(Config.NOTI, 0);
+    }
+
+    public void resetBadge(int position){
+        switch (position){
+            case 1:
+                editor.putInt(Config.COMPLAINT, 0);
+                editor.commit();
+                break;
+            case 2:
+                editor.putInt(Config.MESSAGE, 0);
+                editor.commit();
+                break;
+            case 3:
+                editor.putInt(Config.NOTI, 0);
+                editor.commit();
+                break;
+        }
     }
 
 }

@@ -7,9 +7,9 @@ import org.json.JSONObject;
 
 public class ComplaintModel {
 
-    String id, username, type_name, location_name, status_name, officer_name, link, last_action, title, description, created_at, updated_at;
-    int user_id, type_id, location_id, status_id, officer_id, media_type, affected, support;
-    double lat, lon;
+    private String id, username, type_name, location_name, status_name, officer_name, link, last_action, title, description, created_at, suggestion;
+    private int user_id, type_id, location_id, status_id, officer_id, media_type, affected, support;
+    private double lat, lon;
 
     public ComplaintModel(JSONObject complaint){
         try {
@@ -29,13 +29,13 @@ public class ComplaintModel {
             this.officer_name = complaint.optString("officer_name", "NULL");
             this.title = complaint.getString("title");
             this.description = complaint.getString("description");
+            this.suggestion = complaint.optString("suggestion", null);
             this.media_type = complaint.getInt("media_type");
             this.link = complaint.getString("link");
             this.last_action = complaint.getString("last_action");
             this.affected = complaint.getInt("affected");
             this.support = complaint.getInt("support");
             this.created_at = complaint.getString("created_at");
-            this.updated_at = complaint.getString("updated_at");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,11 +69,9 @@ public class ComplaintModel {
     public int getSupport(){return support;}
     public String getOfficer_name() { return officer_name; }
     public String getType_name(){return type_name;}
-    public String getStatus_name() { return status_name; }
-    public String getLast_action() {return last_action;}
     public String getTitle(){ return title;}
     public String getDescription(){ return  description; }
-    public String getUpdated_at(){ return created_at; }
+    public String getSuggestion() { return suggestion; }
     public double getLat(){return lat;}
     public double getLon(){return lon;}
 

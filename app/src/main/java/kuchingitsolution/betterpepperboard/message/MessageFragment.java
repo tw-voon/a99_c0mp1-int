@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
@@ -54,6 +56,8 @@ public class MessageFragment extends Fragment implements UserListAdapter.onUserC
     private RecyclerView userListView;
     private UserListAdapter userListAdapter;
     private TextView no_content;
+    private String Id;
+    private int position;
     DB_Offline db_offline;
     Session session;
 
@@ -236,6 +240,7 @@ public class MessageFragment extends Fragment implements UserListAdapter.onUserC
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(Config.CHAT_NOTIFICATION));
         get_user_list();
+        ((MainActivity2)getActivity()).removeBadgeAt(2);
     }
 
     @Override
@@ -245,22 +250,31 @@ public class MessageFragment extends Fragment implements UserListAdapter.onUserC
     }
 
     @Override
-    public void OnChangeName(String id) {
+    public void OnChangeName(String id, int position) {
+        this.Id = id;
+        this.position = position;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View CustomView = inflater.inflate(R.layout.dialog_change_name, null);
+        final EditText room_name = CustomView.findViewById(R.id.room_name);
+        final TextView valid = CustomView.findViewById(R.id.valid_name);
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_change_name, null))
+        builder.setView(CustomView)
                 // Add action buttons
             .setPositiveButton("Change", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                Log.d("contextmenu", "click true");
-            }
-        })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    if(room_name.getText().toString().isEmpty())
+                        valid.setVisibility(View.VISIBLE);
+                    else{
+                        valid.setVisibility(View.GONE);
+                        ChangeGroupName(Id, room_name.getText().toString());
+                    }
+                }
+            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }
@@ -269,8 +283,97 @@ public class MessageFragment extends Fragment implements UserListAdapter.onUserC
         builder.show();
     }
 
+    private void ChangeGroupName(final String id, final String name){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_CHANGE_NAME,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("Status: ", response);
+                        if(response.equals("success")){
+                            db_offline.changeRoomName(name, id);
+                            load_view(db_offline.get_room());
+                        } else
+                            Toast.makeText(getContext(), "Internet error occur", Toast.LENGTH_SHORT).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        Log.d("Error", error.toString());
+
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<String,String>();
+                map.put("room_id", id);
+                map.put("name", name);
+                return map;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    private void DeleteGroup(final String room_id){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_DELETE_ROOM,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("Status: ", response);
+                        if(response.equals("success")){
+                            db_offline.deleteRoom(room_id);
+                            load_view(db_offline.get_room());
+                        } else
+                            Toast.makeText(getContext(), "Internet error occur", Toast.LENGTH_SHORT).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        Log.d("Error", error.toString());
+
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<String,String>();
+                map.put("room_id", room_id);
+                map.put("user_id", session.getUserID());
+                return map;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
     @Override
-    public void OnDeleteChat(String id) {
+    public void OnDeleteChat(final String id) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Delete this chat room");
+        builder.setMessage("Are you sure want to delete this chat room ? Once it is deleted, it cannot be undone.");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DeleteGroup(id);
+            }
+        }). setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setCancelable(true);
+        builder.show();
 
     }
 }

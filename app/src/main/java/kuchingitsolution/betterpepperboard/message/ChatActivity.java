@@ -40,7 +40,7 @@ import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements ChatAdapter.onUserClickCallBack{
 
     List<ChatModel> chatModels = new ArrayList<>();
     ChatAdapter chatAdapter;
@@ -162,6 +162,7 @@ public class ChatActivity extends AppCompatActivity {
                         jsonObject.getString("message"), jsonObject.getString("created_at"),
                         jsonObject.getString("id"), user.getString("id"));
                 chatModels.add(chatModel);
+                Log.d("message_content", user.getString("name"));
             }
             chatAdapter.notifyDataSetChanged();
             recyclerView.getLayoutManager().scrollToPosition(chatAdapter.getItemCount()-1);
@@ -271,5 +272,42 @@ public class ChatActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onDeleteMessage(final String msg_id, final int current_position) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_DELETE_MSG,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("Status: ", response);
+                        if(response.equals("success")){
+                            chatModels.remove(current_position);
+                            chatAdapter.notifyDataSetChanged();
+                        } else
+                            Toast.makeText(ChatActivity.this, "Internet error occur", Toast.LENGTH_SHORT).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        Log.d("Error", error.toString());
+
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<String,String>();
+                map.put("msg_id", msg_id);
+                map.put("user_id", session.getUserID());
+                return map;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(ChatActivity.this);
+        requestQueue.add(stringRequest);
     }
 }

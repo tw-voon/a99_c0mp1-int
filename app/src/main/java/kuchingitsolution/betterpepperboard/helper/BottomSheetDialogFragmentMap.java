@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 
 public class BottomSheetDialogFragmentMap extends BottomSheetDialogFragment{
     private String title, desc, imageLink;
@@ -67,7 +68,7 @@ public class BottomSheetDialogFragmentMap extends BottomSheetDialogFragment{
             @Override
             public void onClick(View v) {
 //                Toast.makeText(getActivity(), "report id" + String.valueOf(report_id), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), DetailsComplaintActivity.class);
+                Intent intent = new Intent(getActivity(), SingleReportActivity.class);
                 intent.putExtra("report_id", String.valueOf(report_id));
                 startActivity(intent);
             }

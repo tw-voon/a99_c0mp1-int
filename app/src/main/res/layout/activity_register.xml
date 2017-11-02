@@ -1,200 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/mainParent"
-    tools:context="kuchingitsolution.betterpepperboard.auth.RegisterActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="38sp"
+            android:textColor="@color/colorBg"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:text="@string/form_no_account"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="10dp" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorBg">
+
+            <EditText
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/head_1"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:labelFor="@+id/edtUsername"
+                android:hint="@string/form_username"
+                android:inputType="text"
+                android:id="@+id/edtUsername"/>
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="0dp"
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorBg">
+
+            <EditText
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/bottom_1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
+                android:hint="@string/form_email"
+                android:id="@+id/edtEmail"
+                android:labelFor="@id/edtEmail"
+                android:inputType="textWebEmailAddress|text"/>
 
-            <RelativeLayout
-                android:layout_width="0dp"
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorBg">
+
+            <EditText
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginRight="16dp"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="16dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp">
+                android:id="@+id/edtPhone"
+                android:inputType="phone"
+                android:hint="@string/form_phone"
+                android:labelFor="@id/edtPhone"
+                android:maxLines="1"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="36dp"
-                    android:text="Better City"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/app_logo" />
+        </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/TxtIptLyt1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/app_logo"
-                    android:layout_marginTop="8dp">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/new_password_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorBg"
+            app:passwordToggleEnabled="true">
 
-                    <EditText
-                        android:id="@+id/edtUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_account_circle_black_24dp"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/form_username"
-                        android:inputType="text" />
+            <EditText
+                android:id="@+id/edtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword"
+                android:hint="@string/form_password"
+                android:labelFor="@+id/edtPassword"
+                android:singleLine="true" />
 
-                </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/TxtIptLyt5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/TxtIptLyt1"
-                    app:passwordToggleEnabled="true">
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/new_password_layout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorBg"
+            app:passwordToggleEnabled="true">
 
-                    <EditText
-                        android:id="@+id/edtEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_email_black_24dp"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/form_email"
-                        android:inputType="text|textEmailAddress"
-                        android:lines="1" />
+            <EditText
+                android:id="@+id/edtPswdAgain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:hint="@string/confirm_password"
+                android:inputType="textPassword"
+                android:labelFor="@id/edtPswdAgain"
+                android:singleLine="true" />
 
-                </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/TxtIptLyt4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/TxtIptLyt5"
-                    app:passwordToggleEnabled="true">
+        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/form_register"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_circle"
+            android:text="@string/form_register"
+            android:textColor="@color/colorWhite"
+            app:spinning_bar_width="4dp"
+            app:spinning_bar_color="#FFF"
+            app:spinning_bar_padding="6dp"
+            android:onClick="validateInfo"/>
 
-                    <EditText
-                        android:id="@+id/edtPhone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_call_black_24dp"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/form_phone"
-                        android:inputType="phone"
-                        android:lines="1" />
+        <TextView
+            android:id="@+id/txtViewRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
+            android:onClick="toLogin"
+            android:text="@string/form_have_account"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary" />
 
-                </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/TxtIptLyt2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/TxtIptLyt4"
-                    app:passwordToggleEnabled="true">
-
-                    <EditText
-                        android:id="@+id/edtPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_lock_black_24dp"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/form_password"
-                        android:inputType="textPassword"
-                        android:lines="1" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/TxtIptLyt3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/TxtIptLyt2"
-                    app:passwordToggleEnabled="true"
-                    android:layout_marginBottom="8dp">
-
-                    <EditText
-                        android:id="@+id/edtPswdAgain"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_lock_black_24dp"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/confirm_password"
-                        android:inputType="textPassword" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <Button
-                    android:id="@+id/form_login"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/TxtIptLyt3"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@color/colorGreen"
-                    android:layout_centerHorizontal="true"
-                    android:onClick="validateInfo"
-                    android:text="@string/form_register"
-                    android:textColor="@color/colorWhite" />
-
-                <TextView
-                    android:id="@+id/txtViewRegister"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/form_login"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginTop="4dp"
-                    android:onClick="toLogin"
-                    android:layout_centerHorizontal="true"
-                    android:text="@string/form_have_account"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorPrimary" />
-
-                <ProgressBar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    android:layout_below="@id/txtViewRegister"
-                    android:id="@+id/loading"
-                    android:visibility="gone"
-                    style="?android:attr/progressBarStyleHorizontal"/>
-
-            </RelativeLayout>
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

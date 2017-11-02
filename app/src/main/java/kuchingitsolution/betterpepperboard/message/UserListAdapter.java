@@ -29,9 +29,10 @@ import kuchingitsolution.betterpepperboard.R;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyViewHolder>{
 
-    List<UserListModel> userlists = new ArrayList<>();
-    Context context;
-    String ids;
+    private List<UserListModel> userlists = new ArrayList<>();
+    private Context context;
+    private String ids;
+    private int current_position;
     private onUserClickCallBack onUserClickCallBack;
 
     public UserListAdapter(Context context, List<UserListModel> userlists, onUserClickCallBack onUserClickCallBack){
@@ -49,7 +50,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
 
         final UserListModel userListModel = userlists.get(position);
         holder.profile_image.setImageResource(R.drawable.profile_sample);
@@ -75,9 +76,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
         holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-                MenuItem Edit = contextMenu.add(Menu.NONE, 1, 1, "Edit");
+                MenuItem Edit = contextMenu.add(Menu.NONE, 1, 1, "Change Group Name");
                 MenuItem Delete = contextMenu.add(Menu.NONE, 2, 2, "Delete");
                 ids = userListModel.getRoom_id();
+                current_position = position;
                 Edit.setOnMenuItemClickListener(onEditMenu);
                 Delete.setOnMenuItemClickListener(onEditMenu);
             }
@@ -92,11 +94,12 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
             switch (item.getItemId()) {
                 case 1:
                     Log.d("contextmenu", "helloe edit " +  ids);
-                    onUserClickCallBack.OnChangeName(ids);
+                    onUserClickCallBack.OnChangeName(ids, current_position);
                     break;
 
                 case 2:
                     Log.d("contextmenu", "helloe delete");
+                    onUserClickCallBack.OnDeleteChat(ids);
                     break;
             }
             return true;
@@ -141,7 +144,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
     }
 
     public interface onUserClickCallBack{
-        void OnChangeName(String id);
+        void OnChangeName(String id, int position);
         void OnDeleteChat(String id);
     }
 }

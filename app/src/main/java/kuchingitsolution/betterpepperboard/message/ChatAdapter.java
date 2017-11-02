@@ -3,7 +3,10 @@ package kuchingitsolution.betterpepperboard.message;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -22,14 +25,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder>{
 
     private List<ChatModel> chatModels = new ArrayList<>();
     private Context context;
-    private String user_id;
+    private String user_id, msg_id;
+    private int current_position;
     private int SELF = 100;
     private static String today;
+    private onUserClickCallBack onUserClickCallBack;
 
     public ChatAdapter(Context context, List<ChatModel> chatModels, String user_id){
         this.context = context;
         this.chatModels = chatModels;
         this.user_id = user_id;
+        this.onUserClickCallBack = ((onUserClickCallBack) context);
     }
 
     @Override
@@ -55,17 +61,42 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        ChatModel chatModel = chatModels.get(position);
-        ChatModel previousModel = chatModels.get(position != 0 ? position-1 : 0);
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        final ChatModel chatModel = chatModels.get(position);
 
-        if(!chatModel.getUser_id().equals(user_id) && !previousModel.getUser_id().equals(chatModel.getUser_id())){
-//            holder.profile_image.setImageResource(R.drawable.profile_sample);
+        if(getItemViewType(position) == 1 || getItemViewType(position) == 100){
+            holder.message.setText(chatModel.getMessage());
+            holder.timestamp.setText(getTimeStamp(chatModel.getTimestamp()));
+        } else {
             holder.username.setText(chatModel.getUsername());
+            holder.message.setText(chatModel.getMessage());
+            holder.timestamp.setText(getTimeStamp(chatModel.getTimestamp()));
         }
-        holder.message.setText(chatModel.getMessage());
-        holder.timestamp.setText(getTimeStamp(chatModel.getTimestamp()));
+
+        holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                MenuItem DeleteMsg = contextMenu.add(Menu.NONE, 1, 1, "Delete Message");
+                msg_id = chatModel.getMessage_id();
+                current_position = position;
+                DeleteMsg.setOnMenuItemClickListener(onEditMenu);
+            }
+        });
     }
+
+    private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+
+            switch (item.getItemId()) {
+                case 1:
+                    onUserClickCallBack.onDeleteMessage(msg_id, current_position);
+                    break;
+            }
+
+            return true;
+        }
+    };
 
     @Override
     public int getItemCount() {
@@ -84,7 +115,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder>{
             return SELF;
         else if(previousModel.getUser_id().equals(chatModel.getUser_id()) && !chatModel.getUser_id().equals(user_id))
             return 1;
-        else return 0;
+        else
+            return 0;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -112,5 +144,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder>{
             e.printStackTrace();
         }
         return timestamp;
+    }
+
+    public static interface onUserClickCallBack {
+        void onDeleteMessage(String msg_id, int current_position);
     }
 }

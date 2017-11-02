@@ -19,7 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
+import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.message.ChatActivity;
 
 public class PepperApps extends Application{
@@ -27,6 +29,7 @@ public class PepperApps extends Application{
     private static PepperApps pepperApps;
     private RequestQueue mRequestQueue;
     private Context mContext;
+    private Session session;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -37,6 +40,7 @@ public class PepperApps extends Application{
         super.onCreate();
         pepperApps = this;
         mContext = getApplicationContext();
+        session = new Session(this);
         OneSignal.startInit(this)
                 .setNotificationReceivedHandler(new ExampleNotificationReceivedHandler())
                 .setNotificationOpenedHandler(new OpenNotification())
@@ -117,12 +121,26 @@ public class PepperApps extends Application{
         public void notificationReceived(OSNotification notification) {
             JSONObject data = notification.payload.additionalData;
             String customKey;
-            Log.v("OneSignalExample", "customkey set with value: " + data.toString());
+            Log.v("OneSignalExample", "customkey set with values: " + data.toString());
 
-            customKey = data.optString("state", null);
-            if (customKey != null && customKey.equals("chat")) {
-                Log.i("OneSignalExample", "customkey set with value: " + customKey);
-                broadcast(data.toString());
+            customKey = data.optString("category", null);
+            if(customKey != null){
+                switch (customKey){
+                    case "chat":
+                        Log.i("OneSignalExample", "customkey set with value: " + customKey);
+                        session.putMessageBadge(1);
+                        broadcast(data.toString());
+                        badge_broadcast(Config.MESSAGE);
+                        break;
+                    case "notification":
+                        session.putNotiBadge(1);
+                        badge_broadcast(Config.NOTI);
+                        break;
+                    case "complaint":
+                        session.putComplaintBadge(1);
+                        badge_broadcast(Config.COMPLAINT);
+                        break;
+                }
             }
         }
     }
@@ -144,6 +162,15 @@ public class PepperApps extends Application{
         Log.d("sender", "Broadcasting message");
     }
 
+    private void badge_broadcast(String data){
+        Intent intent = new Intent("notification_received");
+        // You can also include some extra data.
+        intent.putExtra("data", data);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        Log.d("sender", "Broadcasting message");
+    }
+
+
     private class OpenNotification implements OneSignal.NotificationOpenedHandler{
 
         @Override
@@ -155,7 +182,7 @@ public class PepperApps extends Application{
             String customKey;
             String group_key = result.notification.payload.groupKey;
             Intent intent = null;
-            customKey = data.optString("state", null);
+            customKey = data.optString("category", null);
 
             if (customKey != null && customKey.equals("chat")){
                 JSONObject room_name = data.optJSONObject("message").optJSONObject("room");
@@ -163,8 +190,8 @@ public class PepperApps extends Application{
                 intent = new Intent(mContext, ChatActivity.class);
                 intent.putExtra("chat_room_id", group_key);
                 intent.putExtra("name", name);
-            } else if(customKey != null){
-                intent = new Intent(mContext, DetailsComplaintActivity.class);
+            } else if(customKey != null && (customKey.equals("notification") || customKey.equals("complaint"))){
+                intent = new Intent(mContext, SingleReportActivity.class);
                 report_id = data.optString("report_id", "null");
                 Log.d("OneSignalData", "report id : " + report_id);
                 intent.putExtra("report_id", report_id);

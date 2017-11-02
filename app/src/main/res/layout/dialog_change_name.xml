@@ -15,7 +15,18 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
         android:hint="New Chat room name" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/valid_name"
+        android:text="Please input the room name!"
+        android:textColor="@color/mt_red"
+        android:textStyle="bold"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginBottom="4dp"/>
 
 </LinearLayout>

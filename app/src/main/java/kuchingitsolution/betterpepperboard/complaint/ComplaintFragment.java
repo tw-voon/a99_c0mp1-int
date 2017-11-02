@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
@@ -105,6 +106,7 @@ public class ComplaintFragment extends Fragment{
     @Override
     public void onPause() {
         reload = true;
+        ((MainActivity2)getActivity()).removeBadgeAt(1);
         super.onPause();
     }
 

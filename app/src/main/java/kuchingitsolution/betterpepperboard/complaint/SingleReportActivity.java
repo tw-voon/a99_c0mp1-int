@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -74,13 +75,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     private RecyclerView commentlist;
     private CommentAdapter commentAdapter;
     private String action, reportLink, report_id, status_id, officer_id, officer_name, lat, lon, report_title, url, status;
-    TextView category, desc, location, title, username, no_comment, timestamp, officer_incharge, like, like_no, follow, follow_no, last_status;
+    TextView category, desc, location, title, username, no_comment, timestamp, officer_incharge, like, like_no, follow, follow_no, last_status, suggestion;
     Button btnsendComment;
     EditText edtcomment;
     ImageView pic, like_logo, follow_logo;
     Session session;
     RelativeLayout comment_section;
-    LinearLayout sendComment, last_action;
+    LinearLayout sendComment, last_action, suggestion_layer;
     LinearLayout like_region, follow_region;
     ProgressBar loading_img;
     DB_Offline db_offline;
@@ -94,6 +95,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         setContentView(R.layout.activity_single_report);
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         setting_up();
 
@@ -347,6 +349,14 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             username.setText(jsonObject.getString("username"));
             timestamp.setText(jsonObject.getString("created_at"));
             category.setText(jsonObject.getString("type_name"));
+
+            if(jsonObject.optString("suggestion", "null").equals("null")){
+                suggestion_layer.setVisibility(View.GONE);
+            } else {
+                suggestion_layer.setVisibility(View.VISIBLE);
+                suggestion.setText(jsonObject.getString("suggestion"));
+            }
+
 
             if(jsonObject.getString("officer_name").equals("NULL")){
                 officer_incharge.setText("Waiting admin assign officer");
@@ -614,6 +624,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         timestamp =  findViewById(R.id.submit_at);
         officer_incharge =  findViewById(R.id.officer_incharge);
         category = findViewById(R.id.category);
+        suggestion = findViewById(R.id.tvtSuggestion);
+        suggestion_layer = findViewById(R.id.suggestion_layout);
 
         no_comment = findViewById(R.id.no_comment);
         btnsendComment = findViewById(R.id.btn_send);
