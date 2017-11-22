@@ -18,7 +18,6 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 
 public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.MyViewHolder>{
 
@@ -47,27 +46,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.MyViewHold
             @Override
             public void onClick(View view) {
                 Toast.makeText(context, "User id: " + officerModel.getUsername(), Toast.LENGTH_SHORT).show();
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setMessage("Are you sure you want to assign " +  officerModel.getUsername() + " to handle this?");
-                alertDialogBuilder.setPositiveButton("yes",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                Intent intent = new Intent(context, DetailsComplaintActivity.class);
-                                context.startActivity(intent);
-                            }
-                        });
-
-                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = alertDialogBuilder.create();
                 holder.checkBox.setChecked(true);
-//                alertDialog.show();
             }
         });
 

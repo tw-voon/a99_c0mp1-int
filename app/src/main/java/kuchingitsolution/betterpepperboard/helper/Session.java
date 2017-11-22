@@ -38,7 +38,14 @@ public class Session {
         editor.commit();
     }
 
+    public void setCurrentPosition(String position){
+        editor.putString("report_position", position);
+        editor.commit();
+    }
+
     public String getCurrentId(){ return prefs.getString("report_id", null);}
+
+    public String getCurrentPosition(){return prefs.getString("report_position", null);}
 
     public void setKeyShowPassword(){
         editor.putBoolean(KEY_SHOW_PASSWORD, true);

@@ -8,16 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Session;
 

@@ -1,5 +1,6 @@
 package kuchingitsolution.betterpepperboard.helper;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
@@ -20,6 +21,7 @@ public class BottomSheetDialogFragmentStatus extends BottomSheetDialogFragment {
         this.imgLink = imgLink;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(final Dialog dialog, int style) {
         super.setupDialog(dialog, style);

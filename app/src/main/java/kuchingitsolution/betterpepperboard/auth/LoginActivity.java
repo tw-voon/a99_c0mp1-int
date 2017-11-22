@@ -54,6 +54,12 @@ public class LoginActivity extends AppCompatActivity {
         edtUsername = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         login = findViewById(R.id.form_login);
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateInfo();
+            }
+        });
         handler = new Handler();
 //        loading = findViewById(R.id.loading);
     }
@@ -79,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void validateInfo(View view) {
+    public void validateInfo() {
         String username = edtUsername.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
         if(username.length() != 0 && password.length() != 0){

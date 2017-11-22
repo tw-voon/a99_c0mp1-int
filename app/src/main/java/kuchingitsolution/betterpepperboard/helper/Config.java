@@ -51,4 +51,7 @@ public class Config {
     public static int ONLINE = 1;
     public static int OFFLINE = 2;
 
+    public static int ENABLE = 1;
+    public static int DISABLE = 2;
+
 }

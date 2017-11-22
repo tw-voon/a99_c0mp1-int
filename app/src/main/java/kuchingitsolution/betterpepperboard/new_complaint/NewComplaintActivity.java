@@ -24,12 +24,14 @@ import android.support.v7.appcompat.BuildConfig;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
+import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogUpload;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.ImageCompressionUtils;
 import kuchingitsolution.betterpepperboard.helper.RealPathUtils;
@@ -71,22 +74,19 @@ import static kuchingitsolution.betterpepperboard.R.id.loading;
 
 public class NewComplaintActivity extends AppCompatActivity {
 
-    TextView category, location;
-    EditText edttitle, edtdesc, edtSuggestion;
-    ImageView image_preview, locationPreview;
-    String selectedLatitute, selectedLongitute, userLocation, userChoosenTask = "", userID, categoryID = null, imagePath;
-    String title, desc, suggestion;
-    final static int PLACE_PICKER_CODE = 1000, REQUEST_CAMERA = 1888, PICK_IMAGE_REQUEST = 2;
-    Bitmap selectedImage;
+    private TextView category, location;
+    private EditText edttitle, edtdesc, edtSuggestion;
+    private ImageView image_preview, locationPreview;
+    private String selectedLatitute, selectedLongitute, userLocation, categoryID = null, imagePath, userChoosenTask;
+    private String title, desc, suggestion;
+    final static int PLACE_PICKER_CODE = 1000, REQUEST_CAMERA = 1888, PICK_IMAGE_REQUEST = 2, ENABLE = 1, DISABLE = 2;
+    private Bitmap selectedImage;
     private OkHttpClient client;
-    ProgressBar loading;
-    Session session;
-    File imgFile;
-    Uri tempImgFile;
-    ImageCompressionUtils imageCompressionUtils;
-    private static final String IMAGE_DIRECTORY = "/Better City";
-
-    private static final String CATEGORY = "category", CHOSEN_IMAGE = "chosen_image", TITLE = "title", DESC = "desc", IMAGE = "image", LOCATION = "location", CHOSEN_TASK = "chosen_task";
+    private Session session;
+    private File imgFile;
+    private Uri tempImgFile;
+    private ImageCompressionUtils imageCompressionUtils;
+    private boolean can_back = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,11 +105,10 @@ public class NewComplaintActivity extends AppCompatActivity {
         image_preview =  findViewById(R.id.image_preview);
         locationPreview =  findViewById(R.id.location_preview);
         OkHttpClient.Builder b = new OkHttpClient.Builder();
-        b.readTimeout(200, TimeUnit.SECONDS);
-        b.writeTimeout(300, TimeUnit.SECONDS);
+        b.readTimeout(300, TimeUnit.SECONDS);
+        b.writeTimeout(400, TimeUnit.SECONDS);
         b.retryOnConnectionFailure(false); // Don't retry the connection (prevent twice entry)
         client = b.build();
-        loading = findViewById(R.id.uploading);
         session = new Session(this);
         imageCompressionUtils = new ImageCompressionUtils(this);
 
@@ -118,8 +117,6 @@ public class NewComplaintActivity extends AppCompatActivity {
             tempImgFile = savedInstanceState.getParcelable("imgFile");
             imagePath = savedInstanceState.getString("imgPath");
 
-            Log.d("resume", "activityyyyyyyyyyyyyyyyyyy " + imagePath + " !!");
-
             if(imagePath != null){
                 imgFile = new File(imagePath);
                 selectedImage = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -127,14 +124,40 @@ public class NewComplaintActivity extends AppCompatActivity {
                 image_preview.setVisibility(View.VISIBLE);
             }
 
-            Log.d("resume", "activityyyyyyyyyyyyyyyyyyy " + String.valueOf(tempImgFile) + " !!");
-
-            Log.d("resume", "activityyyyyyyyyyyyyyyyyyy");
-
         }
+
+        setup_upload_dialog();
 
         Log.d("title", "enter create");
     }
+
+    public void setup_upload_dialog() {
+
+    }
+
+    private void disable_interaction(int status){
+
+        switch (status){
+            case 1:
+                edttitle.setEnabled(true);
+                edtdesc.setEnabled(true);
+                edtSuggestion.setEnabled(true);
+                image_preview.setEnabled(true);
+                category.setEnabled(true);
+                location.setEnabled(true);
+                break;
+            case 2:
+                edttitle.setEnabled(false);
+                edtdesc.setEnabled(false);
+                edtSuggestion.setEnabled(false);
+                image_preview.setEnabled(false);
+                category.setEnabled(false);
+                location.setEnabled(false);
+                break;
+        }
+
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -164,9 +187,10 @@ public class NewComplaintActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 boolean result= Utility.checkPermission(NewComplaintActivity.this);
+                boolean write_external = Utility.check_write_external_permission(NewComplaintActivity.this);
                 if (items[item].equals("Take Photo")) {
                     userChoosenTask="Take Photo";
-                    if(result)
+                    if(result && write_external)
                         cameraIntent();
                 } else if (items[item].equals("Choose from Library")) {
                     userChoosenTask="Choose from Library";
@@ -208,8 +232,6 @@ public class NewComplaintActivity extends AppCompatActivity {
         return imageBytes;
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -223,40 +245,11 @@ public class NewComplaintActivity extends AppCompatActivity {
     }
 
     private void cameraIntent(){
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-//
-//        String imageFileName = timeStamp + ".jpg";
-//        File storageDir = Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES + IMAGE_DIRECTORY);
-//        imagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
-//
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        tempImgFile = Uri.fromFile(storageDir);
-//        Log.d("resume", String.valueOf(tempImgFile));
-//        File file = createImageFile();
-//
-//        if(Build.VERSION.SDK_INT  < 20)
-//            outputFileUri = Uri.fromFile(file);
-//        else
-//            outputFileUri = FileProvider.getUriForFile(NewComplaintActivity.this,
-//                "kuchingitsolution.betterpepperboard.provider", file);
-//
-//        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
-//            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//        } else {
-//            List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-//            for (ResolveInfo resolveInfo : resInfoList) {
-//                String packageName = resolveInfo.activityInfo.packageName;
-//                grantUriPermission(packageName, outputFileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            }
-//        }
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-//        startActivityForResult(intent, REQUEST_CAMERA);
 
         Intent intent;
         if(Build.VERSION.SDK_INT  < 24) {
             intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            tempImgFile = Uri.fromFile(getOutputMediaFile());
+            tempImgFile = Uri.fromFile(createImageFile());
         } else {
             intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             tempImgFile = FileProvider.getUriForFile(NewComplaintActivity.this, "kuchingitsolution.betterpepperboard.provider", getOutputMediaFile());
@@ -265,37 +258,6 @@ public class NewComplaintActivity extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImgFile);
         startActivityForResult(intent, REQUEST_CAMERA);
 
-//        File file = createImageFile();
-//        if(file != null){
-//            tempImgFile = Uri.fromFile(createImageFile());
-//            intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImgFile);
-//            startActivityForResult(intent, REQUEST_CAMERA);
-//        }
-
-    }
-
-    private File createImageFile() {
-
-        long timeStamp = System.currentTimeMillis();
-        String imageFileName = "NAME_" + timeStamp;
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + IMAGE_DIRECTORY);
-
-        if(!storageDir.exists())
-            storageDir.mkdirs();
-
-        File images = null;
-        try {
-            images = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
-                    storageDir      /* directory */
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return images;
     }
 
     @Override
@@ -317,9 +279,6 @@ public class NewComplaintActivity extends AppCompatActivity {
         }
 
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
-//                onCaptureImageResult(data);
-            image_preview.setImageURI(tempImgFile);
-            image_preview.setVisibility(View.VISIBLE);
             imagePath = tempImgFile.getPath();
             Log.d("TAG", "File Saved::--->" + tempImgFile.getPath());
             if(Build.VERSION.SDK_INT> 23) {
@@ -334,6 +293,9 @@ public class NewComplaintActivity extends AppCompatActivity {
             imagePath = imageCompressionUtils.saveImage(selectedImage, this); /* change the image path to modified image */
             Log.d("TAG", "File Saved::--->" + imagePath);
             imgFile = new File(imagePath);
+            Bitmap preview = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            image_preview.setImageBitmap(Bitmap.createScaledBitmap(preview, preview.getWidth() / 2 , preview.getHeight() / 2, false));
+            image_preview.setVisibility(View.VISIBLE);
         }
 
         Log.d("request:", requestCode + "result code: " + resultCode);
@@ -380,38 +342,14 @@ public class NewComplaintActivity extends AppCompatActivity {
 
     }
 
-    private void onCaptureImageResult(Intent data) {
-
-        if(data.getExtras() != null){
-            selectedImage = (Bitmap) data.getExtras().get("data");
-            image_preview.setImageBitmap(selectedImage);
-            image_preview.setVisibility(View.VISIBLE);
-            imagePath = imageCompressionUtils.saveImage(selectedImage, this);
-        }
-//        imgFile = new File(imagePath);
-//        if(data != null) {
-//            selectedImage = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//            tempImgFile = data.getData();
-//            try {
-//                selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), tempImgFile);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            selectedImage = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//            imagePath = imageCompressionUtils.saveImage(selectedImage, this);
-//            image_preview.setImageBitmap(selectedImage);
-//            image_preview.setVisibility(View.VISIBLE);
-//            imgFile = new File(imagePath);
-//            selectedImage = getResizedBitmap(selectedImage, selectedImage.getWidth() / 2, selectedImage.getHeight() / 2);
-//        }
-    }
-
     private static File getOutputMediaFile(){
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "CameraDemo");
+                Environment.DIRECTORY_PICTURES), "Better City");
 
         if (!mediaStorageDir.exists()){
-            if (!mediaStorageDir.mkdirs()){
+            boolean is_dir_make = mediaStorageDir.mkdirs();
+            if (!is_dir_make){
+                Log.d("error", "null thing");
                 return null;
             }
         }
@@ -419,6 +357,30 @@ public class NewComplaintActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator +
                 "IMG_"+ timeStamp + ".jpg");
+    }
+
+    private File createImageFile() {
+
+        long timeStamp = System.currentTimeMillis();
+        String imageFileName = "NAME_" + timeStamp;
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES + "/BetteCity");
+
+        if(!storageDir.exists())
+            storageDir.mkdirs();
+
+        File images = null;
+        try {
+            images = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return images;
     }
 
     public void selectLocation(View view) {
@@ -442,42 +404,50 @@ public class NewComplaintActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if(can_back)
+            super.onBackPressed();
+        else
+            Toast.makeText(this, "Uploading your complaint. Please wait until it is complete", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d("select", item.getItemId() + " ");
         switch (item.getItemId()) {
             // action with ID action_settings was selected
             case R.id.submit:
-                Toast.makeText(this, "Submit selected", Toast.LENGTH_SHORT)
-                        .show();
-                validate_details();
+                if(can_back)
+                    validate_details();
+                else
+                    Toast.makeText(this, "Uploading this complaint.. Please wait..", Toast.LENGTH_SHORT).show();
                 break;
             default:
-                super.onBackPressed();
+                if(can_back)
+                    super.onBackPressed();
+                else
+                    Toast.makeText(this, "Uploading this complaint.. Please wait..", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
     }
 
-    private Boolean validate_details(){
+    private void validate_details(){
 
         title = edttitle.getText().toString().trim();
         desc = edtdesc.getText().toString().trim();
         suggestion = edtSuggestion.getText().toString().trim();
 
-        boolean status = true;
-
         if(TextUtils.isEmpty(title) || TextUtils.isEmpty(desc) || selectedImage == null || userLocation.equals("") || categoryID == null){
-            status = false;
             showMessage("Make sure you have input all the field ");
         } else{
-//            imagePath = getStringImage(selectedImage);
             Log.d("imagepath", suggestion + " ");
             if(TextUtils.isEmpty(suggestion))
                 suggestion = "null";
+            can_back = false;
+            disable_interaction(DISABLE);
             uploadImage(getStringImage(selectedImage));
-            loading.setVisibility(View.VISIBLE);
         }
-            return status;
     }
 
     private void showMessage(String message){
@@ -487,6 +457,7 @@ public class NewComplaintActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                can_back = true;
             }
         });
         alertDialogBuilder.show();
@@ -495,6 +466,31 @@ public class NewComplaintActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     private void uploadImage(final byte[] image){
         new AsyncTask<String, Integer, String>(){
+
+            private AlertDialog.Builder alert;
+            private AlertDialog ad;
+
+            private ProgressBar dialog_upload;
+            private TextView dialog_upload_status;
+            private ImageView status_done;
+            private AlertDialog upload_dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                alert = new AlertDialog.Builder(NewComplaintActivity.this);
+                LayoutInflater inflater = NewComplaintActivity.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.bottom_sheet_upload, null);
+
+                dialog_upload = dialogView.findViewById(R.id.uploading);
+                dialog_upload_status = dialogView.findViewById(R.id.uploading_progress);
+                status_done = dialogView.findViewById(R.id.status_done);
+
+                alert.setView(dialogView);
+                alert.setCancelable(false);
+                alert.create();
+                ad = alert.show();
+            }
 
             @Override
             protected String doInBackground(String... strings) {
@@ -512,7 +508,7 @@ public class NewComplaintActivity extends AppCompatActivity {
 
                         float percentage = 100f * bytesWritten / contentLength;
                         if (percentage >= 0) {
-                            loading.setProgress((int)percentage);
+                            publishProgress((int)percentage);
                             Log.d("upload", String.valueOf(percentage));
                         }
                     }
@@ -527,16 +523,27 @@ public class NewComplaintActivity extends AppCompatActivity {
             }
 
             @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                dialog_upload.setProgress(values[0]);
+                dialog_upload_status.setText(String.valueOf(values[0]));
+                if(values[0] == 100) {
+                    status_done.setVisibility(View.VISIBLE);
+                    dialog_upload.setIndeterminate(true);
+                }
+            }
+
+            @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-//                Log.d("Result", s);
-                loading.setVisibility(View.GONE);
                 if(s.equals("Success")) {
                     Toast.makeText(NewComplaintActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(NewComplaintActivity.this, MainActivity2.class);
                     startActivity(intent);
                     finish();
-                } else showMessage(s);
+                } else showMessage("Error while uploading complaint, please try again");
+                disable_interaction(ENABLE);
+                ad.dismiss();
             }
         }.execute();
     }

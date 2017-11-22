@@ -14,11 +14,7 @@ import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.Session;

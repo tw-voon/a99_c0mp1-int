@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/mt_gray5"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="kuchingitsolution.betterpepperboard.complaint.SingleReportActivity"
@@ -12,7 +12,42 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:paddingTop="@dimen/text_margin"
+            android:paddingStart="@dimen/text_margin"
+            android:paddingEnd="@dimen/text_margin">
+
+            <TextView
+                android:id="@+id/submit_at"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/submit_by"
+                android:drawableStart="@drawable/ic_access_time_black_24dp"
+                android:drawablePadding="8dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:textColor="#212121" />
+
+            <TextView
+                android:id="@+id/submit_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_account_circle_black_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:textColor="#212121"/>
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,58 +57,62 @@
             android:paddingBottom="8dp">
 
             <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#212121"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="@dimen/text_margin"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:id="@+id/category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="30dp"
+                android:background="@drawable/bg_circle"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="@dimen/text_margin"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorWhite"/>
+
+            <TextView
                 android:id="@+id/desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/text_margin"
+                android:textColor="#212121"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginEnd="@dimen/text_margin" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="@dimen/text_margin"
-                android:layout_marginEnd="@dimen/text_margin"
-                android:contentDescription="divider"
-                android:background="@color/mt_gray4"/>
-
             <TextView
                 android:id="@+id/location_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_location_on_black_24dp"
-                android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-                android:drawablePadding="@dimen/text_margin"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
+                android:drawablePadding="8dp"
                 android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                android:textColor="#212121"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginEnd="@dimen/text_margin"/>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginStart="@dimen/text_margin"
-                android:layout_marginEnd="@dimen/text_margin"
-                android:layout_marginBottom="8dp"
-                android:contentDescription="divider"
-                android:background="@color/mt_gray4"/>
-
-            <ImageView
-                android:id="@+id/complaint_image"
+            <TextView
+                android:id="@+id/officer_incharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_person_pin_black_24dp"
+                android:drawablePadding="8dp"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginEnd="@dimen/text_margin"
-                android:adjustViewBounds="true"
-                android:visibility="gone"
-                android:scaleType="fitXY" />
-
-            <ProgressBar
-                android:id="@+id/loading_img"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_marginTop="5dp"
+                android:textColor="#212121"/>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -220,7 +259,6 @@
                 android:paddingEnd="10dp"
                 android:gravity="center_vertical"
                 android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-                android:text="@string/dummy_title"
                 android:id="@+id/last_status"/>
 
         </LinearLayout>

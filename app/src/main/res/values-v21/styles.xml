@@ -26,4 +26,8 @@
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:colorEdgeEffect">@color/mt_gray4</item>
     </style>
+    <style name="LinearProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorBg</item>
+        <item name="android:progressBackgroundTint">@color/colorGrey</item>
+    </style>
 </resources>

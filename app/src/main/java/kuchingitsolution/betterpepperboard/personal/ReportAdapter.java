@@ -7,22 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.helper.Utility;

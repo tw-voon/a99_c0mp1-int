@@ -81,7 +81,6 @@ public class ResolveFragment extends Fragment{
             };
             complaintlist.addOnScrollListener(endlessRecyclerViewScrollListener);
             complaintlist.setNestedScrollingEnabled(false);
-            complaintlist.setItemAnimator(new SlideUpAnimator());
 
         }
     }
@@ -89,7 +88,7 @@ public class ResolveFragment extends Fragment{
     private void initiatedata(int page){
 
         final String result = db_offline.getComplaint(1, page);
-        Log.d("result2", result);
+//        Log.d("result2_page", result);
 
         if(result.equals("[]")) {
             loading.setVisibility(View.GONE);
@@ -98,7 +97,7 @@ public class ResolveFragment extends Fragment{
             return;
         }
 
-        Log.d("item_count", complaintAdapter.getItemCount() + "    " + page);
+        Log.d("item_count_page", complaintAdapter.getItemCount() + "    " + page);
         if(complaintAdapter.getItemCount() == db_offline.get_total(1))
             return;
 

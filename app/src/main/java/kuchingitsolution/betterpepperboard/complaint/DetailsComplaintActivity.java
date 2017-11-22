@@ -38,9 +38,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -247,7 +251,7 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                     .skipMemoryCache(false)
                     .into(pic);
             reportLink = jsonObject.getString("link");
-            timestamp.setText(jsonObject.getString("created_at"));
+            timestamp.setText(get_time(jsonObject.getString("created_at")));
             String locate = String.format("at - %s", jsonObject.getString("location_name"));
             location.setText(locate);
             status_id = jsonObject.getString("status_id");
@@ -378,6 +382,25 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                 startActivity(intent);
             }
         });
+    }
+
+    private String get_time(String time){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+                "EEE, d MMM yyyy HH:mm", Locale.getDefault());
+
+        try {
+            Date date = dateFormat.parse(time);
+            return String.valueOf(dateFormat2.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return "time parse error";
+
     }
 
     private void setResponse(int affect, int support){
@@ -651,11 +674,6 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
                  status_id = "1";
              }
          }
-
-//         if(requestCode == 1003 && resultCode == RESULT_OK){
-//             report_id = data.getStringExtra("report_id");
-//             Log.d("report_id", "  id : " + report_id);
-//         }
     }
 
     @Override
@@ -671,16 +689,12 @@ public class DetailsComplaintActivity extends AppCompatActivity implements Botto
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        Intent intent = new Intent (SinglePost.this, NewsActivity.class);
-//        startActivity(intent);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d("view_order", "onresume");
-//        initiatedata(report_id);
-//        Log.d("report_id", " report: " + report_id);
     }
 
     @Override

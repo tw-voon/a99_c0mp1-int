@@ -48,9 +48,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
@@ -347,7 +351,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
             title.setText(report_title);
             username.setText(jsonObject.getString("username"));
-            timestamp.setText(jsonObject.getString("created_at"));
+            timestamp.setText(get_time(jsonObject.getString("created_at")));
             category.setText(jsonObject.getString("type_name"));
 
             if(jsonObject.optString("suggestion", "null").equals("null")){
@@ -380,7 +384,6 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             Log.d("linkss", "success");
-                            loading_img.setVisibility(View.GONE);
                             return false;
                         }
                     })
@@ -518,6 +521,25 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                 startActivity(intent);
             }
         });
+    }
+
+    private String get_time(String time){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat(
+                "EEE, d MMM yyyy HH:mm", Locale.getDefault());
+
+        try {
+            Date date = dateFormat.parse(time);
+            return String.valueOf(dateFormat2.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return "time parse error";
+
     }
 
     private void setResponse(int affect, int support){

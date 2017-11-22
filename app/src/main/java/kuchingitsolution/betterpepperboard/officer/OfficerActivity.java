@@ -22,10 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,8 +36,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -45,10 +43,11 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.ImageCompressionUtils;
 import kuchingitsolution.betterpepperboard.helper.Utility;
@@ -60,7 +59,7 @@ import okhttp3.OkHttpClient;
 
 public class OfficerActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener{
 
-    EditText edtReason, edtAction;
+    EditText edtAction;
     ImageView imgActionImage, closeImage;
     RadioGroup status_action;
     Button add_image;
@@ -69,11 +68,11 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
     Bitmap bitmap;
     ArrayList<String> statusData;
     File imgFile;
-    private String image, report_id, action_taken, status_id, userChoosenTask, imagePath;
-    ProgressDialog loading;
+    private String report_id, action_taken, status_id, userChoosenTask, imagePath;
     private OkHttpClient client;
     private RelativeLayout relativeLayout;
     ImageCompressionUtils imageCompressionUtils;
+    private Uri tempImgFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,19 +88,16 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
         closeImage = findViewById(R.id.cancel_image);
         submit = findViewById(R.id.submit);
         status_action = findViewById(R.id.status);
-        loading = new ProgressDialog(this);
-        loading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 
         OkHttpClient.Builder b = new OkHttpClient.Builder();
-        b.readTimeout(200, TimeUnit.SECONDS);
-        b.writeTimeout(300, TimeUnit.SECONDS);
+        b.readTimeout(300, TimeUnit.SECONDS);
+        b.writeTimeout(400, TimeUnit.SECONDS);
         b.retryOnConnectionFailure(true);
         client = b.build();
         report_id = getIntent().getStringExtra("report_id");
         imgActionImage = findViewById(R.id.ivImg);
         relativeLayout = findViewById(R.id.image);
         imageCompressionUtils = new ImageCompressionUtils(this);
-        image = null;
         status_id = "2";
 
         add_image.setOnClickListener(new View.OnClickListener() {
@@ -159,7 +155,6 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
                 if(bitmap != null) {
                     bitmap.recycle();
                     relativeLayout.setVisibility(View.GONE);
-                    image = null;
                 }
             }
         });
@@ -168,7 +163,6 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
             @Override
             public void onClick(View view) {
                 action_taken = edtAction.getText().toString().trim();
-                loading.show();
                 uploadImage();
             }
         });
@@ -176,22 +170,59 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
 
     private void cameraIntent(){
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = timeStamp + ".jpg";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        imagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
-        File file = new File(imagePath);
-        Uri outputFileUri;
-        if(Build.VERSION.SDK_INT  < 20)
-            outputFileUri = Uri.fromFile(file);
-        else
-            outputFileUri = FileProvider.getUriForFile(OfficerActivity.this,
-                "kuchingitsolution.betterpepperboard.provider", file);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+        Intent intent;
+        if(Build.VERSION.SDK_INT  < 24) {
+            intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            tempImgFile = Uri.fromFile(createImageFile());
+        } else {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            tempImgFile = FileProvider.getUriForFile(OfficerActivity.this, "kuchingitsolution.betterpepperboard.provider", getOutputMediaFile());
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImgFile);
         startActivityForResult(intent, 1888);
 
+    }
+
+    private static File getOutputMediaFile(){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Better City");
+
+        if (!mediaStorageDir.exists()){
+            boolean is_dir_make = mediaStorageDir.mkdirs();
+            if (!is_dir_make){
+                Log.d("error", "null thing");
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
+    }
+
+    private File createImageFile() {
+
+        long timeStamp = System.currentTimeMillis();
+        String imageFileName = "NAME_" + timeStamp;
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES + "/BetteCity");
+
+        if(!storageDir.exists())
+            storageDir.mkdirs();
+
+        File images = null;
+        try {
+            images = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return images;
     }
 
     private void galleryIntent(){
@@ -224,7 +255,6 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
                 bitmap = getResizedBitmap(bitmap, bitmap.getWidth() / 5, bitmap.getHeight() / 5);
                 imgActionImage.setImageBitmap(bitmap);
                 relativeLayout.setVisibility(View.VISIBLE);
-                image = getStringImage(bitmap);
             } catch (IOException e) {
                 Log.d("bitmapE", String.valueOf(bitmap));
                 e.printStackTrace();
@@ -252,15 +282,24 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
     }
 
     private void onCaptureImageResult(Intent data) {
-        imgFile = new  File(imagePath);
-        if(imgFile.exists()) {
-            bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            bitmap = getResizedBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
-            imgActionImage.setImageBitmap(bitmap);
-            relativeLayout.setVisibility(View.VISIBLE);
-            imgActionImage.setVisibility(View.VISIBLE);
-            image = getStringImage(bitmap);
-        }  else Log.d("result", "no exists");
+        imagePath = tempImgFile.getPath();
+        Log.d("TAG", "File Saved::--->" + tempImgFile.getPath());
+        if(Build.VERSION.SDK_INT> 23) {
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), tempImgFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+            bitmap = BitmapFactory.decodeFile(imagePath);
+        imagePath = imageCompressionUtils.saveImage(bitmap, this); /* change the image path to modified image */
+        Log.d("TAG", "File Saved::--->" + imagePath);
+        imgFile = new File(imagePath);
+        Bitmap preview = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        imgActionImage.setImageBitmap(Bitmap.createScaledBitmap(preview, preview.getWidth() / 2 , preview.getHeight() / 2, false));
+        relativeLayout.setVisibility(View.VISIBLE);
+        imgActionImage.setVisibility(View.VISIBLE);
     }
 
     private Bitmap getResizedBitmap(Bitmap bitmap, int newWidth, int newHeight){
@@ -303,16 +342,42 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
         return super.onOptionsItemSelected(menuItem);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void uploadImage() {
-//        loading.setVisibility(View.VISIBLE);
 
         new AsyncTask<String, Integer, String>() {
+
+            private AlertDialog.Builder alert;
+            private AlertDialog ad;
+
+            private ProgressBar dialog_upload;
+            private TextView dialog_upload_status;
+            private ImageView status_done;
+            private AlertDialog upload_dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                alert = new AlertDialog.Builder(OfficerActivity.this);
+                LayoutInflater inflater = OfficerActivity.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.bottom_sheet_upload, null);
+
+                dialog_upload = dialogView.findViewById(R.id.uploading);
+                dialog_upload_status = dialogView.findViewById(R.id.uploading_progress);
+                status_done = dialogView.findViewById(R.id.status_done);
+
+                alert.setView(dialogView);
+                alert.setCancelable(false);
+                alert.create();
+                ad = alert.show();
+            }
+
             @Override
             protected String doInBackground(String... strings) {
 
                 MultipartBody body = null;
 
-                if(image != null)
+                if(imgFile != null)
                     body = RequestBuilder.updateAction(report_id, imgFile, action_taken, status_id);
                 else
                     body = RequestBuilder.update_action_no_image(report_id, action_taken, status_id);
@@ -323,7 +388,7 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
 
                         float percentage = 100f * bytesWritten / contentLength;
                         if (percentage >= 0) {
-                            loading.setProgress((int) percentage);
+                            publishProgress((int)percentage);
                         }
                     }
                 });
@@ -337,33 +402,33 @@ public class OfficerActivity extends AppCompatActivity implements Spinner.OnItem
             }
 
             @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                dialog_upload.setProgress(values[0]);
+                dialog_upload_status.setText(String.valueOf(values[0]));
+                if(values[0] == 100) {
+                    status_done.setVisibility(View.VISIBLE);
+                    dialog_upload.setIndeterminate(true);
+                }
+            }
+
+            @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 Log.d("Result", s + " ");
 //                showMessage(s);
-                loading.dismiss();
                 if(s != null) {
                     if (s.equals("success")) {
-                        Toast.makeText(OfficerActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(OfficerActivity.this, DetailsComplaintActivity.class);
+                        Intent intent = new Intent(OfficerActivity.this, SingleReportActivity.class);
                         intent.putExtra("action_taken", action_taken);
                         intent.putExtra("status_id", status_id);
                         setResult(RESULT_OK, intent);
                         finish();
                     }
-                } else Toast.makeText(OfficerActivity.this, "Upload fail", Toast.LENGTH_SHORT).show();
+                } else showMessage("Error while updating action, please try again");
+                ad.dismiss();
             }
         }.execute();
-    }
-
-    private String getStringImage(Bitmap bmp){
-        Log.d("bmp----------------", bmp.toString() + "");
-        String encodedImage;
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, output);
-        byte[] imageBytes = output.toByteArray();
-        encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
     }
 
     private void showMessage(String message){

@@ -42,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Session session;
     private CircularProgressButton register;
     private Handler handler;
+    private boolean can_back = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,12 @@ public class RegisterActivity extends AppCompatActivity {
                 | InputType.TYPE_CLASS_PHONE);
         session = new Session(this);
         register = findViewById(R.id.form_register);
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateInfo();
+            }
+        });
         handler = new Handler();
     }
 
@@ -81,10 +88,9 @@ public class RegisterActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void validateInfo(View view) {
+    public void validateInfo() {
 
         username = edtTxtname.getText().toString();
-
         pswd = password.getText().toString();
         pswd_again = passwordAgain.getText().toString();
         email = edtEmail.getText().toString().trim();
@@ -98,6 +104,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(pswd.equals(pswd_again)){
             register.startAnimation();
+            disable_interaction(Config.DISABLE);
+            can_back = false;
             register();
         } else
             Toast.makeText(RegisterActivity.this, "Please make sure the password is same.", Toast.LENGTH_SHORT).show();
@@ -116,6 +124,8 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         button_revert();
+                        disable_interaction(Config.ENABLE);
+                        can_back = true;
                         Toast.makeText(RegisterActivity.this, "Line109: " + error.toString() + error.getCause(),Toast.LENGTH_LONG ).show();
                     }
                 }){
@@ -152,23 +162,51 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (jObject.getString("status").equals("success")) {
                 JSONObject dataObject = new JSONObject(jObject.getString("data"));
+                register.doneLoadingAnimation(R.color.colorBg, BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_48dp));
                 session.setLoggedin(true);
                 session.putData(dataObject.getString("id"), dataObject.getString("name"), dataObject.getString("avatar_link"), dataObject.getString("role_id"));
                 session.putUserAvatar(dataObject.getString("avatar_link"));
                 handler.postDelayed(r, 1000);
-            } else
+            } else {
                 Toast.makeText(RegisterActivity.this, jObject.getString("data"), Toast.LENGTH_SHORT).show();
+                disable_interaction(Config.ENABLE);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
             showMessage(result);
             button_revert();
+            disable_interaction(Config.ENABLE);
+        }
+
+        can_back = true;
+    }
+
+    private void disable_interaction(int status){
+        switch (status){
+            case 1:
+                edtTxtname.setEnabled(true);
+                edtEmail.setEnabled(true);
+                edtPhone.setEnabled(true);
+                password.setEnabled(true);
+                passwordAgain.setEnabled(true);
+                break;
+            case 2:
+                edtTxtname.setEnabled(false);
+                edtEmail.setEnabled(false);
+                edtPhone.setEnabled(false);
+                password.setEnabled(false);
+                passwordAgain.setEnabled(false);
+                break;
         }
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if(can_back)
+            super.onBackPressed();
+        else
+            Toast.makeText(RegisterActivity.this, "Registration is running. Please wait...", Toast.LENGTH_SHORT).show();
     }
 
     @Override

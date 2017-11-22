@@ -52,6 +52,7 @@ public class MainActivity2 extends AppCompatActivity {
     BottomNavigationViewEx navigation;
     QBadgeView notification, message, complaint;
     FragmentManager fragmentManager;
+    private String user_roles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,45 +60,72 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setShowHideAnimationEnabled(false);
-        }
 
         navigation = findViewById(R.id.navigation);
+        session = new Session(this);
+        user_roles = session.getPosition();
+
+        if(user_roles.equals("3")) /* temporary hide the message features from normal users*/
+            hide_message();
+
         navigation.enableItemShiftingMode(false);
         navigation.enableShiftingMode(false);
         navigation.enableAnimation(false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         content = findViewById(R.id.contents);
         db_offline = new DB_Offline(this);
-        session = new Session(this);
         startService(new Intent(MainActivity2.this, onesignal_service.class));
         notification = new QBadgeView(this);
         message = new QBadgeView(this);
         complaint = new QBadgeView(this);
+
         pushFragment(new HomeFragment(), R.string.title_home);
+
+        /*
+        * i) verify user type
+        * ii) if user is normal user then disable the message function
+        * iii)
+        * */
+    }
+
+    private void hide_message(){
+
+        navigation.getMenu().removeItem(R.id.navigation_message);
+
     }
 
     public void addBadgeAt(int position, int number) {
 
-        if(position == 3){
-//            if(notification.getVisibility() == View.INVISIBLE)
-//                notification.setVisibility(View.VISIBLE);
-            notification.setGravityOffset(8, 3, true)
-                    .setBadgeNumber(number)
-                    .bindTarget(navigation.getBottomNavigationItemView(position));
-        } else if(position == 2){
-//            if(message.getVisibility() == View.INVISIBLE)
-//                message.setVisibility(View.VISIBLE);
-            message.setGravityOffset(8, 3, true)
-                    .setBadgeNumber(number)
-                    .bindTarget(navigation.getBottomNavigationItemView(position));
-        } else if(position == 1){
-            complaint.setGravityOffset(8, 3, true)
-                    .setBadgeNumber(number)
-                    .bindTarget(navigation.getBottomNavigationItemView(position));
+        if(user_roles.equals("3")){
+
+            if(position == 2 || position == 3){
+                notification.setGravityOffset(8, 3, true)
+                        .setBadgeNumber(number)
+                        .bindTarget(navigation.getBottomNavigationItemView(2));
+            } else if(position == 1){
+                complaint.setGravityOffset(8, 3, true)
+                        .setBadgeNumber(number)
+                        .bindTarget(navigation.getBottomNavigationItemView(position));
+            }
+
+        } else {
+
+            if(position == 3){
+                notification.setGravityOffset(8, 3, true)
+                        .setBadgeNumber(number)
+                        .bindTarget(navigation.getBottomNavigationItemView(position));
+            } else if(position == 2){
+                message.setGravityOffset(8, 3, true)
+                        .setBadgeNumber(number)
+                        .bindTarget(navigation.getBottomNavigationItemView(position));
+            } else if(position == 1){
+                complaint.setGravityOffset(8, 3, true)
+                        .setBadgeNumber(number)
+                        .bindTarget(navigation.getBottomNavigationItemView(position));
+            }
+
         }
-        Log.d("BadgeView", String.valueOf(number));
+        Log.d("BadgeView", "Position: " + String.valueOf(position) + " -- Number: " + String.valueOf(number));
 
     }
 
@@ -124,15 +152,23 @@ public class MainActivity2 extends AppCompatActivity {
 
     public void removeBadgeAt(int position){
 
-        if(position == 3){
-            notification.setBadgeNumber(0);
-//            notification.hide(true);
-        } else if(position == 2){
-            message.setBadgeNumber(0);
-            message.hide(true);
-        } else if(position == 1){
-            complaint.setBadgeNumber(0);
-            complaint.hide(true);
+        switch (user_roles){
+            case "3":
+                if(position == 2){
+                    notification.setBadgeNumber(0);
+                } else if(position == 1){
+                    complaint.setBadgeNumber(0);
+                }
+                break;
+            default:
+                if(position == 3){
+                    notification.setBadgeNumber(0);
+                } else if(position == 2){
+                    message.setBadgeNumber(0);
+                } else if(position == 1){
+                    complaint.setBadgeNumber(0);
+                }
+                break;
         }
 
     }
@@ -142,7 +178,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.activity_news);
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     pushFragment(new HomeFragment(), R.string.title_home);
@@ -154,8 +189,13 @@ public class MainActivity2 extends AppCompatActivity {
                     return true;
                 case R.id.navigation_notifications:
                     pushFragment(new NotificationFragment(), R.string.title_notifications);
-                    removeBadgeAt(3);
-                    session.resetBadge(3);
+                    if(user_roles.equals("3")){
+                        session.resetBadge(3);
+                        removeBadgeAt(2);
+                    } else {
+                        session.resetBadge(3);
+                        removeBadgeAt(3);
+                    }
                     return true;
                 case R.id.navigation_message:
                     pushFragment(new MessageFragment(), R.string.action_chat);
@@ -223,6 +263,7 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     private void setup_tab(){
+
         int notibadge = session.getNotiBadge();
         int msgBadge = session.getMessageBadge();
         int complaintBadge = session.getComplaintBadge();

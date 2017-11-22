@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -53,7 +54,9 @@ import org.json.JSONObject;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentMap;
 import kuchingitsolution.betterpepperboard.helper.Config;
+import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
+import kuchingitsolution.betterpepperboard.helper.Utility;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -70,12 +73,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public HashMap<String, String> params = new HashMap<>();
     public HashMap<String, String> image = new HashMap<String, String>();
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    BottomSheetBehavior bottomSheetBehavior;
-    BottomSheetDialog bottomSheetDialog;
     TextView title, desc;
-    RelativeLayout bottomsheet;
     Session session;
     String report_id;
+    DB_Offline db_offline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         session = new Session(this);
+        db_offline = new DB_Offline(this);
 
         title = (TextView) findViewById(R.id.post_title);
         desc = (TextView) findViewById(R.id.post_description);
@@ -141,16 +143,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             for (int i = 0; i < length ; i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                JSONObject locations = jsonObject.getJSONObject("location");
-                JSONObject media = jsonObject.getJSONObject("media");
-                MapsModel mapsModel = new MapsModel();
-                mapsModel.setLatitude(locations.getDouble("lat"));
-                mapsModel.setLongitude(locations.getDouble("lon"));
-                mapsModel.setReportID(jsonObject.getString("id"));
-                mapsModel.setReportTitle(jsonObject.getString("title"));
-                mapsModel.setReportDescription(jsonObject.getString("description"));
-                mapsModel.setImgLink(media.getString("link"));
-                data.add(mapsModel);
+                JSONArray reports = jsonObject.getJSONArray("reports");
+                int report_length = reports.length();
+                for (int j = 0 ; j < report_length ; j++){
+                    JSONObject single_report = reports.getJSONObject(j);
+                    JSONObject media = single_report.getJSONObject("media");
+                    MapsModel mapsModel = new MapsModel();
+                    mapsModel.setLocation_id(jsonObject.getString("id"));
+                    mapsModel.setLatitude(jsonObject.getDouble("lat"));
+                    mapsModel.setLongitude(jsonObject.getDouble("lon"));
+                    mapsModel.setLocation_name(jsonObject.getString("name"));
+                    mapsModel.setReportID(single_report.getString("id"));
+                    mapsModel.setReportTitle(single_report.getString("title"));
+                    mapsModel.setReportDescription(single_report.getString("description"));
+                    mapsModel.setImgLink(media.getString("link"));
+                    mapsModel.setCreated_at(single_report.getString("created_at"));
+                    data.add(mapsModel);
+                    db_offline.insertMap(mapsModel);
+                }
             }
             addMarkerOnMap(data);
         } catch (JSONException e) {
@@ -163,19 +173,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for (int i = 0; i < locations.size(); i++){
             options.position(new LatLng(locations.get(i).getLatitude(), locations.get(i).getLongitude()))
-                    .title(locations.get(i).getReportTitle())
-                    .snippet(locations.get(i).getReportDescription());
+                    .title(locations.get(i).getLocation_name());
             Marker mr = mMap.addMarker(options);
-            params.put(mr.getId(), locations.get(i).getReportID());
+            params.put(mr.getId(), locations.get(i).getLocation_id());
             image.put(mr.getId(), locations.get(i).getImgLink());
         }
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-//                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -183,19 +185,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 if(params.get(marker.getId()) == null){
                     Toast.makeText(MapsActivity.this, "Current location", Toast.LENGTH_SHORT).show();
-//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 } else {
                     Log.d("YES", marker.isInfoWindowShown() + "");
                     marker.hideInfoWindow();
                     report_id = params.get(marker.getId());
                     String imageLink = image.get(marker.getId());
-//                    title.setText(marker.getTitle());
-//                    desc.setText(marker.getSnippet());
                     BottomSheetDialogFragmentMap bottomSheetDialogFragment = new BottomSheetDialogFragmentMap();
-                    bottomSheetDialogFragment.setData(marker.getTitle(), marker.getSnippet(), report_id, imageLink);
+                    bottomSheetDialogFragment.setData(report_id);
                     bottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
-//                    bottomSheetBehavior.setPeekHeight(60);
-//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
 
                 return true;
@@ -248,7 +245,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
-            }
+            } else
+                Utility.checklocationPermission(this);
         }
         else {
             buildGoogleApiClient();
@@ -337,15 +335,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 
                 } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
 
-            // other 'case' lines to check for other permissions this app might request.
-            //You can add here other case statements according to your requirement.
         }
     }
 }

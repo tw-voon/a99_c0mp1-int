@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.Session;
 

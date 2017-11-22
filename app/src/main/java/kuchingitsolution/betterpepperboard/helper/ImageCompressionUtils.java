@@ -25,7 +25,7 @@ import java.util.Calendar;
 public class ImageCompressionUtils {
 
     private Context context;
-    private static final String IMAGE_DIRECTORY = "/BetterCity";
+    private static final String IMAGE_DIRECTORY = "/BetterCity/Images";
 
     public ImageCompressionUtils(Context c)
     {
@@ -153,6 +153,7 @@ public class ImageCompressionUtils {
         Log.d("Exif", filename);
         return filename;
     }
+
     private String getRealPathFromURI(Uri contentURI) {
 //        Uri contentUri = Uri.parse(contentURI);
         Cursor cursor =context. getContentResolver().query(contentURI, null, null, null, null);
@@ -166,7 +167,7 @@ public class ImageCompressionUtils {
     }
 
     public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "BetterCity/Images");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -193,7 +194,7 @@ public class ImageCompressionUtils {
 
     public String saveImage(Bitmap myBitmap, Context context) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        myBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bytes);
         File wallpaperDirectory = new File(
                 Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
 

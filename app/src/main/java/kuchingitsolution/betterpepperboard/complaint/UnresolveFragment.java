@@ -41,6 +41,7 @@ public class UnresolveFragment extends Fragment {
     boolean loadmore = false, temp_finish = false;
     private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
     private GetComplaint getComplaint;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class UnresolveFragment extends Fragment {
 
             complaintAdapter = new ComplaintAdapter(getContext(), newsData);
             complaintlist.setAdapter(complaintAdapter);
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            linearLayoutManager = new LinearLayoutManager(getActivity());
             complaintlist.setLayoutManager(linearLayoutManager);
             endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
                 @Override
@@ -79,24 +80,23 @@ public class UnresolveFragment extends Fragment {
                     getComplaint.load_data(page, Config.URL_GET_UNSOLVE);
                 }
             };
-            complaintlist.addOnScrollListener(endlessRecyclerViewScrollListener);
             complaintlist.setNestedScrollingEnabled(false);
-            complaintlist.setItemAnimator(new SlideUpAnimator());
+//            complaintlist.setItemAnimator(new SlideUpAnimator());
         }
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            initiatedata(complaintAdapter.getItemCount());
-            Log.d("broadcast", "message");
+            initiatedata(db_offline.get_total(2) == 5 ? 0 : complaintAdapter.getItemCount());
+            Log.d("broadcast page", "message" + db_offline.get_total(2) + " ------ " + complaintAdapter.getItemCount());
         }
     };
 
     private void initiatedata(int page){
 
         final String result = db_offline.getComplaint(2, page);
-        Log.d("result2", result);
+        Log.d("result2_page", result + " page --> " + page);
 
         if(result.equals("[]")) {
             if(complaintAdapter.getItemCount() > 0)
@@ -105,8 +105,10 @@ public class UnresolveFragment extends Fragment {
             return;
         }
 
-        if(complaintAdapter.getItemCount() == db_offline.get_total(2))
+        if(complaintAdapter.getItemCount() == db_offline.get_total(2)) {
+            Log.d("page", "same with database");
             return;
+        }
 
         final int cursize = complaintAdapter.getItemCount();
 
@@ -133,7 +135,7 @@ public class UnresolveFragment extends Fragment {
                     e.printStackTrace();
                 }
                 complaintAdapter.notifyItemRangeInserted(cursize, newsData.size());
-                Log.d("compare", "db : " + db_offline.get_total(2) + "  adapter :" + complaintAdapter.getItemCount());
+                Log.d("compare page", "db : " + db_offline.get_total(2) + "  adapter :" + complaintAdapter.getItemCount());
                 loadmore = db_offline.get_total(2) >= complaintAdapter.getItemCount();
             }
         };
@@ -143,18 +145,52 @@ public class UnresolveFragment extends Fragment {
         loading.setVisibility(View.GONE);
     }
 
+    private void update_current_item(){
+        if(session.getCurrentId() != null){
+            String result = db_offline.get_Single_Complaint(session.getCurrentId());
+            int position = Integer.valueOf(session.getCurrentPosition());
+            try {
+
+                JSONArray jsonArray = new JSONArray(result);
+                int length = jsonArray.length();
+                for (int i = 0 ; i < length ; i ++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    if(jsonObject.getString("status_id").equals("1"))
+                        continue;
+                    ComplaintModel news = new ComplaintModel(jsonObject);
+                    newsData.set(position, news);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            complaintAdapter.notifyItemChanged(Integer.valueOf(session.getCurrentPosition()));
+        }
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter("custom-event-name"));
         loading.setVisibility(View.VISIBLE);
-//        complaintAdapter.clear();
+        complaintlist.addOnScrollListener(endlessRecyclerViewScrollListener);
+//        if(complaintAdapter.getItemCount() != 0)
+//            update_current_item();
+        complaintAdapter.clear();
     }
 
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        session.setCurrentPosition(null);
+        session.setCurrentId(null);
     }
 }

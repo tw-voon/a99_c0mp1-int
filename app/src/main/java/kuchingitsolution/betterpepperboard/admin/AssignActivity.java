@@ -1,11 +1,15 @@
 package kuchingitsolution.betterpepperboard.admin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,12 +37,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.action.ActionActivity;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.Session;
-
-import static kuchingitsolution.betterpepperboard.R.id.desc;
 
 public class AssignActivity extends AppCompatActivity implements AssignAdapter.AssignOption {
 
@@ -51,6 +52,10 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
     private LinearLayout linearLayout;
     private MenuItem item;
     private Session session;
+    private AlertDialog.Builder alert;
+    private AlertDialog ad;
+    private Handler handler;
+    private TextView status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,7 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
         tvTitle.setText(title);
         tvDesc.setText(desc);
         Picasso.with(this).load(imgLink).into(profileImg);
+        handler = new Handler();
 
         get_free_officer();
     }
@@ -95,11 +101,8 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
                     public void onResponse(String response) {
                         Log.d("status: ", response);
                         if(response.equals("success")){
-                            Intent intent = new Intent(AssignActivity.this, DetailsComplaintActivity.class);
-                            intent.putExtra("report_id", report_id);
-                            intent.putExtra("officer_name", officer_name);
-                            setResult(RESULT_OK, intent);
-                            finish();
+                            status.setText("Successfully assign officer to this complaint");
+                            handler.postDelayed(r, 1500);
                         } else {
                             Toast.makeText(AssignActivity.this, "Server error", Toast.LENGTH_SHORT).show();
                         }
@@ -128,6 +131,18 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+
+    Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            ad.dismiss();
+            Intent intent = new Intent(AssignActivity.this, SingleReportActivity.class);
+            intent.putExtra("report_id", report_id);
+            intent.putExtra("officer_name", officer_name);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+    };
 
     private void get_free_officer(){
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GET_OFFICER,
@@ -193,7 +208,10 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
             onBackPressed();
             return true;
         } else if (itemId == R.id.submit){
-            assign_officer(officer_id);
+            if(!tvOfficername.getText().toString().equals(officer_name))
+                showMessage("Are you sure want to assign this complaint to " + officer_name + " ?");
+            else
+                showErrorMessage("This officer already assign to this complaint. Please choose others officer.");
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -207,6 +225,51 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
         return true;
     }
 
+    private void showMessage(String message){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AssignActivity.this);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                assign_officer(officer_id);
+                showAssignMessage();
+                dialog.dismiss();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDialogBuilder.show();
+    }
+
+    private void showErrorMessage(String message){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AssignActivity.this);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialogBuilder.show();
+    }
+
+    private void showAssignMessage(){
+        alert = new AlertDialog.Builder(AssignActivity.this);
+        LayoutInflater inflater = AssignActivity.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.bottom_sheet_assign, null);
+
+        status = dialogView.findViewById(R.id.status);
+
+        alert.setView(dialogView);
+        alert.setCancelable(false);
+        alert.create();
+        ad = alert.show();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -215,7 +278,7 @@ public class AssignActivity extends AppCompatActivity implements AssignAdapter.A
     @Override
     public void onOfficerClick(String officer_id, String name, Boolean checked) {
         item.setVisible(checked);
-        Toast.makeText(AssignActivity.this, "Status: " + officer_id, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(AssignActivity.this, "Status: " + officer_id, Toast.LENGTH_SHORT).show();
         this.officer_id = officer_id;
         this.officer_name = name;
     }

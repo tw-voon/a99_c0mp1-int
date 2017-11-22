@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -116,7 +118,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
     }
 
     @Override
-    public void onBindViewHolder(final ComplaintAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(final ComplaintAdapter.MyViewHolder holder, final int position) {
 
         db_offline = new DB_Offline(this.context);
         session = new Session(this.context);
@@ -151,13 +153,13 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         holder.like_no.setText(support);
         holder.follow_no.setText(affect);
         JSONObject response = db_offline.ifResponse(news.getId());
-        Log.d("responssss", "Report id : " + news.getId() + " Response : " + response.toString());
+//        Log.d("responssss", "Report id : " + news.getId() + " Response : " + response.toString());
 
         if(response.length() != 0){
             try {
 
-                Log.d("response", response.getString("support"));
-                Log.d("response", response.getString("affected"));
+//                Log.d("response", response.getString("support"));
+//                Log.d("response", response.getString("affected"));
 
                 if(response.getString("support").equals("1")) {
                     holder.like.setTextColor(Color.BLUE);
@@ -257,6 +259,8 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                 Bundle bundle = new Bundle();
                 bundle.putString("report_id", news.getId());
                 intent.putExtras(bundle);
+                session.setCurrentId(news.getId());
+                session.setCurrentPosition(String.valueOf(position));
                 context.startActivity(intent);
             }
         });
@@ -284,7 +288,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("result", response);
+//                        Log.d("result", response);
                         if(response.equals("success")){
                             db_offline.updateResponse(type, value, session.getUserID(), report_id, initial);
                         }
@@ -359,28 +363,20 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         try {
             Date date = dateFormat.parse(time);
             Date now = dateFormat.parse(getDateTime());
-            Log.d("date", date.toString() + " " + now.toString());
             long diff = now.getTime() - date.getTime();
 
             long diffMinutes = diff / (60 * 1000) % 60;
             long diffHours = diff / (60 * 60 * 1000) % 24;
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
-            Log.d("start_min", " " + diffMinutes);
-            Log.d("start_hour", " " + diffHours);
-            Log.d("start_day", " " + diffDays);
 
             if(diffDays>0) {
-                Log.d("Time", diffDays + " days ago");
                 return String.valueOf(dateFormat2.format(date));
             } else if(diffHours>=1) {
-                Log.d("Time", diffHours + " hours ago");
                 return String.format("%s hour ago", diffHours);
             } else if(diffMinutes<60) {
-                Log.d("Time", diffMinutes + " minutes ago");
                 return String.format("%s minute ago",diffMinutes);
             } else {
-                Log.d("Time", String.valueOf("Now"));
                 return String.valueOf(0);
             }
 

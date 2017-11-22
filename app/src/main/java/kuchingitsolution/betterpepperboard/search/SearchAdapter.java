@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder>{
 
@@ -40,7 +40,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             @Override
             public void onClick(View view) {
                 Log.d("Onclick", searchModel.getReport_id());
-                Intent intent = new Intent(context.getApplicationContext(), DetailsComplaintActivity.class);
+                Intent intent = new Intent(context.getApplicationContext(), SingleReportActivity.class);
                 intent.putExtra("report_id", searchModel.getReport_id());
                 context.startActivity(intent);
             }

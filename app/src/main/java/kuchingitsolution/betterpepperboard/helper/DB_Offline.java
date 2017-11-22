@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import kuchingitsolution.betterpepperboard.map.MapsModel;
 import kuchingitsolution.betterpepperboard.message.UserListModel;
 import kuchingitsolution.betterpepperboard.notification.NotificationModel;
 
@@ -116,6 +117,8 @@ public class DB_Offline extends SQLiteOpenHelper {
     private static final String AVATAR = "avatar";
 
     private static final String NOTIFICATION_TABLE = "notification_table";
+
+    private static final String MAPSMODELS = "mapmodels";
 
     private Context context;
     SharedPreferences sharedPreferences;
@@ -257,6 +260,17 @@ public class DB_Offline extends SQLiteOpenHelper {
                 + USER_ID + " VARCHAR,"
                 + CREATED_AT + " DATETIME" + ")";
 
+        String CREATE_MAP_TABLE = "CREATE TABLE " + MAPSMODELS + "("
+                + ID + " VARCHAR PRIMARY KEY,"
+                + NAME + " VARCHAR,"
+                + LATITUDE + " DOUBLE,"
+                + LONGITUDE + " DOUBLE,"
+                + LOCATION_ID + " VARCHAR,"
+                + TITLE + " VARCHAR,"
+                + DESC + " VARCHAR,"
+                + IMGLINK + " VARCHAR,"
+                + CREATED_AT + " DATETIME" + ")";
+
         pepperboard.execSQL(CREATE_COMMENT_TABLE);
         pepperboard.execSQL(CREATE_COMPLAINT_TABLE);
         pepperboard.execSQL(CREATE_LOCATION_TABLE);
@@ -271,6 +285,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         pepperboard.execSQL(CREATE_ACTION_TABLE);
         pepperboard.execSQL(CREATE_ROOM_LIST_TABLE);
         pepperboard.execSQL(CREATE_NOTIFICATION_TABLE);
+        pepperboard.execSQL(CREATE_MAP_TABLE);
 
     }
 
@@ -290,6 +305,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         pepperboard.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTION);
         pepperboard.execSQL("DROP TABLE IF EXISTS " + CHAT_ROOM_TABLE);
         pepperboard.execSQL("DROP TABLE IF EXISTS " + NOTIFICATION_TABLE);
+        pepperboard.execSQL("DROP TABLE IF EXISTS " + MAPSMODELS);
         onCreate(pepperboard);
 
     }
@@ -342,6 +358,32 @@ public class DB_Offline extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(CHAT_ROOM_TABLE, null, null);
         db.close();
+    }
+
+    public void insertMap(MapsModel mapsModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        ContentValues item = new ContentValues();
+        item.put(ID, mapsModel.getReportID());
+        item.put(NAME, mapsModel.getLocation_name());
+        item.put(LATITUDE, mapsModel.getLatitude());
+        item.put(LONGITUDE, mapsModel.getLongitude());
+        item.put(LOCATION_ID, mapsModel.getLocation_id());
+        item.put(TITLE, mapsModel.getReportTitle());
+        item.put(DESC, mapsModel.getReportDescription());
+        item.put(IMGLINK, mapsModel.getImgLink());
+        item.put(CREATED_AT, mapsModel.getCreated_at());
+
+        if(ifExistsMap(mapsModel.getReportID()))
+            db.update(MAPSMODELS, item, " id = '" + mapsModel.getLocation_id() + "'", null);
+        else
+            db.insert(MAPSMODELS, null, item);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
     }
 
     public void insertRoom(UserListModel userListModel){
@@ -670,9 +712,10 @@ public class DB_Offline extends SQLiteOpenHelper {
             String title, String description, int affected, int support, String created, String updated
                         */
 
-    public void clearComplaint(){
+    public void clearComplaint(String status){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_REPORT, null, null);
+        db.delete(TABLE_REPORT, STATUS_ID + "=" + status, null);
+        Log.d("page", "clear");
         db.close();
     }
 
@@ -681,6 +724,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         String id = "0";
+        long ids;
 
         ContentValues item = new ContentValues();
         try {
@@ -718,10 +762,11 @@ public class DB_Offline extends SQLiteOpenHelper {
         }
 
         if(ifExists(id))
-            db.update(TABLE_REPORT, item, " id = '" + id + "'", null);
+            ids = db.update(TABLE_REPORT, item, " id = '" + id + "'", null);
         else
-            db.insert(TABLE_REPORT, null, item);
+            ids = db.insert(TABLE_REPORT, null, item);
 
+        Log.d("page_insert", " ---------- " + ids + " --------- ");
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
@@ -748,7 +793,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         if(cursor.moveToFirst())
             support = Integer.valueOf(cursor.getString(0));
         else Log.d("Result", "support : 0");
-        Log.d("support", support + " ");
+//        Log.d("support", support + " ");
         cursor.close();
         return support;
     }
@@ -762,7 +807,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         if(cursor.moveToFirst())
             affect = Integer.valueOf(cursor.getString(0));
         else Log.d("Result", "support : 0");
-        Log.d("support", affect + " ");
+//        Log.d("support", affect + " ");
         cursor.close();
         return affect;
     }
@@ -783,6 +828,17 @@ public class DB_Offline extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
         String checkQuery = "SELECT " + ID + " FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ id + "'";
+        cursor= db.rawQuery(checkQuery,null);
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
+
+    private boolean ifExistsMap(String id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
+        String checkQuery = "SELECT " + ID + " FROM " + MAPSMODELS + " WHERE " + ID + "= '"+ id + "'";
         cursor= db.rawQuery(checkQuery,null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
@@ -912,33 +968,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         String SELECT_NOTIFICATION = String.format("SELECT * FROM %S ORDER BY %S DESC",
                 NOTIFICATION_TABLE, CREATED_AT);
 
-        Log.d("query", SELECT_NOTIFICATION);
-
-//        Cursor cursor = db.rawQuery(SELECT_NOTIFICATION, null);
-//        if(cursor.moveToFirst()){
-//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
-//
-//            do {
-//                JSONObject jsonObject = new JSONObject();
-//                try {
-//                    jsonObject.put(ID, cursor.getString(0));
-//                    jsonObject.put(REPORT_ID, cursor.getString(1));
-//                    jsonObject.put(MESSAGE, cursor.getString(2));
-//                    jsonObject.put(AVATAR, cursor.getString(3));
-//                    jsonObject.put(USER_ID, cursor.getString(4));
-//                    jsonObject.put(CREATED_AT, cursor.getString(5));
-//                    notification.add(cursor.getPosition(), jsonObject);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            } while (cursor.moveToNext());
-//        } else Log.d("Result == ", "NO");
-//
-//        Log.d("Overall result", String.valueOf(notification));
-//
-//        cursor.close();
-//        db.close();
-//        return String.valueOf(notification);
+//        Log.d("query", SELECT_NOTIFICATION);
         return db.rawQuery(SELECT_NOTIFICATION, null);
     }
 
@@ -955,8 +985,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
 
         if(cursor.moveToFirst()){
-            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
-
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -990,11 +1019,113 @@ public class DB_Offline extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         } else Log.d("Result == ", "NO");
 
-        Log.d("Overall result", String.valueOf(complaintData));
+//        Log.d("Overall result", String.valueOf(complaintData));
 
         cursor.close();
         db.close();
         return String.valueOf(complaintData);
+    }
+
+    public String get_Single_Complaint(String report_id){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<JSONObject> complaintData = new ArrayList<>();
+
+        String SELECT_COMPLAINTS = String.format("SELECT * FROM %S WHERE %S = '%S'",
+                TABLE_REPORT, ID, report_id);
+
+        Log.d("query", SELECT_COMPLAINTS);
+
+        Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
+
+        if(cursor.moveToFirst()){
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
+            do {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(ID, cursor.getString(0));
+                    jsonObject.put(USER_ID, cursor.getString(1));
+                    jsonObject.put(USERNAME, cursor.getString(2));
+                    jsonObject.put(TYPE_ID, cursor.getString(3));
+                    jsonObject.put(TYPE_NAME, cursor.getString(4));
+                    jsonObject.put(LOCATION_ID, cursor.getString(5));
+                    jsonObject.put(LOCATION_NAME, cursor.getString(6));
+                    jsonObject.put(LONGITUDE, cursor.getString(7));
+                    jsonObject.put(LATITUDE, cursor.getString(8));
+                    jsonObject.put(STATUS_ID, cursor.getString(9));
+                    jsonObject.put(STATUS_NAME, cursor.getString(10));
+                    jsonObject.put(OFFICER_ID, cursor.getString(11));
+                    jsonObject.put(OFFICER_NAME, cursor.getString(12));
+                    jsonObject.put(TITLE, cursor.getString(13));
+                    jsonObject.put(DESC, cursor.getString(14));
+                    jsonObject.put(SUGGESTION, cursor.getString(15));
+                    jsonObject.put(MEDIA_TYPE, cursor.getString(16));
+                    jsonObject.put(LINK, cursor.getString(17));
+                    jsonObject.put(LAST_ACTION, cursor.getString(18));
+                    jsonObject.put(AFFECTED, cursor.getString(19));
+                    jsonObject.put(SUPPORTED, cursor.getString(20));
+                    jsonObject.put(CREATED_AT, cursor.getString(21));
+                    jsonObject.put(UPDATED_AT, cursor.getString(22));
+                    complaintData.add(cursor.getPosition(), jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } while (cursor.moveToNext());
+        } else Log.d("Result == ", "NO");
+
+//        Log.d("Overall result", String.valueOf(complaintData));
+
+        cursor.close();
+        db.close();
+        return String.valueOf(complaintData);
+    }
+
+    //    String CREATE_MAP_TABLE = "CREATE TABLE " + MAPSMODELS + "("
+//            + ID + " INTEGER PRIMARY KEY,"
+//            + NAME + " VARCHAR,"
+//            + LATITUDE + " DOUBLE,"
+//            + LONGITUDE + "DOUBLE,"
+//            + REPORT_ID + " VARCHAR,"
+//            + TITLE + " VARCHAR,"
+//            + DESC + " VARCHAR,"
+//            + IMGLINK + " VARCHAR,"
+//            + CREATED_AT + " DATETIME" + ")";
+
+    public String get_map(String id){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<JSONObject> news_list = new ArrayList<>();
+
+        String SELECT_LISTS = String.format("SELECT * FROM %S WHERE %S = '%S'",
+                MAPSMODELS, LOCATION_ID, id);
+
+        Log.d("query", SELECT_LISTS);
+
+        Cursor cursor = db.rawQuery(SELECT_LISTS, null);
+
+        if(cursor.moveToFirst()){
+            do {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(ID, cursor.getString(0));
+                    jsonObject.put(NAME, cursor.getString(1));
+                    jsonObject.put(LATITUDE, cursor.getString(2));
+                    jsonObject.put(LONGITUDE, cursor.getString(3));
+                    jsonObject.put(LOCATION_ID, cursor.getString(4));
+                    jsonObject.put(TITLE, cursor.getString(5));
+                    jsonObject.put(DESC, cursor.getString(6));
+                    jsonObject.put(IMGLINK, cursor.getString(7));
+                    jsonObject.put(CREATED_AT, cursor.getString(8));
+                    news_list.add(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } while (cursor.moveToNext());
+        } else Log.d("Result MAP == ", "NO");
+
+        cursor.close();
+        db.close();
+        return String.valueOf(news_list);
     }
 
     public Cursor get_room(){
@@ -1004,25 +1135,8 @@ public class DB_Offline extends SQLiteOpenHelper {
         String SELECT_ROOM = String.format("SELECT * FROM %S ORDER BY %S DESC",
                 CHAT_ROOM_TABLE, TIMESTAMP);
 
-        Log.d("query", SELECT_ROOM);
+//        Log.d("query", SELECT_ROOM);
 
-        //        if(cursor.moveToFirst()){
-//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
-//
-//            do {
-//                UserListModel jsonObject = new UserListModel(
-//                        cursor.getString(1), cursor.getString(3), cursor.getString(2),
-//                        cursor.getString(4), cursor.getString(5), cursor.getString(0)
-//                );
-//                complaintData.add(jsonObject);
-//
-//            } while (cursor.moveToNext());
-//        } else Log.d("Result == ", "NO");
-
-//        Log.d("Overall result", String.valueOf(complaintData));
-
-//        cursor.close();
-//        db.close();
         return db.rawQuery(SELECT_ROOM, null);
     }
 
@@ -1042,8 +1156,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(CHECK_RESPONSE, null);
 
         if(cursor.moveToFirst()){
-            Log.d("Result response", DatabaseUtils.dumpCursorToString(cursor));
-
+//            Log.d("Result response", DatabaseUtils.dumpCursorToString(cursor));
             try {
                 jsonObject.put(SUPPORTED, cursor.getString(3));
                 jsonObject.put(AFFECTED, cursor.getString(4));
@@ -1052,7 +1165,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             }
         } else Log.d("Result == ", "NO RESPONSE");
 
-        Log.d("Overall response", String.valueOf(jsonObject));
+//        Log.d("Overall response", String.valueOf(jsonObject));
 
         cursor.close();
         db.close();
@@ -1073,8 +1186,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
 
         if(cursor.moveToFirst()){
-            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
-
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -1108,7 +1220,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         } else Log.d("Result == ", "NO");
 
-        Log.d("Overall result", String.valueOf(complaintData));
+//        Log.d("Overall result", String.valueOf(complaintData));
 
         cursor.close();
         db.close();
@@ -1126,7 +1238,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Log.d("query", SELECT_COMPLAINTS);
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
         if(cursor.moveToFirst()){
-            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -1142,7 +1254,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         } else {
             Log.d("Result == ", "NO");
         }
-        Log.d("Overall result", String.valueOf(hotlineData));
+//        Log.d("Overall result", String.valueOf(hotlineData));
         cursor.close();
         db.close();
         return String.valueOf(hotlineData);
@@ -1157,7 +1269,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Log.d("query", SELECT_INFO);
         Cursor cursor = db.rawQuery(SELECT_INFO, null);
         if(cursor.moveToFirst()){
-            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -1171,7 +1283,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         } else {
             Log.d("Result == ", "NO");
         }
-        Log.d("Overall result", String.valueOf(infoData));
+//        Log.d("Overall result", String.valueOf(infoData));
         cursor.close();
         db.close();
         return String.valueOf(infoData);
@@ -1186,7 +1298,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         Log.d("query", SELECT_INFO);
         Cursor cursor = db.rawQuery(SELECT_INFO, null);
         if(cursor.moveToFirst()){
-            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
+//            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -1200,7 +1312,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         } else {
             Log.d("Result == ", "NO");
         }
-        Log.d("Overall result", String.valueOf(reportData));
+//        Log.d("Overall result", String.valueOf(reportData));
         cursor.close();
         db.close();
         return String.valueOf(reportData);
@@ -1232,7 +1344,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         } else {
             Log.d("Result == ", "NO");
         }
-        Log.d("Overall result", String.valueOf(detailData));
+//        Log.d("Overall result", String.valueOf(detailData));
         cursor.close();
         db.close();
         return String.valueOf(detailData);

@@ -13,9 +13,7 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.complaint.DetailsComplaintActivity;
-
-import static android.R.attr.data;
+import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
 
@@ -40,7 +38,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, DetailsComplaintActivity.class);
+                Intent intent = new Intent(context, SingleReportActivity.class);
                 intent.putExtra("report_id", model.getReport_id());
                 context.startActivity(intent);
             }

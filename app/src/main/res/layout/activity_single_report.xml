@@ -25,60 +25,14 @@
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/complaint_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="?attr/actionBarSize"
-                android:layout_marginStart="20dp"
-                android:paddingBottom="8dp"
-                app:layout_collapseMode="pin"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:textColor="#212121"
-                    android:textSize="20sp"/>
-
-                <TextView
-                    android:id="@+id/submit_by"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_account_circle_black_24dp"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:textColor="#212121"/>
-
-                <TextView
-                    android:id="@+id/submit_at"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_access_time_black_24dp"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:textColor="#212121"/>
-
-                <TextView
-                    android:id="@+id/category"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_local_offer_black_24dp"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:textColor="#212121"/>
-
-                <TextView
-                    android:id="@+id/officer_incharge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:textColor="#212121"/>
-
-            </LinearLayout>
+                android:maxHeight="350dp"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                android:scaleType="centerCrop" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -91,6 +45,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_single_report" />
+    <include
+        layout="@layout/content_single_report"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

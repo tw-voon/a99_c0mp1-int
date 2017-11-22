@@ -1,5 +1,6 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ public class GetComplaint {
         db_offline = new DB_Offline(context);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public void pull_complaint(){
         new AsyncTask<String, Integer, String>() {
             @Override
@@ -68,7 +70,8 @@ public class GetComplaint {
         }.execute(Config.GET_REPORT);
     }
 
-    public void load_data(final int page, String url)
+    @SuppressLint("StaticFieldLeak")
+    public void load_data(final int page, final String url)
     {
         new AsyncTask<String, Integer, String>() {
             @Override
@@ -92,12 +95,14 @@ public class GetComplaint {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Log.e("ANSWER INFINITE SCROLL", "" + result);
+//                Log.e("ANSWER INFINITE SCROLL", "" + result);
                 if(result != null){
 
                     if(!result.equals("null")) {
-                        if(page == 1)
-                            db_offline.clearComplaint();
+                        if(page == 1 && url.equals(Config.URL_GET_UNSOLVE))
+                            db_offline.clearComplaint("2");
+                        else if(page == 1 && url.equals(Config.URL_GET_SOLVE))
+                            db_offline.clearComplaint("1");
                         process_unsolved(result);
                     } else
                         broadcast();
