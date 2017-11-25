@@ -46,6 +46,26 @@ public class RequestBuilder {
                 .build();
     }
 
+    public static MultipartBody uploadImageComment(String report_id, String user_id, String message, File image){
+//        Log.d("result2", image);
+        return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("report_id", report_id)
+                .addFormDataPart("user_id", user_id)
+                .addFormDataPart("comment", message)
+                .addFormDataPart("image","...", RequestBody.create(MediaType.parse("image/jpg"), image))
+                .build();
+    }
+
+    public static MultipartBody addCommentNoImage(String report_id, String user_id, String message){
+        return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("report_id", report_id)
+                .addFormDataPart("user_id", user_id)
+                .addFormDataPart("comment", message)
+                .build();
+    }
+
     public static MultipartBody getComplaint(String user_id){
         return new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

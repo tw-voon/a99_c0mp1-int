@@ -1,14 +1,24 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
 import android.animation.AnimatorInflater;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,6 +59,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.action.ActionActivity;
@@ -64,9 +79,18 @@ import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentOptio
 import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogFragmentStatus;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
+import kuchingitsolution.betterpepperboard.helper.ImageCompressionUtils;
 import kuchingitsolution.betterpepperboard.helper.Session;
+import kuchingitsolution.betterpepperboard.helper.Utility;
+import kuchingitsolution.betterpepperboard.helper.network.ApiCall;
+import kuchingitsolution.betterpepperboard.helper.network.CountingRequestBody;
+import kuchingitsolution.betterpepperboard.helper.network.RequestBuilder;
 import kuchingitsolution.betterpepperboard.map.ActivityViewOnMap;
 import kuchingitsolution.betterpepperboard.officer.OfficerActivity;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+
+import static android.R.attr.bitmap;
 
 public class SingleReportActivity extends AppCompatActivity implements BottomSheetDialogFragmentOption.OptionBottomSheetCallback {
 
@@ -78,13 +102,14 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     private List<CommentModel> comments;
     private RecyclerView commentlist;
     private CommentAdapter commentAdapter;
-    private String action, reportLink, report_id, status_id, officer_id, officer_name, lat, lon, report_title, url, status;
-    TextView category, desc, location, title, username, no_comment, timestamp, officer_incharge, like, like_no, follow, follow_no, last_status, suggestion;
-    Button btnsendComment;
-    EditText edtcomment;
-    ImageView pic, like_logo, follow_logo;
-    Session session;
-    RelativeLayout comment_section;
+    private String action, reportLink, report_id, status_id, officer_id, officer_name, lat, lon, report_title, url, status, imagePath, message;
+    private TextView category, desc, location, title, username, no_comment, timestamp, officer_incharge, like, like_no, follow, follow_no, last_status, suggestion;
+    final static int PLACE_PICKER_CODE = 1000, REQUEST_CAMERA = 1888, PICK_IMAGE_REQUEST = 2, ENABLE = 1, DISABLE = 2;
+    private Button btnsendComment;
+    private EditText edtcomment;
+    private ImageView pic, like_logo, follow_logo, comment_img, attached_image;
+    private Session session;
+    private RelativeLayout comment_section;
     LinearLayout sendComment, last_action, suggestion_layer;
     LinearLayout like_region, follow_region;
     ProgressBar loading_img;
@@ -92,6 +117,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     BottomSheetDialogFragmentStatus statusBottomSheetDialogFragment = null;
     BottomSheetDialogFragmentOption optionBottomSheetDialogFragment = null;
     int affected_no, support_no;
+
+    private File imgFile;
+    private Uri tempImgFile;
+    private Bitmap selectedImage;
+    private ImageCompressionUtils imageCompressionUtils;
+    private Boolean can_back = true;
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +144,12 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         btnsendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = edtcomment.getText().toString().trim();
-                if (TextUtils.isEmpty(msg)) {
+                message = edtcomment.getText().toString().trim();
+                if (TextUtils.isEmpty(message)) {
                     Toast.makeText(getApplicationContext(), "Enter a message", Toast.LENGTH_SHORT).show();
                 } else
-                    addComment(report_id, msg);
+                    uploadImage();
+                //uploadImage();
             }
         });
 
@@ -176,28 +209,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                     public void onResponse(String response) {
 
                         Log.d("Status: ", response);
-                        JSONObject jsonObject;
-                        try {
-                            jsonObject = new JSONObject(response);
+                        append_new_comment(response);
 
-                            CommentModel comment = new CommentModel(
-                                    session.getUsername(),
-                                    jsonObject.getString("message"),
-                                    jsonObject.getString("created_at"),
-                                    jsonObject.getInt("user_id"),
-                                    jsonObject.getInt("id"),
-                                    session.getUserAvatar()
-                            );
-                            comments.add(comment);
-
-                            commentAdapter.notifyDataSetChanged();
-                            no_comment.setVisibility(View.GONE);
-                            edtcomment.setText("");
-                            commentlist.getLayoutManager().smoothScrollToPosition(commentlist, null, commentAdapter.getItemCount() - 1);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
                 },
 
@@ -221,6 +234,43 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    private void append_new_comment(String response){
+        Log.d("comment_result", response + " -- ");
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(response);
+
+            CommentModel comment = new CommentModel(
+                    session.getUsername(),
+                    jsonObject.getString("message"),
+                    jsonObject.getString("created_at"),
+                    jsonObject.getInt("user_id"),
+                    jsonObject.getInt("id"),
+                    jsonObject.optString("image_link")
+            );
+            comments.add(comment);
+
+            commentAdapter.notifyDataSetChanged();
+            no_comment.setVisibility(View.GONE);
+            edtcomment.setText("");
+            attached_image.setVisibility(View.GONE);
+            attached_image.setImageResource(0);
+            imgFile = null;
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    commentlist.getLayoutManager().scrollToPosition(commentAdapter.getItemCount()-1);
+                }
+            }, 5000);
+
+            Log.d("comment_result", commentAdapter.getItemCount() - 1 + " Total Item");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void getComment(final String report_ID){
@@ -273,7 +323,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                             result.getString("created_at"),
                             result.getInt("user_id"),
                             result.getInt("id"),
-                            " "
+                            result.optString("image_link")
                     );
                     comments.add(comment);
                 }
@@ -628,6 +678,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         commentlist = findViewById(R.id.comment_list_view);
         session = new Session(this);
         db_offline = new DB_Offline(this);
+        imageCompressionUtils = new ImageCompressionUtils(this);
+
+        OkHttpClient.Builder b = new OkHttpClient.Builder();
+        b.readTimeout(300, TimeUnit.SECONDS);
+        b.writeTimeout(400, TimeUnit.SECONDS);
+        b.retryOnConnectionFailure(false); // Don't retry the connection (prevent twice entry)
+        client = b.build();
 
         if (getIntent() != null) {
             report_id = getIntent().getStringExtra("report_id");
@@ -653,6 +710,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         btnsendComment = findViewById(R.id.btn_send);
         edtcomment =  findViewById(R.id.message);
         comment_section =  findViewById(R.id.commentsection);
+        comment_img = findViewById(R.id.comment_img);
+        attached_image = findViewById(R.id.attached_image);
         sendComment =  findViewById(R.id.sendComment);
 
         follow = findViewById(R.id.follow);
@@ -667,6 +726,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         loading_img = findViewById(R.id.loading_img);
         last_status =  findViewById(R.id.last_status);
         last_action =  findViewById(R.id.last_action);
+
+        comment_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectImage();
+            }
+        });
     }
 
     @Override
@@ -682,7 +748,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
         if (itemId == android.R.id.home) {
-            onBackPressed();
+            if(can_back)
+                onBackPressed();
             return true;
         }
 
@@ -774,9 +841,261 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             }
         }
 
-//         if(requestCode == 1003 && resultCode == RESULT_OK){
-//             report_id = data.getStringExtra("report_id");
-//             Log.d("report_id", "  id : " + report_id);
-//         }
+        if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
+            imagePath = tempImgFile.getPath();
+            Log.d("TAG", "File Saved::--->" + tempImgFile.getPath());
+            if(Build.VERSION.SDK_INT> 23) {
+                try {
+                    selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), tempImgFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else
+                selectedImage = BitmapFactory.decodeFile(imagePath);
+            imagePath = imageCompressionUtils.saveImage(selectedImage, this); /* change the image path to modified image */
+            Log.d("TAG", "File Saved::--->" + imagePath);
+            imgFile = new File(imagePath);
+            Bitmap preview = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            attached_image.setImageBitmap(Bitmap.createScaledBitmap(preview, preview.getWidth() / 2 , preview.getHeight() / 2, false));
+            attached_image.setVisibility(View.VISIBLE);
+        }
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            Log.d("result:","result code: " + uri.getLastPathSegment());
+            String path = imageCompressionUtils.compressImage(uri);
+            try {
+                Uri imageUri = data.getData();
+                imgFile = new File(path);
+                InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                selectedImage = BitmapFactory.decodeStream(imageStream);
+                selectedImage = getResizedBitmap(selectedImage, selectedImage.getWidth() / 2, selectedImage.getHeight() / 2);
+                attached_image.setImageBitmap(selectedImage);
+                attached_image.setVisibility(View.VISIBLE);
+            } catch (IOException e) {
+                Log.d("bitmapE", String.valueOf(bitmap));
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bitmap, int newWidth, int newHeight){
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+    }
+
+    /* Image selection */
+     /* Select camera or image from gallery */
+    public void selectImage() {
+        final CharSequence[] items = { "Take Photo", "Choose from Library",
+                "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(SingleReportActivity.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                boolean result= Utility.checkPermission(SingleReportActivity.this);
+                boolean write_external = Utility.check_write_external_permission(SingleReportActivity.this);
+                if (items[item].equals("Take Photo")) {
+                    if(result && write_external)
+                        cameraIntent();
+                } else if (items[item].equals("Choose from Library")) {
+                    if(result)
+                        galleryIntent();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                } else {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void cameraIntent(){
+
+        Intent intent;
+        if(Build.VERSION.SDK_INT  < 24) {
+            intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            tempImgFile = Uri.fromFile(createImageFile());
+        } else {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            tempImgFile = FileProvider.getUriForFile(SingleReportActivity.this, "kuchingitsolution.betterpepperboard.provider", getOutputMediaFile());
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImgFile);
+        startActivityForResult(intent, REQUEST_CAMERA);
+
+    }
+
+    private void galleryIntent(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+        startActivityForResult(Intent.createChooser(intent, "Select File"),PICK_IMAGE_REQUEST);
+    }
+
+    private File createImageFile() {
+
+        long timeStamp = System.currentTimeMillis();
+        String imageFileName = "NAME_" + timeStamp;
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES + "/BetteCity");
+
+        if(!storageDir.exists())
+            storageDir.mkdirs();
+
+        File images = null;
+        try {
+            images = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return images;
+    }
+
+    private static File getOutputMediaFile(){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Better City");
+
+        if (!mediaStorageDir.exists()){
+            boolean is_dir_make = mediaStorageDir.mkdirs();
+            if (!is_dir_make){
+                Log.d("error", "null thing");
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void uploadImage(){
+        new AsyncTask<String, Integer, String>(){
+
+            private AlertDialog.Builder alert;
+            private AlertDialog ad;
+
+            private ProgressBar dialog_upload;
+            private TextView dialog_upload_status;
+            private ImageView status_done;
+            private AlertDialog upload_dialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                can_back = false;
+                alert = new AlertDialog.Builder(SingleReportActivity.this);
+                LayoutInflater inflater = SingleReportActivity.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.bottom_sheet_upload, null);
+
+                dialog_upload = dialogView.findViewById(R.id.uploading);
+                dialog_upload_status = dialogView.findViewById(R.id.uploading_progress);
+                status_done = dialogView.findViewById(R.id.status_done);
+
+                alert.setView(dialogView);
+                alert.setCancelable(false);
+                alert.create();
+                ad = alert.show();
+            }
+
+            @Override
+            protected String doInBackground(String... strings) {
+
+                /*map.put("report_id",report_id);
+                map.put("user_id", session.getUserID());
+                map.put("comment", message);*/
+                MultipartBody body = null;
+                if(imgFile != null) {
+                    body = RequestBuilder.uploadImageComment(
+                            report_id,
+                            session.getUserID(),
+                            message, imgFile);
+                } else {
+                    body = RequestBuilder.addCommentNoImage(
+                            report_id,
+                            session.getUserID(),
+                            message
+                    );
+                }
+
+                CountingRequestBody monitoring = new CountingRequestBody(body, new CountingRequestBody.Listener() {
+                    @Override
+                    public void onRequestProgress(long bytesWritten, long contentLength) {
+
+                        float percentage = 100f * bytesWritten / contentLength;
+                        if (percentage >= 0) {
+                            publishProgress((int)percentage);
+                            Log.d("upload", String.valueOf(percentage));
+                        }
+                    }
+                });
+
+                try {
+                    return ApiCall.POST(client, Config.URL_AddComment, monitoring);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                dialog_upload.setProgress(values[0]);
+                dialog_upload_status.setText(String.valueOf(values[0]));
+                if(values[0] == 100) {
+                    status_done.setVisibility(View.VISIBLE);
+                    dialog_upload.setIndeterminate(true);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                if(s != null) {
+                    append_new_comment(s);
+                } else showMessage("Error while uploading complaint, please try again");
+                disable_interaction(ENABLE);
+                ad.dismiss();
+                can_back = true;
+            }
+        }.execute();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(can_back)
+            super.onBackPressed();
+    }
+
+    private void disable_interaction(int status){
+
+        switch (status){
+            case 1:
+                btnsendComment.setEnabled(true);
+                break;
+            case 2:
+                btnsendComment.setEnabled(false);
+                break;
+        }
+
     }
 }

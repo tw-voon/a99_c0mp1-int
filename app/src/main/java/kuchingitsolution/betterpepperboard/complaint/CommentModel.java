@@ -2,7 +2,7 @@ package kuchingitsolution.betterpepperboard.complaint;
 
 public class CommentModel {
 
-    private String username, commentmsg, timeago, avatar_link;
+    private String username, commentmsg, timeago, image_link;
     private int userID, msgID;
 
     CommentModel(String username, String message, String timeago, int userID, int msgID, String avatar_link){
@@ -11,7 +11,7 @@ public class CommentModel {
         this.msgID = msgID;
         this.commentmsg = message;
         this.timeago = timeago;
-        this.avatar_link = avatar_link;
+        this.image_link = avatar_link;
     }
 
     CommentModel(){}
@@ -34,7 +34,7 @@ public class CommentModel {
 
     public int getUserID(){ return userID; }
 
-    public String getAvatar_link(){return avatar_link;}
+    public String getImage_link(){return image_link;}
 
     public int getMsgID(){ return msgID; }
 }
