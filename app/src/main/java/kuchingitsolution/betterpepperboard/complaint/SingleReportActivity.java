@@ -252,7 +252,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             );
             comments.add(comment);
 
-            commentAdapter.notifyDataSetChanged();
+//            commentAdapter.notifyDataSetChanged();
+            commentAdapter.notifyItemInserted(commentAdapter.getItemCount());
             no_comment.setVisibility(View.GONE);
             edtcomment.setText("");
             attached_image.setVisibility(View.GONE);
@@ -262,9 +263,9 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    commentlist.getLayoutManager().scrollToPosition(commentAdapter.getItemCount()-1);
+                    commentlist.getLayoutManager().smoothScrollToPosition(commentlist, null,commentAdapter.getItemCount()-1);
                 }
-            }, 5000);
+            }, 1000);
 
             Log.d("comment_result", commentAdapter.getItemCount() - 1 + " Total Item");
 

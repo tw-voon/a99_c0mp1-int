@@ -29,10 +29,11 @@
                 android:id="@+id/complaint_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxHeight="350dp"
+                android:maxHeight="250dp"
                 android:adjustViewBounds="true"
                 android:visibility="gone"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
