@@ -1,16 +1,19 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
-import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.squareup.picasso.Picasso;
 
 import kuchingitsolution.betterpepperboard.R;
 import uk.co.senab.photoview.PhotoView;
@@ -32,24 +35,34 @@ public class ImageFullscreenActivity extends AppCompatActivity {
         imageView = findViewById(R.id.fullscreen_image);
         loading = findViewById(R.id.loading_img);
 
-        if(getIntent() != null){
+        if (getIntent() != null) {
             String url = getIntent().getStringExtra("image");
-            Glide.with(ImageFullscreenActivity.this)
+            Picasso.with(this).load(url).into(imageView, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    loading.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+            /*Glide.with(ImageFullscreenActivity.this)
                     .load(url)
-                    .listener(new RequestListener<String, GlideDrawable>() {
+                    .listener(new RequestListener<Drawable>() {
                         @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             loading.setVisibility(View.GONE);
                             return false;
                         }
                     })
-                    .skipMemoryCache(false)
-                    .into(imageView);
+                    .into(imageView);*/
         }
     }
 

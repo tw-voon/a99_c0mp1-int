@@ -1,35 +1,25 @@
 package kuchingitsolution.betterpepperboard;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import kuchingitsolution.betterpepperboard.complaint.ComplaintFragment;
-import kuchingitsolution.betterpepperboard.helper.BottomNavigationViewHelper;
-import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.home.HomeFragment;
@@ -38,9 +28,7 @@ import kuchingitsolution.betterpepperboard.notification.NotificationFragment;
 import kuchingitsolution.betterpepperboard.personal.PersonalFragment;
 import kuchingitsolution.betterpepperboard.search.SearchActivity;
 import kuchingitsolution.betterpepperboard.search.SearchUserActivity;
-import kuchingitsolution.betterpepperboard.service.onesignal_service;
 import kuchingitsolution.betterpepperboard.setting.SettingActivity;
-import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity2 extends AppCompatActivity {
@@ -74,7 +62,7 @@ public class MainActivity2 extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         content = findViewById(R.id.contents);
         db_offline = new DB_Offline(this);
-        startService(new Intent(MainActivity2.this, onesignal_service.class));
+        // startService(new Intent(MainActivity2.this, onesignal_service.class));
         notification = new QBadgeView(this);
         message = new QBadgeView(this);
         complaint = new QBadgeView(this);
@@ -129,26 +117,26 @@ public class MainActivity2 extends AppCompatActivity {
 
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
-            Log.d("onesignal_data", intent.getStringExtra("data"));
-            if(intent.getStringExtra("data") != null){
-                switch (intent.getStringExtra("data")){
-                    case Config.MESSAGE:
-                        addBadgeAt(2, 1);
-                        break;
-                    case Config.COMPLAINT:
-                        addBadgeAt(1, 1);
-                        break;
-                    case Config.NOTI:
-                        addBadgeAt(3, session.getNotiBadge());
-                        break;
-                }
-            }
-        }
-    };
+//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
+//            Log.d("onesignal_data", intent.getStringExtra("data"));
+//            if(intent.getStringExtra("data") != null){
+//                switch (intent.getStringExtra("data")){
+//                    case Config.MESSAGE:
+//                        addBadgeAt(2, 1);
+//                        break;
+//                    case Config.COMPLAINT:
+//                        addBadgeAt(1, 1);
+//                        break;
+//                    case Config.NOTI:
+//                        addBadgeAt(3, session.getNotiBadge());
+//                        break;
+//                }
+//            }
+//        }
+//    };
 
     public void removeBadgeAt(int position){
 
@@ -295,7 +283,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        // LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         super.onPause();
         PepperApps.activityPaused();// On Pause notify the Application
     }
@@ -304,8 +292,8 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         PepperApps.activityResumed();// On Resume notify the Application
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter("notification_received"));
+        //LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+        //        new IntentFilter("notification_received"));
         setup_tab();
     }
 }

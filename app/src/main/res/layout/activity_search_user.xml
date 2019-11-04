@@ -20,7 +20,7 @@
         android:gravity="center"
         android:id="@+id/selectedUser"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/newuser_recycler_view"
         android:layout_below="@+id/selectedUser"
         android:layout_width="match_parent"

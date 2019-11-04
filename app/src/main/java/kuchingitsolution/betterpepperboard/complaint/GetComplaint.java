@@ -4,9 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,14 +30,14 @@ public class GetComplaint {
     private Session session;
     private DB_Offline db_offline;
 
-    public GetComplaint(Context context){
+    public GetComplaint(Context context) {
         this.context = context;
         session = new Session(context);
         db_offline = new DB_Offline(context);
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void pull_complaint(){
+    public void pull_complaint() {
         new AsyncTask<String, Integer, String>() {
             @Override
             protected String doInBackground(String... url) {
@@ -61,7 +62,7 @@ public class GetComplaint {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Log.e("ANSWER", "" + result);
-                if(result == null || result.equals("null"))
+                if (result == null || result.equals("null"))
                     Toast.makeText(context, "NULL", Toast.LENGTH_SHORT).show();
                 else
                     process_response(result);
@@ -71,8 +72,7 @@ public class GetComplaint {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void load_data(final int page, final String url)
-    {
+    public void load_data(final int page, final String url) {
         new AsyncTask<String, Integer, String>() {
             @Override
             protected String doInBackground(String... url) {
@@ -96,12 +96,12 @@ public class GetComplaint {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
 //                Log.e("ANSWER INFINITE SCROLL", "" + result);
-                if(result != null){
+                if (result != null) {
 
-                    if(!result.equals("null")) {
-                        if(page == 1 && url.equals(Config.URL_GET_UNSOLVE))
+                    if (!result.equals("null")) {
+                        if (page == 1 && url.equals(Config.URL_GET_UNSOLVE))
                             db_offline.clearComplaint("2");
-                        else if(page == 1 && url.equals(Config.URL_GET_SOLVE))
+                        else if (page == 1 && url.equals(Config.URL_GET_SOLVE))
                             db_offline.clearComplaint("1");
                         process_unsolved(result);
                     } else
@@ -115,7 +115,7 @@ public class GetComplaint {
         }.execute(url);
     }
 
-    private void process_unsolved(String result){
+    private void process_unsolved(String result) {
 
         try {
 
@@ -125,7 +125,7 @@ public class GetComplaint {
             JSONArray response = jsonObject.getJSONArray("response");
             int length = jsonArray.length();
 
-            for (int i = 0; i < length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject data = jsonArray.getJSONObject(i);
                 db_offline.insertComplaint(data);
             }
@@ -136,7 +136,7 @@ public class GetComplaint {
         broadcast();
     }
 
-    private void process_response(String result){
+    private void process_response(String result) {
 
         try {
             JSONObject jsonObject = new JSONObject(result);
@@ -144,7 +144,7 @@ public class GetComplaint {
             JSONArray response = jsonObject.getJSONArray("response");
             int length = jsonArray.length();
 
-            for (int i = 0; i < length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject data = jsonArray.getJSONObject(i);
                 db_offline.insertComplaint(data);
             }
@@ -155,7 +155,7 @@ public class GetComplaint {
         broadcast();
     }
 
-    public void broadcast(){
+    public void broadcast() {
         Intent intent = new Intent("custom-event-name");
         // You can also include some extra data.
         intent.putExtra("reload", "true");

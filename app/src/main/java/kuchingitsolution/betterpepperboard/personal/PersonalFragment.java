@@ -1,13 +1,9 @@
 package kuchingitsolution.betterpepperboard.personal;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,8 +11,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -46,13 +46,13 @@ public class PersonalFragment extends Fragment {
     GetComplaint getComplaint;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onAttach(Context context){
+    public void onAttach(Context context) {
         super.onAttach(context);
     }
 
@@ -65,7 +65,7 @@ public class PersonalFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(getView() != null){
+        if (getView() != null) {
             report_frame = (FrameLayout) getView().findViewById(R.id.content_personal);
             session = new Session(getContext());
             getComplaint = new GetComplaint(getContext());
@@ -78,9 +78,9 @@ public class PersonalFragment extends Fragment {
             status_2 = getView().findViewById(R.id.status_2);
             status_3 = getView().findViewById(R.id.status_3);
 
-            if(session.getPosition().equals("1")){
+            if (session.getPosition().equals("1")) {
                 setTextView("Total Complaint", "Solved", "Unsolved", "Unassigned", "Assigned");
-            } else if(session.getPosition().equals("2")){
+            } else if (session.getPosition().equals("2")) {
                 setTextView("Assigned Complaint", "Solved", "Unsolved", "Unsolved", "Solved");
             } else {
                 setTextView("Submitted Complaint", "Solved", "Followed", "My Report", "Followed Report");
@@ -111,25 +111,23 @@ public class PersonalFragment extends Fragment {
         }
     }
 
-    private void setTabTextColor(String click){
-        switch (click){
+    private void setTabTextColor(String click) {
+        switch (click) {
             case "report":
-                if(Build.VERSION.SDK_INT >= 23 ) {
+                if (Build.VERSION.SDK_INT >= 23) {
                     showReport.setTextColor(getResources().getColor(R.color.colorPrimary, null));
                     showFollowed.setTextColor(getResources().getColor(R.color.mt_gray3, null));
-                }
-                else{
+                } else {
                     showReport.setTextColor(getResources().getColor(R.color.colorPrimary));
                     showFollowed.setTextColor(getResources().getColor(R.color.mt_gray3));
                 }
                 break;
 
             case "followed":
-                if(Build.VERSION.SDK_INT >= 23 ) {
+                if (Build.VERSION.SDK_INT >= 23) {
                     showFollowed.setTextColor(getResources().getColor(R.color.colorPrimary, null));
                     showReport.setTextColor(getResources().getColor(R.color.mt_gray3, null));
-                }
-                else{
+                } else {
                     showFollowed.setTextColor(getResources().getColor(R.color.colorPrimary));
                     showReport.setTextColor(getResources().getColor(R.color.mt_gray3));
                 }
@@ -137,7 +135,7 @@ public class PersonalFragment extends Fragment {
         }
     }
 
-    private void setTextView(String label_1, String label_2, String label_3, String tab_1, String tab_2){
+    private void setTextView(String label_1, String label_2, String label_3, String tab_1, String tab_2) {
 
         showReport.setText(tab_1);
         showFollowed.setText(tab_2);
@@ -147,7 +145,7 @@ public class PersonalFragment extends Fragment {
 
     }
 
-    private void get_details(){
+    private void get_details() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GET_DETAIL,
                 new Response.Listener<String>() {
                     @Override
@@ -169,10 +167,10 @@ public class PersonalFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         Log.d("error1", error.toString());
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 map.put("user_id", session.getUserID());
                 return map;
             }

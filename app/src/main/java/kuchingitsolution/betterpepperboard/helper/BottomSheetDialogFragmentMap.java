@@ -2,34 +2,26 @@ package kuchingitsolution.betterpepperboard.helper;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Handler;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Picasso;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.map.MapsModel;
 
-public class BottomSheetDialogFragmentMap extends BottomSheetDialogFragment{
+public class BottomSheetDialogFragmentMap extends BottomSheetDialogFragment {
     private ArrayList<MapsModel> mapsModels = new ArrayList<>();
     private String location_id;
     private DB_Offline db_offline;

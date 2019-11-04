@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="kuchingitsolution.betterpepperboard">
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -13,9 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera2" />
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
 
     <application
         android:name=".PepperApps"
@@ -35,9 +42,8 @@
         </activity>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="kuchingitsolution.betterpepperboard.provider"
-            android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
@@ -178,21 +184,21 @@
                 android:value=".complaint.DetailsComplaintActivity" />
         </activity>
 
-        <service android:name=".service.onesignal_service" />
-        <service
+        <!--<service android:name=".service.onesignal_service" />-->
+        <!--<service
             android:name=".service.NotificationExtender"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
-        </service>
+        </service>-->
 
-        <meta-data
+        <!--<meta-data
             android:name="com.onesignal.NotificationAccentColor.DEFAULT"
             android:value="FF00FF00" />
         <meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"
-            android:value="DISABLE" />
+            android:value="DISABLE" />-->
 
         <activity
             android:name=".message.ChatActivity"

@@ -75,7 +75,7 @@
             android:layout_height="1dp"
             android:background="@color/mt_gray5"/>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/action_list"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"

@@ -1,8 +1,9 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import kuchingitsolution.betterpepperboard.R;
 

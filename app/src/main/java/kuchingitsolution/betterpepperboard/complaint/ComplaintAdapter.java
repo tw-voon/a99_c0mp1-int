@@ -2,25 +2,18 @@ package kuchingitsolution.betterpepperboard.complaint;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,17 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,14 +34,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
-import kuchingitsolution.betterpepperboard.notification.NotificationAdapter;
-
-import static kuchingitsolution.betterpepperboard.R.string.officer_name;
 
 public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyViewHolder> {
 
@@ -94,7 +76,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         }
     }
 
-    public ComplaintAdapter(Context context, ArrayList<ComplaintModel> newsList){
+    public ComplaintAdapter(Context context, ArrayList<ComplaintModel> newsList) {
         this.context = context;
         this.newslist = newsList;
     }
@@ -133,7 +115,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         holder.month.setText(get_date("month", news.getCreated_at()));
         holder.category.setText(news.getType_name());
 
-        if(news.getStatus_id() == 1) {
+        if (news.getStatus_id() == 1) {
             holder.status_color.setBackgroundResource(R.color.colorPrimary);
         } else {
             holder.status_color.setBackgroundResource(R.color.mt_red);
@@ -141,7 +123,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
 
         String officer_name;
 
-        if(!news.getOfficer_name().equals("NULL")) {
+        if (!news.getOfficer_name().equals("NULL")) {
             officer_name = news.getOfficer_name();
         } else {
             officer_name = "Waiting admin assign officer";
@@ -155,13 +137,13 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         JSONObject response = db_offline.ifResponse(news.getId());
 //        Log.d("responssss", "Report id : " + news.getId() + " Response : " + response.toString());
 
-        if(response.length() != 0){
+        if (response.length() != 0) {
             try {
 
 //                Log.d("response", response.getString("support"));
 //                Log.d("response", response.getString("affected"));
 
-                if(response.getString("support").equals("1")) {
+                if (response.getString("support").equals("1")) {
                     holder.like.setTextColor(Color.BLUE);
                     holder.like_no.setTextColor(Color.BLUE);
                     holder.like_logo.setImageResource(R.drawable.ic_favorite_black_24dp);
@@ -171,7 +153,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                     holder.like_logo.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 }
 
-                if(response.getString("affected").equals("1")) {
+                if (response.getString("affected").equals("1")) {
                     holder.follow.setTextColor(Color.BLUE);
                     holder.follow_no.setTextColor(Color.BLUE);
                     holder.follow_logo.setImageResource(R.drawable.ic_star_black_24dp);
@@ -199,7 +181,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
             @Override
             public void onClick(View view) {
 
-                if(holder.like.getCurrentTextColor() == Color.BLUE) {
+                if (holder.like.getCurrentTextColor() == Color.BLUE) {
 
                     holder.like.setTextColor(Color.BLACK);
                     holder.like_no.setTextColor(Color.BLACK);
@@ -209,8 +191,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                     holder.like_no.setText(support);
                     updateResponse("support", 0, news.getId(), news.getSupport());
 
-                }
-                else {
+                } else {
 
                     holder.like.setTextColor(Color.BLUE);
                     holder.like_no.setTextColor(Color.BLUE);
@@ -228,7 +209,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
             @Override
             public void onClick(View view) {
 
-                if(holder.follow.getCurrentTextColor() == Color.BLUE){
+                if (holder.follow.getCurrentTextColor() == Color.BLUE) {
 
                     holder.follow.setTextColor(Color.BLACK);
                     holder.follow_no.setTextColor(Color.BLACK);
@@ -238,7 +219,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                     holder.follow_no.setText(affect);
                     updateResponse("affected", 0, news.getId(), news.getAffected());
 
-                } else{
+                } else {
 
                     holder.follow.setTextColor(Color.BLUE);
                     holder.follow_no.setTextColor(Color.BLUE);
@@ -274,6 +255,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         newslist.add(s);
         notifyDataSetChanged();
     }
+
     /*
     CLEAR DATA FROM ADAPTER
      */
@@ -282,14 +264,14 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         notifyDataSetChanged();
     }
 
-    private void updateResponse(final String type,final int value, final String report_id, final int initial){
+    private void updateResponse(final String type, final int value, final String report_id, final int initial) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.UPDATE_RESPONSE,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 //                        Log.d("result", response);
-                        if(response.equals("success")){
+                        if (response.equals("success")) {
                             db_offline.updateResponse(type, value, session.getUserID(), report_id, initial);
                         }
                     }
@@ -300,11 +282,11 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
-                map.put("user_id",session.getUserID());
+                Map<String, String> map = new HashMap<>();
+                map.put("user_id", session.getUserID());
                 map.put("report_id", report_id);
                 map.put("type", type);
                 map.put("value", String.valueOf(value));
@@ -316,7 +298,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         requestQueue.add(stringRequest);
     }
 
-    private String get_date(String type, String time){
+    private String get_date(String type, String time) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -329,12 +311,12 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
 
         String day = null;
 
-        switch (type){
+        switch (type) {
             case "day":
                 try {
                     Date date = dateFormat.parse(time);
                     day = dateFormat2.format(date);
-                } catch (ParseException e){
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -343,7 +325,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
                 try {
                     Date date = dateFormat.parse(time);
                     day = dateFormat3.format(date);
-                } catch (ParseException e){
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -352,7 +334,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         return day;
     }
 
-    private String get_time(String time){
+    private String get_time(String time) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -370,12 +352,12 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
 
-            if(diffDays>0) {
+            if (diffDays > 0) {
                 return String.valueOf(dateFormat2.format(date));
-            } else if(diffHours>=1) {
+            } else if (diffHours >= 1) {
                 return String.format("%s hour ago", diffHours);
-            } else if(diffMinutes<60) {
-                return String.format("%s minute ago",diffMinutes);
+            } else if (diffMinutes < 60) {
+                return String.format("%s minute ago", diffMinutes);
             } else {
                 return String.valueOf(0);
             }
@@ -400,8 +382,7 @@ public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.MyVi
         return newslist == null ? 0 : newslist.size();
     }
 
-    public void filter(ArrayList<ComplaintModel> filterList)
-    {
+    public void filter(ArrayList<ComplaintModel> filterList) {
         newslist = new ArrayList<>();
         newslist.addAll(filterList);
         notifyDataSetChanged();

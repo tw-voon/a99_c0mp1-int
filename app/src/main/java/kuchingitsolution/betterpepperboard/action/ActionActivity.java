@@ -1,17 +1,13 @@
 package kuchingitsolution.betterpepperboard.action;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,9 +28,8 @@ import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
-import kuchingitsolution.betterpepperboard.helper.Session;
 
-public class ActionActivity extends AppCompatActivity{
+public class ActionActivity extends AppCompatActivity {
 
     private RecyclerView action_recycler_view;
     private ActionAdapter actionAdapter;
@@ -47,22 +42,22 @@ public class ActionActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_action);
 
-        if(getActionBar() != null)
+        if (getActionBar() != null)
             getActionBar().setHomeButtonEnabled(true);
 
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         tvOfficerName = (TextView) findViewById(R.id.tvOfficerName);
 
-        if(getIntent() != null){
+        if (getIntent() != null) {
             report_id = getIntent().getStringExtra("report_id");
             officer_name = getIntent().getStringExtra("officer_name");
             status_id = getIntent().getStringExtra("status_id");
 
-            if(status_id.equals("1"))
+            if (status_id.equals("1"))
                 tvStatus.setText("Solved");
             else tvStatus.setText("Unsolved");
 
-            if(officer_name.equals("NULL"))
+            if (officer_name.equals("NULL"))
                 tvOfficerName.setText("No Officer Assigned");
             else
                 tvOfficerName.setText(officer_name);
@@ -84,7 +79,7 @@ public class ActionActivity extends AppCompatActivity{
         get_action();
     }
 
-    private void get_action(){
+    private void get_action() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GET_ACTION,
                 new Response.Listener<String>() {
                     @Override
@@ -102,11 +97,11 @@ public class ActionActivity extends AppCompatActivity{
                         Log.d("Error", error.toString());
 
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<String,String>();
-                map.put("report_id",report_id);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("report_id", report_id);
                 return map;
             }
         };
@@ -115,14 +110,13 @@ public class ActionActivity extends AppCompatActivity{
         requestQueue.add(stringRequest);
     }
 
-    private void process_action(String result){
+    private void process_action(String result) {
 
         try {
             JSONArray jsonArray = new JSONArray(result);
             int length = jsonArray.length();
 
-            for (int i = 0; i < length; i++)
-            {
+            for (int i = 0; i < length; i++) {
                 JSONObject action = jsonArray.getJSONObject(i);
 
                 ActionModel actionModel = new ActionModel(
@@ -140,6 +134,7 @@ public class ActionActivity extends AppCompatActivity{
             e.printStackTrace();
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();

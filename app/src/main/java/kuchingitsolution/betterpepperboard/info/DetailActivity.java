@@ -1,14 +1,15 @@
 package kuchingitsolution.betterpepperboard.info;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,8 +29,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.data;
-
 public class DetailActivity extends AppCompatActivity {
 
     private List<DetailsModel> detailModelList = new ArrayList<>();
@@ -45,7 +44,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -61,23 +60,23 @@ public class DetailActivity extends AppCompatActivity {
 
         get_offline_data();
 
-        if(Network.isNetworkStatusAvailable(this))
+        if (Network.isNetworkStatusAvailable(this))
             get_details();
         else
             get_offline_data();
     }
 
-    private void get_offline_data(){
+    private void get_offline_data() {
         String result = db_offline.getDetailsInfo(category_id);
         Log.d("length", "result " + result.equals("[]"));
-        if(!result.equals("[]"))
+        if (!result.equals("[]"))
             process_result(result, Config.OFFLINE);
         else {
             loading.setVisibility(View.GONE);
         }
     }
 
-    private void get_details(){
+    private void get_details() {
         loading.setVisibility(View.VISIBLE);
 
         new AsyncTask<String, Integer, String>() {
@@ -110,7 +109,7 @@ public class DetailActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Log.e("ANSWER", "" + result);
-                if(result == null || result.equals("null"))
+                if (result == null || result.equals("null"))
                     get_offline_data();
                 else
                     process_result(result, Config.ONLINE);
@@ -119,14 +118,14 @@ public class DetailActivity extends AppCompatActivity {
         }.execute(Config.DETAIL_URL);
     }
 
-    private void process_result(String result, int status){
-        if(detailModelList.size() > 0)
+    private void process_result(String result, int status) {
+        if (detailModelList.size() > 0)
             detailModelList.clear();
 
         try {
             JSONArray jsonArray = new JSONArray(result);
             int length = jsonArray.length();
-            for(int i = 0; i < length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 DetailsModel detailsModel = new DetailsModel(
                         jsonObject.getString("id"),
@@ -137,7 +136,7 @@ public class DetailActivity extends AppCompatActivity {
                 detailModelList.add(detailsModel);
             }
 
-            if(status == Config.ONLINE)
+            if (status == Config.ONLINE)
                 db_offline.insertDetails(result);
 
             detailsAdapter.notifyDataSetChanged();

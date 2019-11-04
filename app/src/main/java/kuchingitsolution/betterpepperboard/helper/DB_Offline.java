@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -30,7 +29,7 @@ public class DB_Offline extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME ="pepper_board";
+    private static final String DATABASE_NAME = "pepper_board";
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String USERNAME = "username";
@@ -153,9 +152,9 @@ public class DB_Offline extends SQLiteOpenHelper {
                 + UPDATED_AT + " DATETIME" + ")";
 
         /*  offline data to store
-        *   id, user_id, username, type_id, type_name, location_id, location_name, lat, lon, status_id, status_name
-        *   officer_id, officer_name, media_type, link, last_action, title, description, affected, support, link
-        * */
+         *   id, user_id, username, type_id, type_name, location_id, location_name, lat, lon, status_id, status_name
+         *   officer_id, officer_name, media_type, link, last_action, title, description, affected, support, link
+         * */
 
         String CREATE_COMPLAINT_TABLE = "CREATE TABLE " + TABLE_REPORT + "("
                 + ID + " VARCHAR PRIMARY KEY,"
@@ -310,7 +309,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public void clearTable(){
+    public void clearTable() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_COMMENT, null, null);
         db.delete(TABLE_USER, null, null);
@@ -328,7 +327,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertNotification(NotificationModel notificationModel){
+    public void insertNotification(NotificationModel notificationModel) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -348,19 +347,19 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public void deleteNotification(){
+    public void deleteNotification() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(NOTIFICATION_TABLE, null, null);
         db.close();
     }
 
-    public void deleteRoom(){
+    public void deleteRoom() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(CHAT_ROOM_TABLE, null, null);
         db.close();
     }
 
-    public void insertMap(MapsModel mapsModel){
+    public void insertMap(MapsModel mapsModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
 
@@ -375,7 +374,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         item.put(IMGLINK, mapsModel.getImgLink());
         item.put(CREATED_AT, mapsModel.getCreated_at());
 
-        if(ifExistsMap(mapsModel.getReportID()))
+        if (ifExistsMap(mapsModel.getReportID()))
             db.update(MAPSMODELS, item, " id = '" + mapsModel.getLocation_id() + "'", null);
         else
             db.insert(MAPSMODELS, null, item);
@@ -386,7 +385,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public void insertRoom(UserListModel userListModel){
+    public void insertRoom(UserListModel userListModel) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -399,7 +398,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         item.put(LAST_SEEN, userListModel.getLast_seen());
         item.put(LAST_MSG, userListModel.getLast_msg());
 
-        if(ifRoomExists(userListModel.getRoom_id()))
+        if (ifRoomExists(userListModel.getRoom_id()))
             db.update(CHAT_ROOM_TABLE, item, " id = '" + userListModel.getRoom_id() + "'", null);
         else
             db.insert(CHAT_ROOM_TABLE, null, item);
@@ -409,7 +408,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void changeRoomName(String name, String room_id){
+    public void changeRoomName(String name, String room_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
 
@@ -424,18 +423,18 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public void deleteRoom(String room_id){
+    public void deleteRoom(String room_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
 
-        db.delete(CHAT_ROOM_TABLE, ID + " = ?", new String[] { room_id });
+        db.delete(CHAT_ROOM_TABLE, ID + " = ?", new String[]{room_id});
 
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
     }
 
-    public void insertResponse(JSONArray data){
+    public void insertResponse(JSONArray data) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RESPONSE, null, null);
         db.beginTransaction();
@@ -465,7 +464,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertAction(JSONArray data){
+    public void insertAction(JSONArray data) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTION, null, null);
         db.beginTransaction();
@@ -495,7 +494,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertReportMedia(JSONObject data){
+    public void insertReportMedia(JSONObject data) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_REPORT_MEDIA, null, null);
         db.beginTransaction();
@@ -518,7 +517,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertReportType(String result){
+    public void insertReportType(String result) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_REPORT_TYPE, null, null);
@@ -527,7 +526,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         try {
             JSONArray data = new JSONArray(result);
             int length = data.length();
-            for (int i = 0; i<length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 ContentValues item = new ContentValues();
                 item.put(ID, jsonObject.getString("id"));
@@ -547,7 +546,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertInfo(String result){
+    public void insertInfo(String result) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_INFO, null, null);
@@ -556,7 +555,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         try {
             JSONArray data = new JSONArray(result);
             int length = data.length();
-            for (int i = 0; i<length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 ContentValues item = new ContentValues();
                 item.put(ID, jsonObject.getString("id"));
@@ -576,7 +575,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertDetails(String result){
+    public void insertDetails(String result) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_DETAILS, null, null);
@@ -585,7 +584,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         try {
             JSONArray data = new JSONArray(result);
             int length = data.length();
-            for (int i = 0; i<length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 ContentValues item = new ContentValues();
                 item.put(ID, jsonObject.getString("id"));
@@ -608,7 +607,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public void insertHotline(String result){
+    public void insertHotline(String result) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_HOTLINE, null, null);
@@ -617,7 +616,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         try {
             JSONArray data = new JSONArray(result);
             int length = data.length();
-            for (int i = 0; i<length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 ContentValues item = new ContentValues();
                 item.put(ID, jsonObject.getString("id"));
@@ -639,7 +638,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertReport(String result){
+    public void insertReport(String result) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_REPORT, null, null);
@@ -650,7 +649,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             JSONArray jsonArray;
             jsonArray = data.getJSONArray("data");
             int length = jsonArray.length();
-            for (int i = 0; i<length; i++){
+            for (int i = 0; i < length; i++) {
 
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 ContentValues item = new ContentValues();
@@ -712,14 +711,14 @@ public class DB_Offline extends SQLiteOpenHelper {
             String title, String description, int affected, int support, String created, String updated
                         */
 
-    public void clearComplaint(String status){
+    public void clearComplaint(String status) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_REPORT, STATUS_ID + "=" + status, null);
         Log.d("page", "clear");
         db.close();
     }
 
-    public void insertComplaint(JSONObject data){
+    public void insertComplaint(JSONObject data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -742,7 +741,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             item.put(STATUS_ID, data.getInt("status_id"));
             item.put(STATUS_NAME, data.getJSONObject("status").getString("name"));
             item.put(OFFICER_ID, data.optInt("officer_id"));
-            if(data.isNull("officer"))
+            if (data.isNull("officer"))
                 item.put(OFFICER_NAME, "NULL");
             else
                 item.put(OFFICER_NAME, data.getJSONObject("officer").optString("name"));
@@ -761,7 +760,7 @@ public class DB_Offline extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        if(ifExists(id))
+        if (ifExists(id))
             ids = db.update(TABLE_REPORT, item, " id = '" + id + "'", null);
         else
             ids = db.insert(TABLE_REPORT, null, item);
@@ -773,24 +772,23 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public int get_total(int status)
-    {
+    public int get_total(int status) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT " + STATUS_ID + " FROM " + TABLE_REPORT + " WHERE " + STATUS_ID + "= '"+ status + "'";
-        cursor= db.rawQuery(checkQuery,null);
+        String checkQuery = "SELECT " + STATUS_ID + " FROM " + TABLE_REPORT + " WHERE " + STATUS_ID + "= '" + status + "'";
+        cursor = db.rawQuery(checkQuery, null);
         int exists = cursor.getCount();
         cursor.close();
         return exists;
     }
 
-    public int get_support(String report_id){
+    public int get_support(String report_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT support FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ report_id + "'";
+        String checkQuery = "SELECT support FROM " + TABLE_REPORT + " WHERE " + ID + "= '" + report_id + "'";
         cursor = db.rawQuery(checkQuery, null);
         int support = 0;
-        if(cursor.moveToFirst())
+        if (cursor.moveToFirst())
             support = Integer.valueOf(cursor.getString(0));
         else Log.d("Result", "support : 0");
 //        Log.d("support", support + " ");
@@ -798,13 +796,13 @@ public class DB_Offline extends SQLiteOpenHelper {
         return support;
     }
 
-    public int get_affect(String report_id){
+    public int get_affect(String report_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT "+ AFFECTED +" FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ report_id + "'";
+        String checkQuery = "SELECT " + AFFECTED + " FROM " + TABLE_REPORT + " WHERE " + ID + "= '" + report_id + "'";
         cursor = db.rawQuery(checkQuery, null);
         int affect = 0;
-        if(cursor.moveToFirst())
+        if (cursor.moveToFirst())
             affect = Integer.valueOf(cursor.getString(0));
         else Log.d("Result", "support : 0");
 //        Log.d("support", affect + " ");
@@ -812,57 +810,54 @@ public class DB_Offline extends SQLiteOpenHelper {
         return affect;
     }
 
-    private boolean ifRoomExists(String id)
-    {
+    private boolean ifRoomExists(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT " + ID + " FROM " + CHAT_ROOM_TABLE + " WHERE " + ID + "= '"+ id + "'";
-        cursor= db.rawQuery(checkQuery,null);
+        String checkQuery = "SELECT " + ID + " FROM " + CHAT_ROOM_TABLE + " WHERE " + ID + "= '" + id + "'";
+        cursor = db.rawQuery(checkQuery, null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
 
-    private boolean ifExists(String id)
-    {
+    private boolean ifExists(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT " + ID + " FROM " + TABLE_REPORT + " WHERE " + ID + "= '"+ id + "'";
-        cursor= db.rawQuery(checkQuery,null);
+        String checkQuery = "SELECT " + ID + " FROM " + TABLE_REPORT + " WHERE " + ID + "= '" + id + "'";
+        cursor = db.rawQuery(checkQuery, null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
 
-    private boolean ifExistsMap(String id)
-    {
+    private boolean ifExistsMap(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT " + ID + " FROM " + MAPSMODELS + " WHERE " + ID + "= '"+ id + "'";
-        cursor= db.rawQuery(checkQuery,null);
+        String checkQuery = "SELECT " + ID + " FROM " + MAPSMODELS + " WHERE " + ID + "= '" + id + "'";
+        cursor = db.rawQuery(checkQuery, null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
 
-    private boolean ifResponseExists(String report_id, String user_id){
+    private boolean ifResponseExists(String report_id, String user_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = null;
-        String checkQuery = "SELECT * FROM " + TABLE_RESPONSE + " WHERE " + REPORT_ID + "= '"+ report_id + "'" + " AND " + USER_ID + "= " + user_id;
-        cursor= db.rawQuery(checkQuery,null);
+        String checkQuery = "SELECT * FROM " + TABLE_RESPONSE + " WHERE " + REPORT_ID + "= '" + report_id + "'" + " AND " + USER_ID + "= " + user_id;
+        cursor = db.rawQuery(checkQuery, null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
 
-    public void insertReportStatus(JSONArray status){
+    public void insertReportStatus(JSONArray status) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTION, null, null);
         db.beginTransaction();
 
         try {
             int length = status.length();
-            for(int i = 0; i < length; i++){
+            for (int i = 0; i < length; i++) {
                 JSONObject action = status.getJSONObject(i);
                 ContentValues item = new ContentValues();
                 item.put(ID, action.getString(ID));
@@ -892,15 +887,15 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-                ContentValues item = new ContentValues();
-                item.put(ID, user.getString(ID));
-                item.put(NAME, user.getString(NAME));
-                item.put(ROLE_ID, user.getString(ROLE_ID));
-                item.put(CREATED_AT, user.getString(CREATED_AT));
-                item.put(UPDATED_AT, user.getString(UPDATED_AT));
+            ContentValues item = new ContentValues();
+            item.put(ID, user.getString(ID));
+            item.put(NAME, user.getString(NAME));
+            item.put(ROLE_ID, user.getString(ROLE_ID));
+            item.put(CREATED_AT, user.getString(CREATED_AT));
+            item.put(UPDATED_AT, user.getString(UPDATED_AT));
 
-                long tag_id = db.insert(TABLE_USER, null, item);
-                Log.d("user id = ", tag_id + " ");
+            long tag_id = db.insert(TABLE_USER, null, item);
+            Log.d("user id = ", tag_id + " ");
 
             db.setTransactionSuccessful();
         } catch (JSONException e) {
@@ -911,7 +906,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insert_report_media(JSONObject media){
+    public void insert_report_media(JSONObject media) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_REPORT_MEDIA, null, null);
         db.beginTransaction();
@@ -935,7 +930,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insert_location(JSONObject location){
+    public void insert_location(JSONObject location) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_LOCATION, null, null);
         db.beginTransaction();
@@ -961,7 +956,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Cursor get_notification(){
+    public Cursor get_notification() {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> notification = new ArrayList<>();
 
@@ -972,7 +967,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return db.rawQuery(SELECT_NOTIFICATION, null);
     }
 
-    public String getComplaint(int status, int next){
+    public String getComplaint(int status, int next) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> complaintData = new ArrayList<>();
@@ -984,7 +979,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1026,7 +1021,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return String.valueOf(complaintData);
     }
 
-    public String get_Single_Complaint(String report_id){
+    public String get_Single_Complaint(String report_id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> complaintData = new ArrayList<>();
@@ -1038,7 +1033,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1091,7 +1086,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 //            + IMGLINK + " VARCHAR,"
 //            + CREATED_AT + " DATETIME" + ")";
 
-    public String get_map(String id){
+    public String get_map(String id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> news_list = new ArrayList<>();
@@ -1103,7 +1098,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(SELECT_LISTS, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -1128,7 +1123,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return String.valueOf(news_list);
     }
 
-    public Cursor get_room(){
+    public Cursor get_room() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<UserListModel> complaintData = new ArrayList<>();
 
@@ -1140,7 +1135,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return db.rawQuery(SELECT_ROOM, null);
     }
 
-    public JSONObject ifResponse(String report_id){
+    public JSONObject ifResponse(String report_id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> responseData = new ArrayList<>();
@@ -1155,7 +1150,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(CHECK_RESPONSE, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result response", DatabaseUtils.dumpCursorToString(cursor));
             try {
                 jsonObject.put(SUPPORTED, cursor.getString(3));
@@ -1173,7 +1168,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return jsonObject;
     }
 
-    public String getSingleReport(String id){
+    public String getSingleReport(String id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> complaintData = new ArrayList<>();
@@ -1185,7 +1180,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1228,7 +1223,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public String getHotline(){
+    public String getHotline() {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> hotlineData = new ArrayList<>();
@@ -1237,7 +1232,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Log.d("query", SELECT_COMPLAINTS);
         Cursor cursor = db.rawQuery(SELECT_COMPLAINTS, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1260,7 +1255,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return String.valueOf(hotlineData);
     }
 
-    public String getInfo(){
+    public String getInfo() {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> infoData = new ArrayList<>();
         String SELECT_INFO = String.format("SELECT * FROM %S",
@@ -1268,7 +1263,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Log.d("query", SELECT_INFO);
         Cursor cursor = db.rawQuery(SELECT_INFO, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1289,7 +1284,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return String.valueOf(infoData);
     }
 
-    public String getReportType(){
+    public String getReportType() {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> reportData = new ArrayList<>();
         String SELECT_INFO = String.format("SELECT * FROM %S",
@@ -1297,7 +1292,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Log.d("query", SELECT_INFO);
         Cursor cursor = db.rawQuery(SELECT_INFO, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 //            Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1318,7 +1313,7 @@ public class DB_Offline extends SQLiteOpenHelper {
         return String.valueOf(reportData);
     }
 
-    public String getDetailsInfo(int id){
+    public String getDetailsInfo(int id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<JSONObject> detailData = new ArrayList<>();
@@ -1327,7 +1322,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
         Log.d("query", SELECT_DETAIL);
         Cursor cursor = db.rawQuery(SELECT_DETAIL, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             Log.d("Result complaint", DatabaseUtils.dumpCursorToString(cursor));
             do {
                 JSONObject jsonObject = new JSONObject();
@@ -1351,13 +1346,13 @@ public class DB_Offline extends SQLiteOpenHelper {
 
     }
 
-    public boolean updateResponse(String type, int value, String user_id, String report_id, int initial){
+    public boolean updateResponse(String type, int value, String user_id, String report_id, int initial) {
         SQLiteDatabase db = this.getReadableDatabase();
         long id = 0;
 
-        switch (type){
+        switch (type) {
             case "support":
-                if(ifResponseExists(report_id, user_id)){
+                if (ifResponseExists(report_id, user_id)) {
                     ContentValues item = new ContentValues();
                     item.put("support", value);
                     id = db.update(TABLE_RESPONSE, item, " report_id ='" + report_id + "' AND user_id =" + user_id, null);
@@ -1378,7 +1373,7 @@ public class DB_Offline extends SQLiteOpenHelper {
 
                 break;
             case "affected":
-                if(ifResponseExists(report_id, user_id)){
+                if (ifResponseExists(report_id, user_id)) {
                     ContentValues item = new ContentValues();
                     item.put("affected", value);
                     id = db.update(TABLE_RESPONSE, item, " report_id ='" + report_id + "' AND user_id =" + user_id, null);

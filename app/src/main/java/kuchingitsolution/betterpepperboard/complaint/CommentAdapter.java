@@ -2,7 +2,7 @@ package kuchingitsolution.betterpepperboard.complaint;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +10,22 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import kuchingitsolution.betterpepperboard.R;
 
-public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder>{
+public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
 
     private List<CommentModel> comments;
     Context context;
@@ -31,6 +36,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
         public CircleImageView profile;
         public ImageView comment_img;
         public ProgressBar loading;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.username);
@@ -43,7 +49,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
 
     }
 
-    CommentAdapter(Context context, List<CommentModel> comments){
+    CommentAdapter(Context context, List<CommentModel> comments) {
         this.comments = comments;
         this.context = context;
     }
@@ -64,25 +70,35 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
         holder.username.setText(comment.getUsername());
         holder.message.setText(comment.getCommentmsg());
         holder.time.setText(comment.getTimeago());
-        if(comment.getImage_link().length() > 4){
+        if (comment.getImage_link().length() > 4) {
             holder.loading.setVisibility(View.VISIBLE);
             url = comment.getImage_link();
-            Glide.with(context)
+            Picasso.with(context).load(comment.getImage_link()).into(holder.comment_img, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    holder.loading.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+            /*Glide.with(context)
                     .load(comment.getImage_link())
-                    .listener(new RequestListener<String, GlideDrawable>() {
+                    .listener(new RequestListener<Drawable>() {
                         @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             holder.loading.setVisibility(View.GONE);
                             return false;
                         }
                     })
-                    .skipMemoryCache(false)
-                    .into(holder.comment_img);
+                    .into(holder.comment_img);*/
 
             holder.comment_img.setVisibility(View.VISIBLE);
             holder.comment_img.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +109,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
                     context.startActivity(intent);
                 }
             });
-        } else Glide.clear(holder.comment_img);
+        }
+//        else Glide.with(context).clear(holder.comment_img);
 
     }
 

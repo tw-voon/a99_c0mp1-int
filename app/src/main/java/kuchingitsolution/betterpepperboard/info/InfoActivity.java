@@ -1,9 +1,7 @@
 package kuchingitsolution.betterpepperboard.info;
 
 import android.content.Intent;
-import android.icu.text.IDNA;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +9,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +24,6 @@ import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Network;
-import kuchingitsolution.betterpepperboard.hotline.HotlineModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

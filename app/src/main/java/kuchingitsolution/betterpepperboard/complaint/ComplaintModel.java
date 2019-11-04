@@ -1,6 +1,5 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
-import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +10,7 @@ public class ComplaintModel {
     private int user_id, type_id, location_id, status_id, officer_id, media_type, affected, support;
     private double lat, lon;
 
-    public ComplaintModel(JSONObject complaint){
+    public ComplaintModel(JSONObject complaint) {
         try {
 
             this.id = complaint.getString("id");
@@ -43,56 +42,116 @@ public class ComplaintModel {
 
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
-    public String getReportTitle(){
-        return  title;
+
+    public String getReportTitle() {
+        return title;
     }
-    public String getNewsDescription(){
+
+    public String getNewsDescription() {
         return description;
     }
-    public String getCreated_at() { return created_at; }
-    public String getLink(){
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public String getLink() {
         return link;
     }
-    public String getId() { return id; }
-    public String getLocation_name(){ return location_name;}
-    public int getAffected() {return affected;}
-    public int getSupported() {return support; }
-    public int getUser_id(){ return  user_id; }
-    public int getStatus_id(){return status_id;}
-    public int getType_id(){return type_id;}
-    public int getLocation_id(){return location_id;}
-    public int getOfficer_id(){return officer_id;}
-    public int getMedia_type(){return media_type;}
-    public int getSupport(){return support;}
-    public String getOfficer_name() { return officer_name; }
-    public String getType_name(){return type_name;}
-    public String getTitle(){ return title;}
-    public String getDescription(){ return  description; }
-    public String getSuggestion() { return suggestion; }
-    public double getLat(){return lat;}
-    public double getLon(){return lon;}
 
-    public void setOfficer(int id, String name){
+    public String getId() {
+        return id;
+    }
+
+    public String getLocation_name() {
+        return location_name;
+    }
+
+    public int getAffected() {
+        return affected;
+    }
+
+    public int getSupported() {
+        return support;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public int getStatus_id() {
+        return status_id;
+    }
+
+    public int getType_id() {
+        return type_id;
+    }
+
+    public int getLocation_id() {
+        return location_id;
+    }
+
+    public int getOfficer_id() {
+        return officer_id;
+    }
+
+    public int getMedia_type() {
+        return media_type;
+    }
+
+    public int getSupport() {
+        return support;
+    }
+
+    public String getOfficer_name() {
+        return officer_name;
+    }
+
+    public String getType_name() {
+        return type_name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSuggestion() {
+        return suggestion;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setOfficer(int id, String name) {
         this.officer_id = id;
         this.officer_name = name;
     }
 
-    public void support(){
+    public void support() {
         this.support = this.support + 1;
     }
 
-    public void noSupport(){
+    public void noSupport() {
         this.support = this.support - 1;
     }
 
-    public void affected(){
+    public void affected() {
         this.affected = this.affected + 1;
     }
 
-    public void noAffected(){
+    public void noAffected() {
         this.affected = this.affected - 1;
     }
 }

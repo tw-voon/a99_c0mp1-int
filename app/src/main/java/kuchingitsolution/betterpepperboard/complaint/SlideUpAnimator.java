@@ -1,9 +1,10 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 public class SlideUpAnimator extends SimpleItemAnimator {
     @Override

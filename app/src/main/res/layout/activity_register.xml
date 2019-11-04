@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="10dp" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorBg">
@@ -44,9 +44,9 @@
                 android:inputType="text"
                 android:id="@+id/edtUsername"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorBg">
@@ -59,9 +59,9 @@
                 android:labelFor="@id/edtEmail"
                 android:inputType="textWebEmailAddress|text"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorBg">
@@ -75,9 +75,9 @@
                 android:labelFor="@id/edtPhone"
                 android:maxLines="1"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/new_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,9 +94,9 @@
                 android:labelFor="@+id/edtPassword"
                 android:singleLine="true" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/new_password_layout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
                 android:labelFor="@id/edtPswdAgain"
                 android:singleLine="true" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
             android:layout_width="match_parent"

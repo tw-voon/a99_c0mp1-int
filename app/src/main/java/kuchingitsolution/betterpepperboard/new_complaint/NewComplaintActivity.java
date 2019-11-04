@@ -1,26 +1,18 @@
 package kuchingitsolution.betterpepperboard.new_complaint;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.appcompat.BuildConfig;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -31,10 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -44,22 +39,17 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.helper.BottomSheetDialogUpload;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.ImageCompressionUtils;
-import kuchingitsolution.betterpepperboard.helper.RealPathUtils;
 import kuchingitsolution.betterpepperboard.helper.Session;
 import kuchingitsolution.betterpepperboard.helper.Utility;
 import kuchingitsolution.betterpepperboard.helper.network.ApiCall;
@@ -69,8 +59,6 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 
 import static android.R.attr.bitmap;
-import static kuchingitsolution.betterpepperboard.R.id.image;
-import static kuchingitsolution.betterpepperboard.R.id.loading;
 
 public class NewComplaintActivity extends AppCompatActivity {
 

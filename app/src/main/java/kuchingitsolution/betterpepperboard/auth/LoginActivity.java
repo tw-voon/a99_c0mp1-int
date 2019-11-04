@@ -1,27 +1,23 @@
 package kuchingitsolution.betterpepperboard.auth;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,9 +60,9 @@ public class LoginActivity extends AppCompatActivity {
 //        loading = findViewById(R.id.loading);
     }
 
-    private void modified_edt_field(int status){
+    private void modified_edt_field(int status) {
 
-        switch (status){
+        switch (status) {
             case 1:
                 edtUsername.setEnabled(true);
                 edtPassword.setEnabled(true);
@@ -88,16 +84,16 @@ public class LoginActivity extends AppCompatActivity {
     public void validateInfo() {
         String username = edtUsername.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
-        if(username.length() != 0 && password.length() != 0){
+        if (username.length() != 0 && password.length() != 0) {
             modified_edt_field(DISABLE);
             login.startAnimation();
             _login(username, password);
         } else {
-            Toast.makeText(LoginActivity.this, "Please input all the field.", Toast.LENGTH_LONG ).show();
+            Toast.makeText(LoginActivity.this, "Please input all the field.", Toast.LENGTH_LONG).show();
         }
     }
 
-    private void _login(final String username, final String password){
+    private void _login(final String username, final String password) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.LOGIN_URL,
                 new Response.Listener<String>() {
@@ -115,21 +111,21 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("Error", error.toString());
                         Toast.makeText(LoginActivity.this, "No Internet access", Toast.LENGTH_SHORT).show();
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String,String> map = new HashMap<String,String>();
-                map.put("name",username);
-                map.put("pass",password);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("name", username);
+                map.put("pass", password);
                 return map;
             }
         };
         PepperApps.getInstance(LoginActivity.this).addToRequestQueue(stringRequest, "TAG");
     }
 
-    private void process_login(String result){
+    private void process_login(String result) {
 
-        if(result.equals("fail")){
+        if (result.equals("fail")) {
             revert_();
             showMessage();
             return;
@@ -137,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             JSONObject jsonObject = new JSONObject(result);
-            if(jsonObject.getString("status").equals("success")){
+            if (jsonObject.getString("status").equals("success")) {
                 JSONObject user = jsonObject.getJSONObject("data");
                 login.doneLoadingAnimation(R.color.colorBg, BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_48dp));
                 session.setLoggedin(true);
@@ -154,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 //        loading.setVisibility(View.GONE);
     }
 
-    private void revert_(){
+    private void revert_() {
         login.doneLoadingAnimation(R.color.mt_red, BitmapFactory.decodeResource(getResources(), R.drawable.ic_close_white_24dp));
         login.revertAnimation();
         modified_edt_field(ENABLE);
@@ -169,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    private void showMessage(){
+    private void showMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         builder.setTitle("Credential fail");
         builder.setMessage("Wrong email or password");

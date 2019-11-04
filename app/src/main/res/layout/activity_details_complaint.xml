@@ -257,7 +257,7 @@
                 android:text="@string/info_no_comment"
                 android:id="@+id/no_comment"/>
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/comment_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

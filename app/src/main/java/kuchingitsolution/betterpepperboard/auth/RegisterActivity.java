@@ -3,18 +3,17 @@ package kuchingitsolution.betterpepperboard.auth;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
-import kuchingitsolution.betterpepperboard.MainActivity;
 import kuchingitsolution.betterpepperboard.MainActivity2;
 import kuchingitsolution.betterpepperboard.PepperApps;
 import kuchingitsolution.betterpepperboard.R;

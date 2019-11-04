@@ -2,12 +2,12 @@ package kuchingitsolution.betterpepperboard.helper;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.squareup.picasso.Picasso;
 
 import kuchingitsolution.betterpepperboard.R;

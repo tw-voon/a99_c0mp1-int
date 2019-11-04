@@ -3,21 +3,22 @@ package kuchingitsolution.betterpepperboard.action;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.Image;
-import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Picasso;
@@ -26,7 +27,6 @@ import java.util.List;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.complaint.ImageFullscreenActivity;
-import kuchingitsolution.betterpepperboard.helper.GlideProgressive;
 
 public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.MyViewHolder> {
 
@@ -63,22 +63,32 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.MyViewHold
 
         if(actionModel.getMedia_type() != 0){
             holder.loading.setVisibility(View.VISIBLE);
-            Glide.with(context)
+            Picasso.with(context).load(actionModel.getLink()).into(holder.image_attach, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    holder.loading.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+            /*Glide.with(context)
                     .load(actionModel.getLink())
-                    .listener(new RequestListener<String, GlideDrawable>() {
+                    .listener(new RequestListener<Drawable>() {
                         @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             holder.loading.setVisibility(View.GONE);
                             return false;
                         }
                     })
-                    .skipMemoryCache(false)
-                    .into(holder.image_attach);
+                    .into(holder.image_attach);*/
 
             holder.image_attach.setVisibility(View.VISIBLE);
             Log.d("link", " id " + actionModel.getAction_taken());
@@ -91,7 +101,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.MyViewHold
                     context.startActivity(intent);
                 }
             });
-        } else Glide.clear(holder.image_attach);
+        }
+//        else Glide.with(context).clear(holder.image_attach);
 
         holder.action_taken.setText(actionModel.getAction_taken());
         holder.action_time.setText(actionModel.getCreated_at());

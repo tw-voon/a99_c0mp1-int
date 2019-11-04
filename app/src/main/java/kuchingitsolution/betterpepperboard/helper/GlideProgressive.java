@@ -54,14 +54,13 @@ public class GlideProgressive {
                     }
                 });
 
-        Glide.get(context)
-                .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(okClient.build()));
+        // Glide.get(context).getRegistry()
+                // .register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(okClient.build()));
     }
 
     public void startDownload(String url, ImageView img) {
         Glide.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(img);
     }
 

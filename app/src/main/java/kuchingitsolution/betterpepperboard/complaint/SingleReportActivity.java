@@ -1,6 +1,5 @@
 package kuchingitsolution.betterpepperboard.complaint;
 
-import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -15,17 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +32,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,9 +51,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,7 +167,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         fetch_single_date(report_id);
     }
 
-    private void fetch_single_date(final String report_id){
+    private void fetch_single_date(final String report_id) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.SINGLE_REPORT,
                 new Response.Listener<String>() {
@@ -188,10 +192,10 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                         Log.d("error1", error.toString());
                         Toast.makeText(SingleReportActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 map.put("report_id", report_id);
                 return map;
             }
@@ -201,7 +205,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         requestQueue.add(stringRequest);
     }
 
-    private void addComment(final String report_id, final String message){
+    private void addComment(final String report_id, final String message) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_AddComment,
                 new Response.Listener<String>() {
@@ -221,11 +225,11 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                         Toast.makeText(SingleReportActivity.this, "An Error occur, Please try again later " + error.toString(), Toast.LENGTH_SHORT).show();
 
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
-                map.put("report_id",report_id);
+                Map<String, String> map = new HashMap<>();
+                map.put("report_id", report_id);
                 map.put("user_id", session.getUserID());
                 map.put("comment", message);
                 return map;
@@ -236,7 +240,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         requestQueue.add(stringRequest);
     }
 
-    private void append_new_comment(String response){
+    private void append_new_comment(String response) {
         Log.d("comment_result", response + " -- ");
         JSONObject jsonObject;
         try {
@@ -263,7 +267,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    commentlist.getLayoutManager().smoothScrollToPosition(commentlist, null,commentAdapter.getItemCount()-1);
+                    commentlist.getLayoutManager().smoothScrollToPosition(commentlist, null, commentAdapter.getItemCount() - 1);
                 }
             }, 1000);
 
@@ -274,7 +278,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         }
     }
 
-    public void getComment(final String report_ID){
+    public void getComment(final String report_ID) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GetComment,
                 new Response.Listener<String>() {
@@ -293,11 +297,11 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                         Toast.makeText(SingleReportActivity.this, "An Error occur, Please try again later " + error.toString(), Toast.LENGTH_SHORT).show();
 
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
-                map.put("report_id",report_ID);
+                Map<String, String> map = new HashMap<>();
+                map.put("report_id", report_ID);
                 return map;
             }
         };
@@ -307,14 +311,14 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
     }
 
-    private void processComment(String response){
+    private void processComment(String response) {
 
         try {
             JSONArray jsonArray = new JSONArray(response);
 
-            if(jsonArray.length() != 0){
+            if (jsonArray.length() != 0) {
                 int length = jsonArray.length();
-                for(int i = 0; i < length; i++){
+                for (int i = 0; i < length; i++) {
 
                     JSONObject result = jsonArray.getJSONObject(i);
                     JSONObject user = result.getJSONObject("user");
@@ -346,7 +350,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
     }
 
-    private void initiate_data(final String report_id){
+    private void initiate_data(final String report_id) {
 
         String result = db_offline.getSingleReport(report_id);
         JSONArray jsonArray;
@@ -365,27 +369,27 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             officer_name = jsonObject.getString("officer_name");
             action = jsonObject.getString("last_action");
 
-            if(status_id.equals("1"))
+            if (status_id.equals("1"))
                 status = "Solved";
             else
                 status = "Unsolved";
 
-            if(menuItem!=null){
+            if (menuItem != null) {
 
-                if(session.getPosition().equals("3")){
+                if (session.getPosition().equals("3")) {
                     menuItem.setVisible(false);
                 } else if (session.getPosition().equals("2")) {
 
-                    if(!session.getUserID().equals(jsonObject.optString("officer_id", "NULL"))){
+                    if (!session.getUserID().equals(jsonObject.optString("officer_id", "NULL"))) {
                         menuItem.setVisible(false);
-                    } else if(jsonObject.getString("status_id").equals("1")){
+                    } else if (jsonObject.getString("status_id").equals("1")) {
                         menuItem.setVisible(false);
                     } else
                         menuItem.setVisible(true);
 
-                } else if(session.getPosition().equals("1")){
+                } else if (session.getPosition().equals("1")) {
 
-                    if(jsonObject.getString("status_id").equals("1")){
+                    if (jsonObject.getString("status_id").equals("1")) {
                         menuItem.setVisible(false);
                     } else
                         menuItem.setVisible(true);
@@ -393,7 +397,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                 }
             }
 
-            if(getSupportActionBar()!= null) {
+            if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(report_title);
             }
@@ -405,7 +409,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             timestamp.setText(get_time(jsonObject.getString("created_at")));
             category.setText(jsonObject.getString("type_name"));
 
-            if(jsonObject.optString("suggestion", "null").equals("null")){
+            if (jsonObject.optString("suggestion", "null").equals("null")) {
                 suggestion_layer.setVisibility(View.GONE);
             } else {
                 suggestion_layer.setVisibility(View.VISIBLE);
@@ -413,7 +417,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             }
 
 
-            if(jsonObject.getString("officer_name").equals("NULL")){
+            if (jsonObject.getString("officer_name").equals("NULL")) {
                 officer_incharge.setText("Waiting admin assign officer");
             } else
                 officer_incharge.setText("Assigned to : " + jsonObject.getString("officer_name"));
@@ -423,29 +427,27 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
             Log.d("linkss", url);
 
-            Glide.with(this)
+            Picasso.with(this).load(jsonObject.getString("link")).into(pic);
+/*            GlideApp.with(getApplicationContext())
                     .load(jsonObject.getString("link"))
-                    .listener(new RequestListener<String, GlideDrawable>() {
+                    .listener(new RequestListener<Drawable>() {
                         @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            Log.d("linkss", "fails");
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            Log.d("linkss", "success");
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             return false;
                         }
                     })
-                    .crossFade()
-                    .into(pic);
+                    .into(pic);*/
             pic.setVisibility(View.VISIBLE);
             JSONObject response = db_offline.ifResponse(report_id);
 
-            if(response.length() != 0){
+            if (response.length() != 0) {
 
-                if(response.getString("support").equals("1")) {
+                if (response.getString("support").equals("1")) {
                     like.setTextColor(Color.BLUE);
                     like_no.setTextColor(Color.BLUE);
                     like_logo.setImageResource(R.drawable.ic_favorite_black_24dp);
@@ -455,7 +457,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                     like_logo.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 }
 
-                if(response.getString("affected").equals("1")) {
+                if (response.getString("affected").equals("1")) {
                     follow.setTextColor(Color.BLUE);
                     follow_no.setTextColor(Color.BLUE);
                     follow_logo.setImageResource(R.drawable.ic_star_black_24dp);
@@ -477,8 +479,8 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
             }
             setResponse(jsonObject.getInt("affected"), jsonObject.getInt("support"));
-            like_no.setText(String.format("(%S)",support_no));
-            follow_no.setText(String.format("(%S)",affected_no));
+            like_no.setText(String.format("(%S)", support_no));
+            follow_no.setText(String.format("(%S)", affected_no));
             last_status.setText(jsonObject.getString("last_action"));
 
         } catch (JSONException e) {
@@ -489,7 +491,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             @Override
             public void onClick(View view) {
 
-                if(like.getCurrentTextColor() == Color.BLUE) {
+                if (like.getCurrentTextColor() == Color.BLUE) {
 
                     like.setTextColor(Color.BLACK);
                     like_no.setTextColor(Color.BLACK);
@@ -498,8 +500,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                     String support = String.format("(%S)", getSupport_no());
                     like_no.setText(support);
 
-                }
-                else {
+                } else {
 
                     like.setTextColor(Color.BLUE);
                     like_no.setTextColor(Color.BLUE);
@@ -516,7 +517,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             @Override
             public void onClick(View view) {
 
-                if(follow.getCurrentTextColor() == Color.BLUE) {
+                if (follow.getCurrentTextColor() == Color.BLUE) {
 
                     follow.setTextColor(Color.BLACK);
                     follow_no.setTextColor(Color.BLACK);
@@ -525,8 +526,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                     String support = String.format("(%S)", getAffected_no());
                     follow_no.setText(support);
 
-                }
-                else {
+                } else {
 
                     follow.setTextColor(Color.BLUE);
                     follow_no.setTextColor(Color.BLUE);
@@ -553,7 +553,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         last_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!report_id.isEmpty()){
+                if (!report_id.isEmpty()) {
                     Intent intent = new Intent(SingleReportActivity.this, ActionActivity.class);
                     intent.putExtra("report_id", report_id);
                     intent.putExtra("officer_name", officer_name);
@@ -574,7 +574,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         });
     }
 
-    private String get_time(String time){
+    private String get_time(String time) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -593,31 +593,31 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
     }
 
-    private void setResponse(int affect, int support){
+    private void setResponse(int affect, int support) {
         this.affected_no = affect;
         this.support_no = support;
     }
 
-    private int getAffected_no(){
+    private int getAffected_no() {
         return affected_no;
     }
 
-    private int getSupport_no(){
+    private int getSupport_no() {
         return support_no;
     }
 
-    private void updateResponse(String type, String action){
+    private void updateResponse(String type, String action) {
 
-        switch (type){
+        switch (type) {
             case "support":
-                if(action.equals("add")){
+                if (action.equals("add")) {
                     int temp_support = getSupport_no();
                     setResponse(getAffected_no(), temp_support + 1);
                     Log.d("currentsupportclick", getSupport_no() + " ");
                     updateResponse("support", 1, report_id, getSupport_no());
                 }
 
-                if(action.equals("minus")){
+                if (action.equals("minus")) {
                     int temp_support = getSupport_no();
                     setResponse(getAffected_no(), temp_support - 1);
                     Log.d("currentsupportclick", getSupport_no() + " ");
@@ -626,12 +626,12 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                 break;
 
             case "follow":
-                if(action.equals("add")){
+                if (action.equals("add")) {
                     setResponse(getAffected_no() + 1, getSupport_no());
                     updateResponse("affected", 1, report_id, getAffected_no());
                 }
 
-                if(action.equals("minus")){
+                if (action.equals("minus")) {
                     setResponse(getAffected_no() - 1, getSupport_no());
                     updateResponse("affected", 0, report_id, getAffected_no());
                 }
@@ -639,14 +639,14 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         }
     }
 
-    private void updateResponse(final String type,final int value, final String report_id, final int initial){
+    private void updateResponse(final String type, final int value, final String report_id, final int initial) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.UPDATE_RESPONSE,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d("result", response);
-                        if(response.equals("success")){
+                        if (response.equals("success")) {
                             db_offline.updateResponse(type, value, session.getUserID(), report_id, initial);
                         }
                     }
@@ -657,11 +657,11 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(SingleReportActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
-                map.put("user_id",session.getUserID());
+                Map<String, String> map = new HashMap<>();
+                map.put("user_id", session.getUserID());
                 map.put("report_id", report_id);
                 map.put("type", type);
                 map.put("value", String.valueOf(value));
@@ -673,7 +673,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         requestQueue.add(stringRequest);
     }
 
-    private void setting_up(){
+    private void setting_up() {
 
         comments = new ArrayList<>();
         commentlist = findViewById(R.id.comment_list_view);
@@ -689,7 +689,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
         if (getIntent() != null) {
             report_id = getIntent().getStringExtra("report_id");
-            if(report_id != null)
+            if (report_id != null)
                 session.setCurrentId(report_id);
             else
                 report_id = session.getCurrentId();
@@ -701,32 +701,32 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         title = findViewById(R.id.title);
         username = findViewById(R.id.submit_by);
         pic = findViewById(R.id.complaint_image);
-        timestamp =  findViewById(R.id.submit_at);
-        officer_incharge =  findViewById(R.id.officer_incharge);
+        timestamp = findViewById(R.id.submit_at);
+        officer_incharge = findViewById(R.id.officer_incharge);
         category = findViewById(R.id.category);
         suggestion = findViewById(R.id.tvtSuggestion);
         suggestion_layer = findViewById(R.id.suggestion_layout);
 
         no_comment = findViewById(R.id.no_comment);
         btnsendComment = findViewById(R.id.btn_send);
-        edtcomment =  findViewById(R.id.message);
-        comment_section =  findViewById(R.id.commentsection);
+        edtcomment = findViewById(R.id.message);
+        comment_section = findViewById(R.id.commentsection);
         comment_img = findViewById(R.id.comment_img);
         attached_image = findViewById(R.id.attached_image);
-        sendComment =  findViewById(R.id.sendComment);
+        sendComment = findViewById(R.id.sendComment);
 
         follow = findViewById(R.id.follow);
         follow_no = findViewById(R.id.follow_no);
         follow_logo = findViewById(R.id.follow_logo);
-        like =  findViewById(R.id.like);
+        like = findViewById(R.id.like);
         like_no = findViewById(R.id.like_no);
         like_logo = findViewById(R.id.like_logo);
         like_region = findViewById(R.id.like_region);
         follow_region = findViewById(R.id.follow_region);
 
         loading_img = findViewById(R.id.loading_img);
-        last_status =  findViewById(R.id.last_status);
-        last_action =  findViewById(R.id.last_action);
+        last_status = findViewById(R.id.last_status);
+        last_action = findViewById(R.id.last_action);
 
         comment_img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -749,20 +749,20 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
         if (itemId == android.R.id.home) {
-            if(can_back)
+            if (can_back)
                 onBackPressed();
             return true;
         }
 
-        if(itemId == R.id.action_settings){
+        if (itemId == R.id.action_settings) {
 //            Toast.makeText(SingleReportActivity.this, "More click", Toast.LENGTH_SHORT).show();
-            if(session.getPosition().equals("3")) {
+            if (session.getPosition().equals("3")) {
                 statusBottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
                 statusBottomSheetDialogFragment.setData(status, action, url);
                 statusBottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
             } else {
 
-                if(session.getPosition().equals("2") && !officer_id.equals(session.getUserID())){
+                if (session.getPosition().equals("2") && !officer_id.equals(session.getUserID())) {
                     statusBottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
                     statusBottomSheetDialogFragment.setData(status, action, url);
                     statusBottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
@@ -783,14 +783,14 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
         BottomSheetDialogFragmentStatus bottomSheetDialogFragment = new BottomSheetDialogFragmentStatus();
         bottomSheetDialogFragment.setData(status, action, url);
-        if(status_id.equals("1"))
+        if (status_id.equals("1"))
             showMessage("This complaint already mark as Solved. If you wish to change please contact system admin");
         else
             bottomSheetDialogFragment.show(getSupportFragmentManager(), "Dialog");
 
     }
 
-    private void showMessage(String message){
+    private void showMessage(String message) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SingleReportActivity.this);
         alertDialogBuilder.setTitle("Restriction");
         alertDialogBuilder.setMessage(message);
@@ -806,15 +806,15 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     @Override
     public void assignOfficer() {
 
-        if(session.getPosition().equals("1")){
+        if (session.getPosition().equals("1")) {
             Intent intent = new Intent(SingleReportActivity.this, AssignActivity.class);
             intent.putExtra("title", title.getText());
             intent.putExtra("desc", desc.getText());
             intent.putExtra("img", reportLink);
             intent.putExtra("report_id", report_id);
             startActivityForResult(intent, 1001);
-        } else if (session.getPosition().equals("2")){
-            Intent intent = new Intent (SingleReportActivity.this, OfficerActivity.class);
+        } else if (session.getPosition().equals("2")) {
+            Intent intent = new Intent(SingleReportActivity.this, OfficerActivity.class);
             intent.putExtra("report_id", report_id);
             startActivityForResult(intent, 1002);
         }
@@ -824,19 +824,19 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1001 && resultCode == RESULT_OK){
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
             officer_name = data.getStringExtra("officer_name");
             String officer = String.format("Assigned to - %S", officer_name);
             officer_incharge.setText(officer);
-            if(officer_incharge.getVisibility() != View.VISIBLE)
+            if (officer_incharge.getVisibility() != View.VISIBLE)
                 officer_incharge.setVisibility(View.VISIBLE);
         }
 
-        Log.d("report id", resultCode +" code");
+        Log.d("report id", resultCode + " code");
 
-        if(requestCode == 1002 && resultCode == RESULT_OK){
+        if (requestCode == 1002 && resultCode == RESULT_OK) {
             last_status.setText(data.getStringExtra("action_taken"));
-            if(data.getStringExtra("status_id").equals("1")){
+            if (data.getStringExtra("status_id").equals("1")) {
                 menuItem.setVisible(false);
                 status_id = "1";
             }
@@ -845,26 +845,25 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
             imagePath = tempImgFile.getPath();
             Log.d("TAG", "File Saved::--->" + tempImgFile.getPath());
-            if(Build.VERSION.SDK_INT> 23) {
+            if (Build.VERSION.SDK_INT > 23) {
                 try {
                     selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), tempImgFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            else
+            } else
                 selectedImage = BitmapFactory.decodeFile(imagePath);
             imagePath = imageCompressionUtils.saveImage(selectedImage, this); /* change the image path to modified image */
             Log.d("TAG", "File Saved::--->" + imagePath);
             imgFile = new File(imagePath);
             Bitmap preview = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            attached_image.setImageBitmap(Bitmap.createScaledBitmap(preview, preview.getWidth() / 2 , preview.getHeight() / 2, false));
+            attached_image.setImageBitmap(Bitmap.createScaledBitmap(preview, preview.getWidth() / 2, preview.getHeight() / 2, false));
             attached_image.setVisibility(View.VISIBLE);
         }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            Log.d("result:","result code: " + uri.getLastPathSegment());
+            Log.d("result:", "result code: " + uri.getLastPathSegment());
             String path = imageCompressionUtils.compressImage(uri);
             try {
                 Uri imageUri = data.getData();
@@ -881,7 +880,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         }
     }
 
-    private Bitmap getResizedBitmap(Bitmap bitmap, int newWidth, int newHeight){
+    private Bitmap getResizedBitmap(Bitmap bitmap, int newWidth, int newHeight) {
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -896,22 +895,22 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
     }
 
     /* Image selection */
-     /* Select camera or image from gallery */
+    /* Select camera or image from gallery */
     public void selectImage() {
-        final CharSequence[] items = { "Take Photo", "Choose from Library",
-                "Cancel" };
+        final CharSequence[] items = {"Take Photo", "Choose from Library",
+                "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(SingleReportActivity.this);
         builder.setTitle("Add Photo!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                boolean result= Utility.checkPermission(SingleReportActivity.this);
+                boolean result = Utility.checkPermission(SingleReportActivity.this);
                 boolean write_external = Utility.check_write_external_permission(SingleReportActivity.this);
                 if (items[item].equals("Take Photo")) {
-                    if(result && write_external)
+                    if (result && write_external)
                         cameraIntent();
                 } else if (items[item].equals("Choose from Library")) {
-                    if(result)
+                    if (result)
                         galleryIntent();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -923,10 +922,10 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         builder.show();
     }
 
-    private void cameraIntent(){
+    private void cameraIntent() {
 
         Intent intent;
-        if(Build.VERSION.SDK_INT  < 24) {
+        if (Build.VERSION.SDK_INT < 24) {
             intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             tempImgFile = Uri.fromFile(createImageFile());
         } else {
@@ -939,11 +938,11 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
     }
 
-    private void galleryIntent(){
+    private void galleryIntent() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        startActivityForResult(Intent.createChooser(intent, "Select File"),PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_IMAGE_REQUEST);
     }
 
     private File createImageFile() {
@@ -953,7 +952,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES + "/BetteCity");
 
-        if(!storageDir.exists())
+        if (!storageDir.exists())
             storageDir.mkdirs();
 
         File images = null;
@@ -970,13 +969,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
         return images;
     }
 
-    private static File getOutputMediaFile(){
+    private static File getOutputMediaFile() {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Better City");
 
-        if (!mediaStorageDir.exists()){
+        if (!mediaStorageDir.exists()) {
             boolean is_dir_make = mediaStorageDir.mkdirs();
-            if (!is_dir_make){
+            if (!is_dir_make) {
                 Log.d("error", "null thing");
                 return null;
             }
@@ -984,12 +983,12 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_"+ timeStamp + ".jpg");
+                "IMG_" + timeStamp + ".jpg");
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void uploadImage(){
-        new AsyncTask<String, Integer, String>(){
+    private void uploadImage() {
+        new AsyncTask<String, Integer, String>() {
 
             private AlertDialog.Builder alert;
             private AlertDialog ad;
@@ -1024,7 +1023,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                 map.put("user_id", session.getUserID());
                 map.put("comment", message);*/
                 MultipartBody body = null;
-                if(imgFile != null) {
+                if (imgFile != null) {
                     body = RequestBuilder.uploadImageComment(
                             report_id,
                             session.getUserID(),
@@ -1043,7 +1042,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
                         float percentage = 100f * bytesWritten / contentLength;
                         if (percentage >= 0) {
-                            publishProgress((int)percentage);
+                            publishProgress((int) percentage);
                             Log.d("upload", String.valueOf(percentage));
                         }
                     }
@@ -1062,7 +1061,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
                 super.onProgressUpdate(values);
                 dialog_upload.setProgress(values[0]);
                 dialog_upload_status.setText(String.valueOf(values[0]));
-                if(values[0] == 100) {
+                if (values[0] == 100) {
                     status_done.setVisibility(View.VISIBLE);
                     dialog_upload.setIndeterminate(true);
                 }
@@ -1071,7 +1070,7 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                if(s != null) {
+                if (s != null) {
                     append_new_comment(s);
                 } else showMessage("Error while uploading complaint, please try again");
                 disable_interaction(ENABLE);
@@ -1083,13 +1082,13 @@ public class SingleReportActivity extends AppCompatActivity implements BottomShe
 
     @Override
     public void onBackPressed() {
-        if(can_back)
+        if (can_back)
             super.onBackPressed();
     }
 
-    private void disable_interaction(int status){
+    private void disable_interaction(int status) {
 
-        switch (status){
+        switch (status) {
             case 1:
                 btnsendComment.setEnabled(true);
                 break;

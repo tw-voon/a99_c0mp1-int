@@ -2,17 +2,17 @@ package kuchingitsolution.betterpepperboard.personal;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -44,12 +44,12 @@ public class ReportFragment extends Fragment {
     Session session;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void onAttach(Context context){
+    public void onAttach(Context context) {
         super.onAttach(context);
     }
 
@@ -62,7 +62,7 @@ public class ReportFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(getView() != null){
+        if (getView() != null) {
             no_content = getView().findViewById(R.id.no_content);
             my_report_list = (RecyclerView) getView().findViewById(R.id.my_report_list);
             reportAdapter = new ReportAdapter(getActivity(), reportModelArrayList);
@@ -79,7 +79,7 @@ public class ReportFragment extends Fragment {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
-                    Log.d("OnScrolled", "Scrolled dx: " + dx + " -- dy: " +dy);
+                    Log.d("OnScrolled", "Scrolled dx: " + dx + " -- dy: " + dy);
                 }
             });
         }
@@ -87,7 +87,7 @@ public class ReportFragment extends Fragment {
         get_own_report();
     }
 
-    private void get_own_report(){
+    private void get_own_report() {
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Config.URL_GET_OWN_REPORT,
                 new Response.Listener<String>() {
@@ -103,10 +103,10 @@ public class ReportFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         Log.d("error1", error.toString());
                     }
-                }){
+                }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 map.put("user_id", session.getUserID());
                 return map;
             }
@@ -116,8 +116,8 @@ public class ReportFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    private void process_report(String result){
-        if(result.equals("empty")){
+    private void process_report(String result) {
+        if (result.equals("empty")) {
             no_content.setVisibility(View.VISIBLE);
         } else {
             try {
@@ -125,7 +125,7 @@ public class ReportFragment extends Fragment {
                 JSONArray report = jsonObject.getJSONArray("report");
                 int length = report.length();
 
-                for(int i = 0; i < length ; i++){
+                for (int i = 0; i < length; i++) {
                     JSONObject data = report.getJSONObject(i);
                     JSONObject media = data.getJSONObject("media");
                     JSONObject user = data.getJSONObject("user");

@@ -2,23 +2,14 @@ package kuchingitsolution.betterpepperboard;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.onesignal.OSNotification;
-import com.onesignal.OSNotificationAction;
-import com.onesignal.OSNotificationOpenResult;
-import com.onesignal.OneSignal;
-import org.json.JSONObject;
-import kuchingitsolution.betterpepperboard.complaint.SingleReportActivity;
-import kuchingitsolution.betterpepperboard.helper.Config;
+
 import kuchingitsolution.betterpepperboard.helper.Session;
-import kuchingitsolution.betterpepperboard.message.ChatActivity;
 
 public class PepperApps extends Application{
 
@@ -37,12 +28,6 @@ public class PepperApps extends Application{
         pepperApps = this;
         mContext = getApplicationContext();
         session = new Session(this);
-        OneSignal.startInit(this)
-                .setNotificationReceivedHandler(new ExampleNotificationReceivedHandler())
-                .setNotificationOpenedHandler(new OpenNotification())
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                .unsubscribeWhenNotificationsAreDisabled(true)
-                .init();
     }
 
     public PepperApps(Context context){
@@ -112,93 +97,20 @@ public class PepperApps extends Application{
         return activeConnection;
     }
 
-    private class ExampleNotificationReceivedHandler implements OneSignal.NotificationReceivedHandler {
-        @Override
-        public void notificationReceived(OSNotification notification) {
-            JSONObject data = notification.payload.additionalData;
-            String customKey;
-            Log.v("OneSignalExample", "customkey set with values: " + data.toString());
+//    private void broadcast(String data){
+//        Intent intent = new Intent(Config.CHAT_NOTIFICATION);
+//        // You can also include some extra data.
+//        intent.putExtra("data", data);
+//        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//        Log.d("sender", "Broadcasting message");
+//    }
+//
+//    private void badge_broadcast(String data){
+//        Intent intent = new Intent("notification_received");
+//        // You can also include some extra data.
+//        intent.putExtra("data", data);
+//        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//        Log.d("sender", "Broadcasting message");
+//    }
 
-            customKey = data.optString("category", null);
-            if(customKey != null){
-                switch (customKey){
-                    case "chat":
-                        Log.i("OneSignalExample", "customkey set with value: " + customKey);
-                        session.putMessageBadge(1);
-                        broadcast(data.toString());
-                        badge_broadcast(Config.MESSAGE);
-                        break;
-                    case "notification":
-                        session.putNotiBadge(1);
-                        badge_broadcast(Config.NOTI);
-                        break;
-                    case "complaint":
-                        session.putComplaintBadge(1);
-                        badge_broadcast(Config.COMPLAINT);
-                        break;
-                }
-            }
-        }
-    }
-
-    /*{"state":"chat", "message":{"updated_at":"2017-09-09 22:32:52","user_id":6,"chat_room_id":1,"created_at":"2017-09-09 22:32:52",
-      "id":11,"message":"hahahahahahahahhahahahahahahahahahahahhahahahahahahahahahahahhahahaha",
-      "user":{"updated_at":"2017-09-05 23:29:45","role_id":3,"name":"user_demo_2","created_at":"2017-09-05 23:29:45",
-      "avatar_link":null,"id":6,"email":"demo@demo.com"}},"chat_room":[{"room_id":1,"updated_at":"2017-09-09 00:00:38",
-      "user_id":6,"chatroom":{"updated_at":null,"name":"Test Room","created_at":"2017-09-09 00:00:59",
-      "last_message":{"updated_at":"2017-09-09 22:32:52","user_id":6,"chat_room_id":1,"created_at":"2017-09-09 22:32:52",
-      "id":11,"message":"hahahahahahahahhahahahahahahahahahahahhahahahahahahahahahahahhahahaha"},"id":1,"member_count":2},
-      "created_at":"2017-09-09 00:00:38","id":2}]}*/
-
-    private void broadcast(String data){
-        Intent intent = new Intent(Config.CHAT_NOTIFICATION);
-        // You can also include some extra data.
-        intent.putExtra("data", data);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-        Log.d("sender", "Broadcasting message");
-    }
-
-    private void badge_broadcast(String data){
-        Intent intent = new Intent("notification_received");
-        // You can also include some extra data.
-        intent.putExtra("data", data);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-        Log.d("sender", "Broadcasting message");
-    }
-
-
-    private class OpenNotification implements OneSignal.NotificationOpenedHandler{
-
-        @Override
-        public void notificationOpened(OSNotificationOpenResult result) {
-
-            OSNotificationAction.ActionType actionType = result.action.type;
-            JSONObject data = result.notification.payload.additionalData;
-            String report_id = null;
-            String customKey;
-            String group_key = result.notification.payload.groupKey;
-            Intent intent = null;
-            customKey = data.optString("category", null);
-
-            if (customKey != null && customKey.equals("chat")){
-                JSONObject room_name = data.optJSONObject("message").optJSONObject("room");
-                String name = room_name.optString("name");
-                intent = new Intent(mContext, ChatActivity.class);
-                intent.putExtra("chat_room_id", group_key);
-                intent.putExtra("name", name);
-            } else if(customKey != null && (customKey.equals("notification") || customKey.equals("complaint"))){
-                intent = new Intent(mContext, SingleReportActivity.class);
-                report_id = data.optString("report_id", "null");
-                Log.d("OneSignalData", "report id : " + report_id);
-                intent.putExtra("report_id", report_id);
-            }
-
-            Log.d("OneSignalData", data.toString() + " ");
-
-            if(intent != null) { /* only run this if intent not = to null */
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-    }
 }

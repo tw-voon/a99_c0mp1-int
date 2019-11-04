@@ -2,12 +2,12 @@ package kuchingitsolution.betterpepperboard.setting;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.content.IntentCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import kuchingitsolution.betterpepperboard.R;
 import kuchingitsolution.betterpepperboard.auth.LoginActivity;
@@ -48,7 +48,7 @@ public class SettingActivity extends AppCompatActivity {
                 session.clearPreference();
                 db_offline.clearTable();
                 Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
-                intent.addFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
                         | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();

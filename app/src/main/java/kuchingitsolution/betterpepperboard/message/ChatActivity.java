@@ -1,14 +1,6 @@
 package kuchingitsolution.betterpepperboard.message;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -35,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import kuchingitsolution.betterpepperboard.R;
-import kuchingitsolution.betterpepperboard.action.ActionActivity;
 import kuchingitsolution.betterpepperboard.helper.Config;
 import kuchingitsolution.betterpepperboard.helper.DB_Offline;
 import kuchingitsolution.betterpepperboard.helper.Session;
@@ -82,14 +77,14 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.onUse
         }
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
-            Log.d("onesignal_data", intent.getStringExtra("data"));
-            append_received_msg(intent.getStringExtra("data"));
-        }
-    };
+//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Toast.makeText(context, "message", Toast.LENGTH_SHORT).show();
+//            Log.d("onesignal_data", intent.getStringExtra("data"));
+//            append_received_msg(intent.getStringExtra("data"));
+//        }
+//    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -104,13 +99,13 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.onUse
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(ChatActivity.this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Config.CHAT_NOTIFICATION));
+//        LocalBroadcastManager.getInstance(ChatActivity.this).registerReceiver(broadcastReceiver,
+//                new IntentFilter(Config.CHAT_NOTIFICATION));
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager.getInstance(ChatActivity.this).unregisterReceiver(broadcastReceiver);
+        // LocalBroadcastManager.getInstance(ChatActivity.this).unregisterReceiver(broadcastReceiver);
         super.onPause();
     }
 
